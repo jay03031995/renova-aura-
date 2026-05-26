@@ -98,7 +98,7 @@ function ProcedureDetail({ p }: { p: Procedure }) {
             {p.overview}
           </p>
           <div style={{ marginTop: 28 }}>
-            <BookButton label="Book a consultation" />
+            <BookButton>Book a consultation</BookButton>
           </div>
         </div>
       </section>
@@ -356,7 +356,7 @@ function ProcedureDetail({ p }: { p: Procedure }) {
             walk you through your options, and give you a written plan — no
             obligation.
           </p>
-          <BookButton label="Book your consultation" />
+          <BookButton>Book your consultation</BookButton>
         </div>
       </section>
     </>

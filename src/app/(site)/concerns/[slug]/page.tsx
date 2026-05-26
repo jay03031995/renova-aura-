@@ -96,7 +96,7 @@ function ConcernDetail({ c }: { c: Concern }) {
             {c.summary}
           </p>
           <div style={{ marginTop: 28 }}>
-            <BookButton label="Book a consultation" />
+            <BookButton>Book a consultation</BookButton>
           </div>
         </div>
       </section>
@@ -298,7 +298,7 @@ function ConcernDetail({ c }: { c: Concern }) {
             the cause, and give you a written plan with realistic timelines
             and costs — no obligation.
           </p>
-          <BookButton label="Book your consultation" />
+          <BookButton>Book your consultation</BookButton>
         </div>
       </section>
     </>
