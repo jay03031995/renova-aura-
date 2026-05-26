@@ -2642,11 +2642,32 @@ p { margin: 0; color: var(--muted); }
   transition: all .25s var(--ease);
   display: flex;
   flex-direction: column;
+  overflow: hidden;
 }
+/* When the card has an image header, the inner div carries the padding. */
+.proc-card:has(.proc-card-img) { padding: 0; }
 .proc-card:hover {
   border-color: var(--sage);
   transform: translateY(-3px);
   box-shadow: var(--shadow);
+}
+.proc-card-img {
+  aspect-ratio: 16 / 10;
+  background: var(--cream-2);
+  background-size: cover;
+  background-position: center;
+  position: relative;
+}
+.proc-card-img-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, transparent 60%, rgba(0,0,0,.25) 100%);
+}
+.proc-card-inner {
+  padding: 26px 28px 28px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
 }
 .proc-card-tag {
   display: inline-block;

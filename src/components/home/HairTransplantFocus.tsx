@@ -44,16 +44,24 @@ export default function HairTransplantFocus() {
               href={`/procedures/${p.pillar}/${p.slug}`}
               className="proc-card"
             >
-              {p.tag && <span className="proc-card-tag">{p.tag}</span>}
-              <h3 className="proc-card-title">{p.name}</h3>
-              <p className="proc-card-headline">{p.headline}</p>
-              <div className="proc-card-meta">
-                <span>⏱ {p.quick.duration}</span>
-                <span>↻ {p.quick.sessions}</span>
+              <div
+                className="proc-card-img"
+                style={{ backgroundImage: `url(${p.image})` }}
+              >
+                <div className="proc-card-img-overlay" />
               </div>
-              <span className="proc-card-link">
-                Learn more <ArrowRight size={14} />
-              </span>
+              <div className="proc-card-inner">
+                {p.tag && <span className="proc-card-tag">{p.tag}</span>}
+                <h3 className="proc-card-title">{p.name}</h3>
+                <p className="proc-card-headline">{p.headline}</p>
+                <div className="proc-card-meta">
+                  <span>⏱ {p.quick.duration}</span>
+                  <span>↻ {p.quick.sessions}</span>
+                </div>
+                <span className="proc-card-link">
+                  Learn more <ArrowRight size={14} />
+                </span>
+              </div>
             </Link>
           ))}
         </div>

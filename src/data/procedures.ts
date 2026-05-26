@@ -25,6 +25,12 @@ export type Procedure = {
   tag?: string; // e.g. "Most popular", "Walk-in 60 min"
   headline: string;
   overview: string;
+  /**
+   * Card image URL. Currently Unsplash placeholders curated per procedure
+   * category — replace with clinic photography (uploaded via Sanity) before
+   * launch. Falls back to PILLAR_DEFAULT_IMAGE when missing.
+   */
+  image?: string;
   quick: {
     duration: string;
     sessions: string;
@@ -40,6 +46,39 @@ export type Procedure = {
   lastReviewed?: string; // ISO date for EEAT trust signal
 };
 
+/** Curated placeholder images by procedure category (Unsplash, no auth). */
+const IMG = {
+  hairSurgery:
+    "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?w=800&q=80",
+  hairHealthy:
+    "https://images.unsplash.com/photo-1620331317065-6f9f4b6bb13e?w=800&q=80",
+  hairWoman:
+    "https://images.unsplash.com/photo-1559599101-f09722fb4948?w=800&q=80",
+  beard:
+    "https://images.unsplash.com/photo-1503443207922-dff7d543fd0e?w=800&q=80",
+  eyebrow:
+    "https://images.unsplash.com/photo-1583241475880-083f84372725?w=800&q=80",
+  injection:
+    "https://images.unsplash.com/photo-1607619056574-7b8d3ee536b2?w=800&q=80",
+  faceTreatment:
+    "https://images.unsplash.com/photo-1614859275206-fbcb27e57057?w=800&q=80",
+  faceConsult:
+    "https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=800&q=80",
+  eyesCloseup:
+    "https://images.unsplash.com/photo-1469275606726-7651dcaba2ad?w=800&q=80",
+  noseProfile:
+    "https://images.unsplash.com/photo-1487412947147-5cebf100ffc2?w=800&q=80",
+  bodyContour:
+    "https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=800&q=80",
+  lips:
+    "https://images.unsplash.com/photo-1588421357574-87938a86fa28?w=800&q=80",
+};
+
+export const PILLAR_DEFAULT_IMAGE: Record<ProcedurePillar, string> = {
+  "hair-transplant": IMG.hairSurgery,
+  "plastic-surgery": IMG.faceConsult,
+};
+
 // =========================================================================
 // HAIR TRANSPLANT — 11 procedures
 // =========================================================================
@@ -47,6 +86,7 @@ export type Procedure = {
 const HAIR: Procedure[] = [
   {
     slug: "fue-hair-transplant",
+    image: IMG.hairSurgery,
     name: "FUE Hair Transplant",
     pillar: "hair-transplant",
     tag: "Most popular",
@@ -137,6 +177,7 @@ const HAIR: Procedure[] = [
   },
   {
     slug: "fut-hair-transplant",
+    image: IMG.hairSurgery,
     name: "FUT Hair Transplant",
     pillar: "hair-transplant",
     headline:
@@ -180,6 +221,7 @@ const HAIR: Procedure[] = [
   },
   {
     slug: "dhi-hair-transplant",
+    image: IMG.hairSurgery,
     name: "DHI Hair Transplant",
     pillar: "hair-transplant",
     tag: "Premium",
@@ -219,6 +261,7 @@ const HAIR: Procedure[] = [
   },
   {
     slug: "sapphire-fue-hair-transplant",
+    image: IMG.hairHealthy,
     name: "Sapphire FUE Hair Transplant",
     pillar: "hair-transplant",
     headline: "FUE with sapphire-tipped blades for finer channels and faster healing.",
@@ -251,6 +294,7 @@ const HAIR: Procedure[] = [
   },
   {
     slug: "beard-transplant",
+    image: IMG.beard,
     name: "Beard Transplant",
     pillar: "hair-transplant",
     headline: "Fill patchy beards, scars, or design a full beard from scratch using your own scalp hair.",
@@ -289,6 +333,7 @@ const HAIR: Procedure[] = [
   },
   {
     slug: "eyebrow-transplant",
+    image: IMG.eyebrow,
     name: "Eyebrow Transplant",
     pillar: "hair-transplant",
     headline: "Restore sparse, thinning or scarred eyebrows with permanent natural-hair grafts.",
@@ -325,6 +370,7 @@ const HAIR: Procedure[] = [
   },
   {
     slug: "hairline-lowering",
+    image: IMG.hairHealthy,
     name: "Hairline Lowering",
     pillar: "hair-transplant",
     headline: "Lower a high or receded hairline by 1–4 cm in a single sitting.",
@@ -351,6 +397,7 @@ const HAIR: Procedure[] = [
   },
   {
     slug: "prp-hair-treatment",
+    image: IMG.injection,
     name: "PRP for Hair Loss",
     pillar: "hair-transplant",
     headline: "Concentrated platelets from your own blood, injected to slow loss and stimulate regrowth.",
@@ -388,6 +435,7 @@ const HAIR: Procedure[] = [
   },
   {
     slug: "gfc-hair-therapy",
+    image: IMG.injection,
     name: "GFC Hair Therapy",
     pillar: "hair-transplant",
     headline: "Growth Factor Concentrate — next-generation PRP with higher growth factor yield.",
@@ -416,6 +464,7 @@ const HAIR: Procedure[] = [
   },
   {
     slug: "mesotherapy-for-hair",
+    image: IMG.injection,
     name: "Mesotherapy for Hair",
     pillar: "hair-transplant",
     headline: "Custom cocktail of vitamins, peptides and DHT-blockers injected into the scalp.",
@@ -448,6 +497,7 @@ const HAIR: Procedure[] = [
   },
   {
     slug: "female-hair-transplant",
+    image: IMG.hairWoman,
     name: "Female Hair Transplant",
     pillar: "hair-transplant",
     headline: "Specialised hair restoration for women — no full head shave required.",
@@ -490,6 +540,7 @@ const HAIR: Procedure[] = [
 const PLASTIC: Procedure[] = [
   {
     slug: "rhinoplasty",
+    image: IMG.noseProfile,
     name: "Rhinoplasty (Nose Reshaping)",
     pillar: "plastic-surgery",
     tag: "Most popular",
@@ -530,6 +581,7 @@ const PLASTIC: Procedure[] = [
   },
   {
     slug: "blepharoplasty",
+    image: IMG.eyesCloseup,
     name: "Blepharoplasty (Eyelid Surgery)",
     pillar: "plastic-surgery",
     headline: "Refresh tired or hooded eyes — upper, lower, or both eyelids.",
@@ -564,6 +616,7 @@ const PLASTIC: Procedure[] = [
   },
   {
     slug: "facelift",
+    image: IMG.faceTreatment,
     name: "Facelift (SMAS / Deep-Plane)",
     pillar: "plastic-surgery",
     headline: "Reposition deeper facial tissues for a natural, lasting rejuvenation — not just skin tightening.",
@@ -600,6 +653,7 @@ const PLASTIC: Procedure[] = [
   },
   {
     slug: "liposuction",
+    image: IMG.bodyContour,
     name: "Liposuction",
     pillar: "plastic-surgery",
     headline: "Permanently remove stubborn fat from specific body areas through small incisions.",
@@ -635,6 +689,7 @@ const PLASTIC: Procedure[] = [
   },
   {
     slug: "breast-augmentation",
+    image: IMG.bodyContour,
     name: "Breast Augmentation",
     pillar: "plastic-surgery",
     headline: "Implant or fat-transfer breast enhancement, sized and shaped to your frame.",
@@ -667,6 +722,7 @@ const PLASTIC: Procedure[] = [
   },
   {
     slug: "tummy-tuck",
+    image: IMG.bodyContour,
     name: "Tummy Tuck (Abdominoplasty)",
     pillar: "plastic-surgery",
     headline: "Remove excess abdominal skin and tighten loose muscles after weight loss or pregnancy.",
@@ -699,6 +755,7 @@ const PLASTIC: Procedure[] = [
   },
   {
     slug: "gynecomastia-surgery",
+    image: IMG.bodyContour,
     name: "Gynecomastia Surgery",
     pillar: "plastic-surgery",
     headline: "Permanent correction of male breast enlargement — restore a flat, masculine chest.",
@@ -731,6 +788,7 @@ const PLASTIC: Procedure[] = [
   },
   {
     slug: "lip-fillers",
+    image: IMG.lips,
     name: "Lip Fillers",
     pillar: "plastic-surgery",
     headline: "Natural, subtle lip enhancement with hyaluronic-acid filler — never overdone.",
@@ -762,6 +820,7 @@ const PLASTIC: Procedure[] = [
   },
   {
     slug: "botox",
+    image: IMG.injection,
     name: "Botox / Anti-Wrinkle Injections",
     pillar: "plastic-surgery",
     headline: "Smooth dynamic wrinkles on the forehead, frown lines and crow's feet.",
@@ -798,6 +857,7 @@ const PLASTIC: Procedure[] = [
   },
   {
     slug: "thread-lift",
+    image: IMG.faceTreatment,
     name: "Thread Lift",
     pillar: "plastic-surgery",
     headline: "Non-surgical face lift using dissolvable PDO threads — instant lift, minimal downtime.",
