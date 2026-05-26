@@ -4,14 +4,15 @@ import { useEffect, useMemo, useState } from "react";
 import { useBooking } from "@/components/BookingContext";
 import { ArrowRight, Check } from "@/components/icons";
 
+// RenovaAura services — map to the two surgical pillars + dermatology.
 const CONCERN_CHIPS = [
-  "Acne or scars",
-  "Pigmentation / melasma",
-  "Anti-ageing",
-  "Hair loss",
-  "Laser hair removal",
-  "Bridal program",
-  "Body / contouring",
+  "Hair Transplant (FUE / DHI)",
+  "Plastic Surgery — Face",
+  "Plastic Surgery — Body",
+  "Rhinoplasty",
+  "Facelift / Anti-ageing",
+  "Skin concern (acne, pigmentation, etc.)",
+  "Laser Hair Reduction",
   "Something else",
 ];
 
@@ -188,12 +189,15 @@ export default function BookingModal() {
               className="eyebrow"
               style={{ color: "var(--sand)", marginBottom: 18 }}
             >
-              The Dermaheal Consult
+              The RenovaAura Consult
             </div>
-            <h3>Sit with an MD dermatologist. Walk out with a written plan.</h3>
+            <h3>
+              Sit with a board-certified consultant. Walk out with a written
+              plan.
+            </h3>
             <p style={{ marginTop: 14 }}>
-              A one-on-one assessment of your skin or hair concern, unhurried, honest,
-              calibrated for Indian skin.
+              A one-on-one assessment for your hair transplant, plastic surgery
+              or skin concern — unhurried, honest, never high-pressure.
             </p>
           </div>
           <div className="modal-perks">
@@ -207,7 +211,7 @@ export default function BookingModal() {
               <span className="modal-perk-check">
                 <Check />
               </span>{" "}
-              Personalised skin assessment
+              Personalised assessment + treatment plan
             </div>
             <div className="modal-perk">
               <span className="modal-perk-check">
@@ -291,7 +295,7 @@ export default function BookingModal() {
                   onChange={(e) => set("city", e.target.value)}
                 >
                   <option value="">Select a clinic…</option>
-                  <option>Dwarka · Sector 7, Ramphal Chowk</option>
+                  <option>RenovaAura · Main Clinic</option>
                 </select>
                 {errors.city && (
                   <div className="field-error">{errors.city}</div>

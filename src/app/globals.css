@@ -203,6 +203,7 @@ p { margin: 0; color: var(--muted); }
   position: relative;
   padding: 6px 0;
   transition: color .2s;
+  white-space: nowrap;
 }
 .nav-link:hover { color: var(--cocoa); }
 .nav-link.has-dd::after {
@@ -215,6 +216,7 @@ p { margin: 0; color: var(--muted); }
   display: flex;
   align-items: center;
   gap: 14px;
+  flex-shrink: 0;
 }
 .nav-phone {
   font-size: 13px;
@@ -222,6 +224,7 @@ p { margin: 0; color: var(--muted); }
   display: flex;
   align-items: center;
   gap: 8px;
+  white-space: nowrap;
 }
 
 /* ---------- Announcement bar ---------- */
