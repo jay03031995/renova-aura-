@@ -114,9 +114,18 @@ function mapDoctor(d: SanityDoctor): DoctorFetched {
   };
 }
 
+/**
+ * Surface the local `photo` path as `imageUrl` so the bgImg() helper in
+ * the doctor components picks it up automatically. Sanity-uploaded
+ * portraits override this once the project is connected.
+ */
+function withLocalPhoto(d: Doctor): DoctorFetched {
+  return { ...d, imageUrl: d.photo };
+}
+
 export async function getDoctors(): Promise<DoctorFetched[]> {
   const docs = await safeFetch<SanityDoctor[]>(doctorsQuery);
-  if (!isFilled(docs)) return LOCAL_DOCTORS;
+  if (!isFilled(docs)) return LOCAL_DOCTORS.map(withLocalPhoto);
   return docs.map(mapDoctor);
 }
 
@@ -129,7 +138,8 @@ export async function getDoctorSlugs(): Promise<string[]> {
 export async function getDoctorBySlug(slug: string): Promise<DoctorFetched | undefined> {
   const doc = await safeFetch<SanityDoctor | null>(doctorBySlugQuery, { slug });
   if (doc) return mapDoctor(doc);
-  return LOCAL_DOCTORS.find((d) => d.slug === slug);
+  const local = LOCAL_DOCTORS.find((d) => d.slug === slug);
+  return local ? withLocalPhoto(local) : undefined;
 }
 
 // ----- Results --------------------------------------------------------------

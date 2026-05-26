@@ -3,6 +3,13 @@ export type Doctor = {
   name: string;
   title: string;
   img: string; // d1 | d2 | d3 — variant identifier for placeholder gradient
+  /**
+   * Optional local portrait path (e.g. "/images/doctors/bhawna-bhardwaj.jpg").
+   * Surfaced through the Sanity fetcher as `imageUrl` so the bgImg() helper
+   * in the doctor components picks it up automatically. Sanity-uploaded
+   * portraits will override this when the project is connected.
+   */
+  photo?: string;
   focus: string; // home-card "patients seen" line
   years: number;
   homeBio: string;
@@ -33,6 +40,7 @@ export const DOCTORS: Doctor[] = [
     name: "Dr. Bhawna Bhardwaj",
     title: "Senior Consultant Dermatologist & Hair Transplant Surgeon",
     img: "d1",
+    photo: "/images/doctors/bhawna-bhardwaj.jpg",
     focus: "Dermatology · Hair Transplant",
     years: 9,
     homeBio:
@@ -146,6 +154,7 @@ export const DOCTORS: Doctor[] = [
     name: "Dr. Ankur Bhatia",
     title: "Consultant Plastic & Reconstructive Microsurgeon",
     img: "d2",
+    photo: "/images/doctors/ankur-bhatia.jpg",
     focus: "Plastic Surgery · Microsurgery",
     years: 14,
     homeBio:
