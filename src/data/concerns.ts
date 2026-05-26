@@ -169,43 +169,58 @@ export const CONCERNS: Concern[] = [
     ],
   },
   {
-    slug: "unwanted-hair",
-    name: "Unwanted Hair",
+    slug: "laser-hair-reduction",
+    name: "Laser Hair Reduction",
     icon: "◒",
-    cardTagline: "Laser hair reduction · ingrowns · PCOS-related growth",
+    cardTagline: "Diode + Nd:YAG · 70–90% reduction · safe on Indian skin",
     headline:
-      "Permanent hair reduction with diode + Nd:YAG lasers — safe across all Indian skin types.",
+      "Permanent hair reduction with diode + Nd:YAG lasers — calibrated for every Indian skin type.",
     summary:
-      "Laser hair reduction works best when the right wavelength is matched to your skin type and hair colour. RenovaAura uses diode (810 nm) for lighter skin tones and Nd:YAG (1064 nm) for darker skin tones — the second is the only laser truly safe for type V–VI Indian skin.",
+      "Laser hair reduction (LHR) works best when the wavelength is matched to your skin type and hair colour. RenovaAura uses diode (810 nm) for lighter skin tones and Nd:YAG (1064 nm) for darker skin tones — Nd:YAG is the only laser truly safe for type V–VI Indian skin. A full course gives 70–90% permanent reduction across face, body, underarms, bikini, back, or chest.",
     symptoms: [
       "Coarse facial hair (upper lip, chin, jawline) — often hormonal",
-      "Underarm, leg, bikini, back hair patients want permanently reduced",
-      "Razor bumps and ingrown hairs from shaving",
+      "Underarm, leg, bikini, back, or chest hair you want permanently reduced",
+      "Razor bumps and ingrown hairs from regular shaving",
       "Hirsutism patterns suggesting PCOS",
+      "Folliculitis flares after waxing or threading",
     ],
     causes: [
-      "Genetic factors (most common)",
+      "Genetic factors (most common — runs in families)",
       "Hormonal imbalance — PCOS, insulin resistance, adrenal disorders",
       "Medications (steroids, hormone therapy)",
+      "Post-pregnancy or perimenopausal hormonal shifts",
       "Sometimes idiopathic — no identifiable cause",
     ],
     approach: [
-      "Hormonal workup if facial hair pattern suggests PCOS",
-      "Skin-type assessment to choose the right laser wavelength",
-      "Test patch on first visit before full-area treatment",
-      "6–8 sessions, 4–6 weeks apart, for 70–90% reduction",
-      "Annual maintenance touch-ups for permanent results",
-      "Cooling and post-care protocol to prevent burns in darker skin",
+      "Hormonal workup if facial hair pattern suggests PCOS or thyroid involvement",
+      "Skin-type (Fitzpatrick) assessment to choose the right laser wavelength — diode for I–III, Nd:YAG for IV–VI",
+      "Mandatory test patch on first visit before full-area treatment",
+      "6–8 sessions, 4–6 weeks apart, for 70–90% permanent reduction",
+      "Triple-cooling system protects darker skin from burns and pigmentation",
+      "Annual maintenance touch-ups to handle hormonal regrowth",
+      "Post-care protocol: SPF 50+, no waxing or plucking between sessions (shaving is fine)",
     ],
-    relatedProcedureSlugs: ["botox"],
+    relatedProcedureSlugs: [],
     faqs: [
       {
         q: "Is laser hair removal truly permanent?",
-        a: "It causes permanent reduction (70–90% of hairs after a full course), not absolute removal. Annual maintenance keeps you smooth long-term.",
+        a: "It causes permanent reduction (70–90% of hairs after a full course), not 100% removal. Hormonal regrowth can occur over years, so annual maintenance keeps you smooth long-term.",
       },
       {
         q: "Will laser darken my skin?",
-        a: "Not when the correct wavelength is used for your skin type. We use Nd:YAG for Indian skin types V–VI specifically to avoid pigmentation.",
+        a: "Not when the correct wavelength is used for your skin type. We use Nd:YAG for Indian skin types IV–VI specifically to avoid post-inflammatory pigmentation, which is a real risk with wrong wavelengths.",
+      },
+      {
+        q: "How many sessions will I need?",
+        a: "6–8 sessions is the standard course, 4–6 weeks apart. PCOS patients often need 2–4 extra sessions due to ongoing hormonal stimulation of follicles.",
+      },
+      {
+        q: "Can I do laser on my face if I have melasma?",
+        a: "Only with extra caution. Lasers can trigger melasma flares. We pre-treat the melasma first and use very conservative settings on facial laser sessions.",
+      },
+      {
+        q: "Is it painful?",
+        a: "Modern diode and Nd:YAG lasers with integrated cooling feel like a warm rubber-band snap — uncomfortable but tolerable without anaesthesia. We can apply a numbing cream for sensitive areas (bikini, upper lip) on request.",
       },
     ],
   },
@@ -441,47 +456,6 @@ export const CONCERNS: Concern[] = [
       {
         q: "Can stretch marks be completely removed?",
         a: "Not completely. Red marks can fade to nearly invisible; white marks can become significantly less obvious in texture and tone but rarely disappear entirely.",
-      },
-    ],
-  },
-  {
-    slug: "vitiligo",
-    name: "Vitiligo",
-    icon: "◙",
-    cardTagline: "White patches · pigment loss · auto-immune",
-    headline:
-      "Slow progression and restore pigment with a personalised, evidence-based plan.",
-    summary:
-      "Vitiligo is auto-immune pigment loss. RenovaAura's vitiligo protocol focuses on stopping new patches first (topical immunomodulators, oral therapy when needed), then attempting repigmentation through narrowband UVB, excimer laser, or surgical melanocyte transfer for stable patches.",
-    symptoms: [
-      "White, well-demarcated patches on skin",
-      "Patches commonly on face, hands, around mouth/eyes, genitals",
-      "Premature graying of hair in vitiligo areas",
-      "Patches may spread, stay stable, or rarely shrink",
-    ],
-    causes: [
-      "Auto-immune destruction of melanocytes (most common)",
-      "Genetic predisposition (positive family history in 30%)",
-      "Sometimes triggered by stress or skin trauma",
-      "Often associated with thyroid, diabetes, or other autoimmune conditions",
-    ],
-    approach: [
-      "Thyroid + autoimmune screen at first consultation",
-      "Stop progression first: topical tacrolimus, oral steroids if active spreading",
-      "Repigmentation phase: narrowband UVB phototherapy or excimer laser",
-      "Surgical options (melanocyte transfer) for stable, treatment-resistant patches",
-      "Camouflage makeup and skin-tone matching for cosmetically critical areas",
-      "Counselling and psychological support — vitiligo deeply affects self-esteem",
-    ],
-    relatedProcedureSlugs: [],
-    faqs: [
-      {
-        q: "Is vitiligo contagious?",
-        a: "Absolutely not. It's auto-immune, not infectious.",
-      },
-      {
-        q: "Will my vitiligo come back after treatment?",
-        a: "Vitiligo is a chronic condition that can have phases. Maintenance treatment and lifestyle factors (stress management, vitamin D, balanced diet) help maintain results.",
       },
     ],
   },

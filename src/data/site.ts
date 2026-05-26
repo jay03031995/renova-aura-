@@ -70,7 +70,7 @@ export const FOOTER_LINKS: Record<string, { label: string; href: string }[]> = {
     { label: "Pigmentation & Melasma", href: "/concerns/pigmentation-melasma" },
     { label: "Anti-Ageing & Wrinkles", href: "/concerns/anti-ageing-wrinkles" },
     { label: "Dark Circles", href: "/concerns/dark-circles" },
-    { label: "Unwanted Hair", href: "/concerns/unwanted-hair" },
+    { label: "Laser Hair Reduction", href: "/concerns/laser-hair-reduction" },
     { label: "All Concerns", href: "/concerns" },
   ],
   Clinic: [

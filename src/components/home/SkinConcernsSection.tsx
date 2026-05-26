@@ -15,7 +15,7 @@ const FEATURED_SLUGS = [
   "pigmentation-melasma",
   "anti-ageing-wrinkles",
   "dark-circles",
-  "unwanted-hair",
+  "laser-hair-reduction",
   "scar-reduction",
 ];
 
