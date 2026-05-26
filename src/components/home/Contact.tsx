@@ -24,7 +24,7 @@ export default function Contact() {
         </div>
         <div className="contact-grid">
           <div className="contact-info reveal">
-            <div className="eyebrow">Dwarka, New Delhi</div>
+            <div className="eyebrow">Anand Vihar, New Delhi</div>
             <h2>We&apos;d love to hear from you.</h2>
             <p>
               Whether you have a question about a treatment, want to book a

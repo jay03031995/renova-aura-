@@ -75,8 +75,10 @@ export const FOOTER_LINKS: Record<string, { label: string; href: string }[]> = {
   ],
   Clinic: [
     { label: "Our Doctors", href: "/doctors" },
-    { label: "Patient Results", href: "/results" },
-    { label: "Patient Stories", href: "/#testimonials" },
+    // Patient Results + Patient Stories hidden until RenovaAura's own
+    // before/after gallery and testimonials are available.
+    // { label: "Patient Results", href: "/results" },
+    // { label: "Patient Stories", href: "/#testimonials" },
     { label: "FAQs", href: "/#faq" },
     { label: "Contact", href: "/#contact" },
   ],

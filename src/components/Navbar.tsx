@@ -153,9 +153,9 @@ export default function Navbar() {
             </div>
           </div>
 
-          <Link className="nav-link" href="/results">
-            Results
-          </Link>
+          {/* Results link hidden — /results page still shows dermaheal-era
+              patient photos with @DRNAVJOTARORA watermarks. Re-enable once
+              RenovaAura's own before/after gallery is uploaded via /studio. */}
           <Link className="nav-link" href="/#contact">
             Contact
           </Link>

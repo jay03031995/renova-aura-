@@ -19,19 +19,20 @@ const jsonLd = {
   "@type": "MedicalBusiness",
   name: CLINIC.name,
   description:
-    "MD-led skin and hair clinic in Dwarka, New Delhi offering advanced dermatology, aesthetics and trichology treatments calibrated for Indian skin.",
-  url: "https://dermaheal.co.in",
-  telephone: ["+918080910191", "+917379464999"],
+    "Hair transplant, plastic surgery and dermatology clinic in Anand Vihar, New Delhi. Board-certified consultants delivering FUE, DHI, rhinoplasty, facelift and skin care — evidence-based, natural-looking results.",
+  url: "https://renovaaura.com",
+  telephone: [CLINIC.phone, CLINIC.phone2],
   email: CLINIC.email,
   address: {
     "@type": "PostalAddress",
-    streetAddress: "C-712, Ramphal Chowk, Block D, Sector 7 Dwarka, Palam",
-    addressLocality: "Dwarka",
-    addressRegion: "New Delhi",
-    postalCode: "110075",
-    addressCountry: "IN",
+    streetAddress: CLINIC.addressParts.streetAddress,
+    addressLocality: CLINIC.addressParts.locality,
+    addressRegion: CLINIC.addressParts.region,
+    postalCode: CLINIC.addressParts.postalCode,
+    addressCountry: CLINIC.addressParts.country,
   },
-  geo: { "@type": "GeoCoordinates", latitude: "28.5866", longitude: "77.0336" },
+  // Anand Vihar approx coordinates — refine once verified on Google Maps.
+  geo: { "@type": "GeoCoordinates", latitude: "28.6488", longitude: "77.3025" },
   openingHoursSpecification: [
     {
       "@type": "OpeningHoursSpecification",
@@ -46,7 +47,7 @@ const jsonLd = {
       closes: "19:00",
     },
   ],
-  medicalSpecialty: "Dermatology",
+  medicalSpecialty: ["Dermatology", "Plastic Surgery"],
   priceRange: "$$",
   sameAs: [CLINIC.social.instagram, CLINIC.social.youtube, CLINIC.social.linkedin],
 };

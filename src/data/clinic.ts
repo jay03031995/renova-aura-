@@ -1,7 +1,6 @@
 /**
- * Clinic-level facts. ALL VALUES BELOW ARE PLACEHOLDERS for the
- * RenovaAura launch — replace each with the real address, phones,
- * social handles and hours before going live.
+ * Clinic-level facts. The address is confirmed; phone, email, and social
+ * handles are still placeholders — replace before launch.
  */
 export const CLINIC = {
   name: "RenovaAura",
@@ -10,9 +9,21 @@ export const CLINIC = {
   phone: "+91 00000 00000",
   phone2: "+91 00000 00001",
   email: "hello@renovaaura.com",
-  address: "Address — to be confirmed",
+  address:
+    "First Floor, Plot No C/3, Block B, Surya Niketan, Anand Vihar, New Delhi, Delhi, 110092",
+  // Structured pieces used for schema.org JSON-LD and Google Maps queries.
+  addressParts: {
+    streetAddress: "First Floor, Plot No C/3, Block B, Surya Niketan",
+    locality: "Anand Vihar",
+    region: "New Delhi",
+    postalCode: "110092",
+    country: "IN",
+  },
+  /** Free-form Google Maps query for the embed + link-out. */
+  mapsQuery:
+    "RenovaAura+Surya+Niketan+Anand+Vihar+Delhi+110092",
   hours: "Mon to Sat 10:00 AM to 7:30 PM · Sun by appointment",
-  cities: ["New Delhi"],
+  cities: ["Anand Vihar", "New Delhi"],
   shopUrl: "https://renovaaura.com",
   social: {
     instagram: "https://instagram.com/renovaaura",

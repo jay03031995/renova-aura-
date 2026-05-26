@@ -16,7 +16,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { path: "/procedures/plastic-surgery", priority: 0.9 },
     { path: "/concerns", priority: 0.9 },
     { path: "/doctors", priority: 0.85 },
-    { path: "/results", priority: 0.8 },
+    // /results withheld from sitemap until RenovaAura's own before/after
+    // gallery replaces the dermaheal-era patient photos.
   ];
 
   const procedures = PROCEDURES.map((p) => ({
