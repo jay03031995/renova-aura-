@@ -8,6 +8,7 @@ import {
   HAIR_PROCEDURES,
   PLASTIC_PROCEDURES,
 } from "@/data/procedures";
+import { CONCERNS } from "@/data/concerns";
 import { ArrowRight, Phone } from "@/components/icons";
 import BookButton from "@/components/BookButton";
 
@@ -30,6 +31,7 @@ export default function Navbar() {
 
   const hairTop = HAIR_PROCEDURES.slice(0, 6);
   const plasticTop = PLASTIC_PROCEDURES.slice(0, 6);
+  const concernTop = CONCERNS.slice(0, 6);
 
   return (
     <nav className={"nav" + (scrolled ? " scrolled" : "")}>
@@ -93,6 +95,33 @@ export default function Navbar() {
               <div className="nav-dd-foot">
                 <span>Refined, never overdone</span>
                 <Link href="/procedures/plastic-surgery">
+                  See all <ArrowRight size={11} />
+                </Link>
+              </div>
+            </div>
+          </div>
+
+          <div className="nav-item">
+            <Link className="nav-link has-dd" href="/concerns">
+              Skin Concerns
+            </Link>
+            <div className="nav-dd wide">
+              <div className="nav-dd-hd">
+                Skin concerns · {CONCERNS.length} treated
+              </div>
+              {concernTop.map((c) => (
+                <Link
+                  key={c.slug}
+                  className="nav-dd-item"
+                  href={`/concerns/${c.slug}`}
+                >
+                  <span>{c.name}</span>
+                  <small>{c.cardTagline}</small>
+                </Link>
+              ))}
+              <div className="nav-dd-foot">
+                <span>Calibrated for Indian skin</span>
+                <Link href="/concerns">
                   See all <ArrowRight size={11} />
                 </Link>
               </div>

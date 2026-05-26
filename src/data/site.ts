@@ -65,6 +65,14 @@ export const FOOTER_LINKS: Record<string, { label: string; href: string }[]> = {
     { label: "Botox / Fillers", href: "/procedures/plastic-surgery/botox" },
     { label: "All Procedures", href: "/procedures/plastic-surgery" },
   ],
+  "Skin Concerns": [
+    { label: "Acne & Scars", href: "/concerns/acne" },
+    { label: "Pigmentation & Melasma", href: "/concerns/pigmentation-melasma" },
+    { label: "Anti-Ageing & Wrinkles", href: "/concerns/anti-ageing-wrinkles" },
+    { label: "Dark Circles", href: "/concerns/dark-circles" },
+    { label: "Unwanted Hair", href: "/concerns/unwanted-hair" },
+    { label: "All Concerns", href: "/concerns" },
+  ],
   Clinic: [
     { label: "Our Doctors", href: "/doctors" },
     { label: "Patient Results", href: "/results" },

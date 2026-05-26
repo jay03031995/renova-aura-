@@ -1,6 +1,7 @@
 import type { MetadataRoute } from "next";
 import { getDoctorSlugs } from "@/sanity/lib/fetchers";
 import { PROCEDURES } from "@/data/procedures";
+import { CONCERNS } from "@/data/concerns";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = "https://renovaaura.com";
@@ -13,6 +14,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { path: "/procedures", priority: 0.95 },
     { path: "/procedures/hair-transplant", priority: 0.95 },
     { path: "/procedures/plastic-surgery", priority: 0.9 },
+    { path: "/concerns", priority: 0.9 },
     { path: "/doctors", priority: 0.85 },
     { path: "/results", priority: 0.8 },
   ];
@@ -22,15 +24,22 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: p.pillar === "hair-transplant" ? 0.85 : 0.8,
   }));
 
+  const concerns = CONCERNS.map((c) => ({
+    path: `/concerns/${c.slug}`,
+    priority: 0.8,
+  }));
+
   const doctors = doctorSlugs.map((slug) => ({
     path: `/doctors/${slug}`,
     priority: 0.7,
   }));
 
-  return [...top, ...procedures, ...doctors].map(({ path, priority }) => ({
-    url: `${baseUrl}${path}`,
-    lastModified,
-    changeFrequency: path === "" ? "weekly" : "monthly",
-    priority,
-  }));
+  return [...top, ...procedures, ...concerns, ...doctors].map(
+    ({ path, priority }) => ({
+      url: `${baseUrl}${path}`,
+      lastModified,
+      changeFrequency: path === "" ? "weekly" : "monthly",
+      priority,
+    }),
+  );
 }
