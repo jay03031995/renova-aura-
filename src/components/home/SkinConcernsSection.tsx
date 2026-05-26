@@ -48,25 +48,23 @@ export default function SkinConcernsSection() {
               className="proc-card"
             >
               <div
-                style={{
-                  fontSize: 28,
-                  color: "var(--sage)",
-                  marginBottom: 14,
-                  lineHeight: 1,
-                }}
+                className="proc-card-img"
+                style={{ backgroundImage: `url(${c.image})` }}
               >
-                {c.icon}
+                <div className="proc-card-img-overlay" />
               </div>
-              <h3 className="proc-card-title">{c.name}</h3>
-              <p
-                className="proc-card-headline"
-                style={{ fontSize: 13, color: "var(--tan)" }}
-              >
-                {c.cardTagline}
-              </p>
-              <span className="proc-card-link">
-                Learn more <ArrowRight size={14} />
-              </span>
+              <div className="proc-card-inner">
+                <h3 className="proc-card-title">{c.name}</h3>
+                <p
+                  className="proc-card-headline"
+                  style={{ fontSize: 13, color: "var(--tan)" }}
+                >
+                  {c.cardTagline}
+                </p>
+                <span className="proc-card-link">
+                  Learn more <ArrowRight size={14} />
+                </span>
+              </div>
             </Link>
           ))}
         </div>

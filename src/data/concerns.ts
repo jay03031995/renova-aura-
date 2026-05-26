@@ -15,6 +15,11 @@ export type Concern = {
   slug: string;
   name: string;
   icon: string;
+  /**
+   * Card image URL. Currently Unsplash placeholders — replace with
+   * clinic photography (via Sanity) before launch.
+   */
+  image?: string;
   cardTagline: string;
   headline: string;
   summary: string;
@@ -29,9 +34,36 @@ export type Concern = {
   faqs: { q: string; a: string }[];
 };
 
+/** Curated placeholder images per concern (Unsplash, already whitelisted). */
+const IMG = {
+  acne:
+    "https://images.unsplash.com/photo-1612817288484-6f916006741a?w=800&q=80",
+  pigmentation:
+    "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=800&q=80",
+  antiAgeing:
+    "https://images.unsplash.com/photo-1614859275206-fbcb27e57057?w=800&q=80",
+  laserHair:
+    "https://images.unsplash.com/photo-1559599101-f09722fb4948?w=800&q=80",
+  dullSkin:
+    "https://images.unsplash.com/photo-1556228720-195a672e8a03?w=800&q=80",
+  openPores:
+    "https://images.unsplash.com/photo-1571781926291-c477ebfd024b?w=800&q=80",
+  darkCircles:
+    "https://images.unsplash.com/photo-1469275606726-7651dcaba2ad?w=800&q=80",
+  rosacea:
+    "https://images.unsplash.com/photo-1607000975741-79e4a3a2da5b?w=800&q=80",
+  scars:
+    "https://images.unsplash.com/photo-1488477181946-6428a0291777?w=800&q=80",
+  stretchMarks:
+    "https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=800&q=80",
+  tattoo:
+    "https://images.unsplash.com/photo-1565058379802-bbe93b2f703a?w=800&q=80",
+};
+
 export const CONCERNS: Concern[] = [
   {
     slug: "acne",
+    image: IMG.acne,
     name: "Acne & Acne Scars",
     icon: "◉",
     cardTagline: "Active acne · post-inflammatory scars",
@@ -78,6 +110,7 @@ export const CONCERNS: Concern[] = [
   },
   {
     slug: "pigmentation-melasma",
+    image: IMG.pigmentation,
     name: "Pigmentation & Melasma",
     icon: "◐",
     cardTagline: "Melasma · sun damage · dark patches",
@@ -120,6 +153,7 @@ export const CONCERNS: Concern[] = [
   },
   {
     slug: "anti-ageing-wrinkles",
+    image: IMG.antiAgeing,
     name: "Anti-Ageing & Wrinkles",
     icon: "◑",
     cardTagline: "Fine lines · loss of volume · sagging",
@@ -170,6 +204,7 @@ export const CONCERNS: Concern[] = [
   },
   {
     slug: "laser-hair-reduction",
+    image: IMG.laserHair,
     name: "Laser Hair Reduction",
     icon: "◒",
     cardTagline: "Diode + Nd:YAG · 70–90% reduction · safe on Indian skin",
@@ -226,6 +261,7 @@ export const CONCERNS: Concern[] = [
   },
   {
     slug: "dull-skin-brightening",
+    image: IMG.dullSkin,
     name: "Dull Skin & Uneven Tone",
     icon: "◓",
     cardTagline: "Skin brightening · radiance · texture",
@@ -264,6 +300,7 @@ export const CONCERNS: Concern[] = [
   },
   {
     slug: "open-pores",
+    image: IMG.openPores,
     name: "Open Pores",
     icon: "◔",
     cardTagline: "Visible pores · enlarged pores · oily skin",
@@ -301,6 +338,7 @@ export const CONCERNS: Concern[] = [
   },
   {
     slug: "dark-circles",
+    image: IMG.darkCircles,
     name: "Dark Circles & Under-Eye Hollows",
     icon: "◕",
     cardTagline: "Pigmented · vascular · hollow type",
@@ -338,6 +376,7 @@ export const CONCERNS: Concern[] = [
   },
   {
     slug: "rosacea-sensitive-skin",
+    image: IMG.rosacea,
     name: "Rosacea & Sensitive Skin",
     icon: "◖",
     cardTagline: "Redness · flushing · reactive skin",
@@ -377,6 +416,7 @@ export const CONCERNS: Concern[] = [
   },
   {
     slug: "scar-reduction",
+    image: IMG.scars,
     name: "Scar Reduction",
     icon: "◗",
     cardTagline: "Surgical · acne · injury · keloid scars",
@@ -423,6 +463,7 @@ export const CONCERNS: Concern[] = [
   },
   {
     slug: "stretch-marks",
+    image: IMG.stretchMarks,
     name: "Stretch Marks",
     icon: "◘",
     cardTagline: "Red · white · pregnancy · growth-related",
@@ -461,6 +502,7 @@ export const CONCERNS: Concern[] = [
   },
   {
     slug: "tattoo-removal",
+    image: IMG.tattoo,
     name: "Tattoo Removal",
     icon: "◚",
     cardTagline: "Q-switched laser · multi-session",
