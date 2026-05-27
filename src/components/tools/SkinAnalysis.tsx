@@ -1,18 +1,20 @@
 "use client";
 
 /**
- * Interactive AI Skin Analysis tool.
+ * AI Skin Analysis — photo-first interactive tool.
  *
- * 4-step guided questionnaire — Fitzpatrick + skin type → concerns →
- * lifestyle → patient details. Live "skin health score" updates as the
- * user answers, with a soft visual band (red → yellow → green) so the
- * tool feels simulative rather than form-y.
+ * Flow:
+ *   1. Upload a face photo. Computer vision (canvas pixel sampling, not
+ *      ML) extracts Fitzpatrick + skin type + redness/texture flags.
+ *      Patient can confirm or adjust.
+ *   2. Concerns multi-select.
+ *   3. Lifestyle factors.
+ *   4. Patient details.
  *
- * The "AI" here is a transparent expert system (src/lib/skinAnalysis.ts) —
- * deterministic rules from standard dermatology practice. We don't claim
- * black-box ML.
+ * Live score starts at 0 and animates up only as the questionnaire is
+ * answered — no pre-filled fake defaults.
  */
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { ArrowLeft, ArrowRight, Check } from "@/components/icons";
 import {
@@ -24,14 +26,20 @@ import {
   analyseSkin,
 } from "@/lib/skinAnalysis";
 import { generateReport } from "@/lib/pdfReport";
+import {
+  analyseImage,
+  downscaleDataUrl,
+  readFileAsDataUrl,
+  type ImageAnalysisResult,
+} from "@/lib/imageAnalysis";
 
 const FITZ_OPTIONS: { value: Fitzpatrick; label: string; desc: string }[] = [
-  { value: "I", label: "Type I", desc: "Very fair — always burns, never tans" },
-  { value: "II", label: "Type II", desc: "Fair — usually burns, tans minimally" },
+  { value: "I", label: "Type I", desc: "Very fair — always burns" },
+  { value: "II", label: "Type II", desc: "Fair — usually burns" },
   { value: "III", label: "Type III", desc: "Light olive — sometimes burns" },
-  { value: "IV", label: "Type IV", desc: "Olive — burns minimally, tans easily" },
-  { value: "V", label: "Type V", desc: "Brown — rarely burns, tans well" },
-  { value: "VI", label: "Type VI", desc: "Dark brown / black — never burns" },
+  { value: "IV", label: "Type IV", desc: "Olive — tans easily" },
+  { value: "V", label: "Type V", desc: "Brown — rarely burns" },
+  { value: "VI", label: "Type VI", desc: "Dark — never burns" },
 ];
 
 const SKIN_TYPE_OPTIONS: { value: SkinType; label: string }[] = [
@@ -80,10 +88,19 @@ type Patient = { name: string; phone: string; email: string };
 
 export default function SkinAnalysis() {
   const [step, setStep] = useState(0);
-  const [fitzpatrick, setFitzpatrick] = useState<Fitzpatrick>("IV");
-  const [skinType, setSkinType] = useState<SkinType>("combination");
+
+  // Photo + image analysis
+  const [photo, setPhoto] = useState<string | null>(null);
+  const [photoCompressed, setPhotoCompressed] = useState<string | null>(null);
+  const [imageAnalysis, setImageAnalysis] =
+    useState<ImageAnalysisResult | null>(null);
+  const [analysing, setAnalysing] = useState(false);
+
+  // Required inputs — start unset
+  const [fitzpatrick, setFitzpatrick] = useState<Fitzpatrick | null>(null);
+  const [skinType, setSkinType] = useState<SkinType | null>(null);
   const [ageBracket, setAgeBracket] =
-    useState<AnalysisInput["ageBracket"]>("25-34");
+    useState<AnalysisInput["ageBracket"] | null>(null);
   const [concerns, setConcerns] = useState<SkinConcern[]>([]);
   const [lifestyle, setLifestyle] = useState<LifestyleFactor[]>([]);
   const [patient, setPatient] = useState<Patient>({
@@ -91,24 +108,64 @@ export default function SkinAnalysis() {
     phone: "",
     email: "",
   });
+
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [submitted, setSubmitted] = useState(false);
 
-  const input: AnalysisInput = useMemo(
-    () => ({ fitzpatrick, skinType, ageBracket, concerns, lifestyle }),
-    [fitzpatrick, skinType, ageBracket, concerns, lifestyle],
-  );
+  // Compute analysis only when minimum required inputs are present
+  const result = useMemo(() => {
+    if (!fitzpatrick || !skinType || !ageBracket) return null;
+    const input: AnalysisInput = {
+      fitzpatrick,
+      skinType,
+      ageBracket,
+      concerns,
+      lifestyle,
+    };
+    return analyseSkin(input);
+  }, [fitzpatrick, skinType, ageBracket, concerns, lifestyle]);
 
-  const result = useMemo(() => analyseSkin(input), [input]);
+  // Live "from zero" animated score
+  const [displayedScore, setDisplayedScore] = useState(0);
+  useEffect(() => {
+    const target = result?.healthScore ?? 0;
+    if (target === displayedScore) return;
+    const start = displayedScore;
+    const delta = target - start;
+    const duration = 800;
+    const startedAt = performance.now();
+    let frameId = 0;
+    const tick = (now: number) => {
+      const t = Math.min(1, (now - startedAt) / duration);
+      const eased = 1 - (1 - t) ** 3;
+      setDisplayedScore(Math.round(start + delta * eased));
+      if (t < 1) frameId = requestAnimationFrame(tick);
+    };
+    frameId = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(frameId);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [result?.healthScore]);
 
-  // Health score → green/yellow/red band
   const scoreBand =
-    result.healthScore >= 75
+    !result || result.healthScore === 0
+      ? "empty"
+      : result.healthScore >= 75
       ? "good"
       : result.healthScore >= 55
       ? "moderate"
       : "needs-care";
+
+  const completeness = useMemo(() => {
+    let pts = 0;
+    if (photo) pts += 25;
+    if (fitzpatrick) pts += 15;
+    if (skinType) pts += 15;
+    if (ageBracket) pts += 10;
+    if (concerns.length > 0) pts += 20;
+    if (lifestyle.length > 0) pts += 15;
+    return Math.min(100, pts);
+  }, [photo, fitzpatrick, skinType, ageBracket, concerns, lifestyle]);
 
   const toggleConcern = (c: SkinConcern) =>
     setConcerns((cs) =>
@@ -120,9 +177,35 @@ export default function SkinAnalysis() {
       ls.includes(l) ? ls.filter((x) => x !== l) : [...ls, l],
     );
 
+  const handlePhoto = async (file: File | null) => {
+    if (!file) {
+      setPhoto(null);
+      setPhotoCompressed(null);
+      setImageAnalysis(null);
+      return;
+    }
+    setAnalysing(true);
+    try {
+      const dataUrl = await readFileAsDataUrl(file);
+      setPhoto(dataUrl);
+      const small = await downscaleDataUrl(dataUrl, 800, 0.8);
+      setPhotoCompressed(small);
+      const analysis = await analyseImage(dataUrl);
+      setImageAnalysis(analysis);
+      // Pre-fill the form with what we extracted — patient can override
+      setFitzpatrick(analysis.fitzpatrick);
+      setSkinType(analysis.skinType);
+    } catch {
+      // ignore
+    } finally {
+      setAnalysing(false);
+    }
+  };
+
   const canAdvance = () => {
-    if (step === 1 && concerns.length === 0) return false;
-    if (step === 3) {
+    if (step === 1) return !!fitzpatrick && !!skinType && !!ageBracket;
+    if (step === 2) return concerns.length > 0;
+    if (step === 4) {
       return (
         patient.name.trim().length >= 2 &&
         /^\+?[0-9\s-]{10,}$/.test(patient.phone)
@@ -132,6 +215,10 @@ export default function SkinAnalysis() {
   };
 
   const handleSubmit = async () => {
+    if (!result) {
+      setSubmitError("Please complete steps 1–3 before submitting.");
+      return;
+    }
     if (!canAdvance()) {
       setSubmitError("Please fill in your name and a valid phone number.");
       return;
@@ -148,9 +235,17 @@ export default function SkinAnalysis() {
           name: patient.name,
           phone: patient.phone,
           email: patient.email,
-          ageRange: ageBracket,
+          ageRange: ageBracket ?? undefined,
           summary: result.summary,
-          inputs: input,
+          inputs: {
+            fitzpatrick,
+            skinType,
+            ageBracket,
+            concerns,
+            lifestyle,
+            imageAnalysis,
+            hasPhoto: !!photo,
+          },
           outputs: result,
           source: "/tools/skin-analysis",
         }),
@@ -163,15 +258,18 @@ export default function SkinAnalysis() {
         throw new Error(payload.message || `Lead capture failed (${res.status})`);
       }
 
-      generateReport({
+      await generateReport({
         title: "Personalised AI Skin Analysis",
         subtitle: `Prepared for ${patient.name}`,
         patient: {
           name: patient.name,
           phone: patient.phone,
           email: patient.email || undefined,
-          ageRange: ageBracket,
+          ageRange: ageBracket ?? undefined,
         },
+        patientPhotoDataUrl: photoCompressed ?? photo ?? undefined,
+        patientPhotoCaption:
+          "Patient-uploaded face photograph. Computer-vision pixel sampling used to estimate Fitzpatrick type and skin characteristics — patient-confirmed at submission.",
         sections: [
           {
             type: "stat",
@@ -187,9 +285,34 @@ export default function SkinAnalysis() {
           { type: "spacer", height: 2 },
           { type: "heading", text: "Your skin profile" },
           { type: "paragraph", text: result.skinProfile },
+          ...(imageAnalysis
+            ? ([
+                {
+                  type: "kv",
+                  label: "Pixel-derived lightness",
+                  value: `${imageAnalysis.lightness}/255`,
+                },
+                {
+                  type: "kv",
+                  label: "Redness index",
+                  value: `${imageAnalysis.redness}`,
+                },
+                {
+                  type: "kv",
+                  label: "Texture variance",
+                  value: `${imageAnalysis.textureVariance}`,
+                },
+              ] as const)
+            : []),
           ...(concerns.length
             ? ([
-                { type: "kv", label: "Concerns reported", value: concerns.map((c) => CONCERN_TO_LABEL[c]).join(", ") },
+                {
+                  type: "kv",
+                  label: "Concerns reported",
+                  value: concerns
+                    .map((c) => CONCERN_TO_LABEL[c])
+                    .join(", "),
+                },
               ] as const)
             : []),
           { type: "spacer", height: 2 },
@@ -243,20 +366,21 @@ export default function SkinAnalysis() {
           <ArrowLeft size={14} /> All Tools
         </Link>
         <div className="tool-shell-eyebrow">
-          Interactive Tool · Evidence-based rules
+          Interactive Tool · Computer-vision assisted
         </div>
         <h1 className="tool-shell-title">AI Skin Analysis</h1>
         <p className="tool-shell-sub">
-          A 2-minute guided assessment that maps your skin type, concerns and
-          lifestyle to a personalised set of recommendations — and a PDF you
-          can bring to your consultation.
+          Upload a clear face photo and our pixel-sampling algorithm
+          estimates your Fitzpatrick type, redness and texture indicators —
+          then maps your concerns + lifestyle to a personalised plan with
+          a downloadable PDF report.
         </p>
       </header>
 
       <div className="tool-grid">
         <div className="tool-form">
           <div className="tool-steps">
-            {[0, 1, 2, 3].map((i) => (
+            {[0, 1, 2, 3, 4].map((i) => (
               <div
                 key={i}
                 className={
@@ -269,14 +393,75 @@ export default function SkinAnalysis() {
 
           {step === 0 && (
             <>
-              <h2 className="tool-step-title">Step 1 · Your skin baseline</h2>
+              <h2 className="tool-step-title">Step 1 · Upload your photo</h2>
               <p className="tool-step-sub">
-                Fitzpatrick skin type tells us how your skin responds to
-                sunlight — it's the single most important factor for safe
-                treatment selection.
+                A clear front-facing photo in natural daylight gives the
+                most accurate read. Photos never leave your browser unless
+                you submit the form.
+              </p>
+              <PhotoUploader
+                photo={photo}
+                onChange={handlePhoto}
+                helper="Front-facing face photo · JPG / PNG · up to 10MB"
+                analysing={analysing}
+              />
+              {imageAnalysis && (
+                <div className="tool-photo-result">
+                  <div className="tool-photo-result-eyebrow">
+                    Detected from your photo
+                  </div>
+                  <div className="tool-photo-result-grid">
+                    <div>
+                      <small>Fitzpatrick</small>
+                      <strong>Type {imageAnalysis.fitzpatrick}</strong>
+                    </div>
+                    <div>
+                      <small>Skin type guess</small>
+                      <strong style={{ textTransform: "capitalize" }}>
+                        {imageAnalysis.skinType}
+                      </strong>
+                    </div>
+                    <div>
+                      <small>Lightness</small>
+                      <strong>{imageAnalysis.lightness}/255</strong>
+                    </div>
+                    <div>
+                      <small>Redness index</small>
+                      <strong>{imageAnalysis.redness}</strong>
+                    </div>
+                  </div>
+                  {(imageAnalysis.rednessFlag ||
+                    imageAnalysis.textureFlag) && (
+                    <ul className="tool-photo-flags">
+                      {imageAnalysis.rednessFlag && (
+                        <li>Elevated redness detected — possible rosacea or inflammation</li>
+                      )}
+                      {imageAnalysis.textureFlag && (
+                        <li>Uneven texture detected — possible acne, scarring or pigmentation</li>
+                      )}
+                    </ul>
+                  )}
+                  <p className="tool-photo-hint">
+                    These are smart defaults. You&apos;ll confirm or adjust
+                    them on the next step.
+                  </p>
+                </div>
+              )}
+            </>
+          )}
+
+          {step === 1 && (
+            <>
+              <h2 className="tool-step-title">
+                Step 2 · {imageAnalysis ? "Confirm your skin baseline" : "Your skin baseline"}
+              </h2>
+              <p className="tool-step-sub">
+                {imageAnalysis
+                  ? "We pre-filled this from your photo. Tap to change anything."
+                  : "Fitzpatrick skin type — how your skin responds to sunlight."}
               </p>
               <div className="tool-block-label">Fitzpatrick type</div>
-              <div className="tool-options">
+              <div className="tool-options two-col">
                 {FITZ_OPTIONS.map((o) => (
                   <button
                     key={o.value}
@@ -326,9 +511,9 @@ export default function SkinAnalysis() {
             </>
           )}
 
-          {step === 1 && (
+          {step === 2 && (
             <>
-              <h2 className="tool-step-title">Step 2 · What's bothering you?</h2>
+              <h2 className="tool-step-title">Step 3 · What&apos;s bothering you?</h2>
               <p className="tool-step-sub">
                 Tick everything that applies — multi-select.
               </p>
@@ -353,9 +538,9 @@ export default function SkinAnalysis() {
             </>
           )}
 
-          {step === 2 && (
+          {step === 3 && (
             <>
-              <h2 className="tool-step-title">Step 3 · Lifestyle factors</h2>
+              <h2 className="tool-step-title">Step 4 · Lifestyle factors</h2>
               <p className="tool-step-sub">
                 Cortisol, UV, smoking and sleep all directly affect your skin.
               </p>
@@ -377,12 +562,12 @@ export default function SkinAnalysis() {
             </>
           )}
 
-          {step === 3 && (
+          {step === 4 && (
             <>
-              <h2 className="tool-step-title">Step 4 · Your details</h2>
+              <h2 className="tool-step-title">Step 5 · Your details</h2>
               <p className="tool-step-sub">
-                We'll WhatsApp your full report and the care team will reach
-                out within 10 minutes during clinic hours.
+                We&apos;ll WhatsApp your full report and the care team will
+                reach out within 10 minutes during clinic hours.
               </p>
               <div className="tool-field">
                 <label>Full name</label>
@@ -435,22 +620,22 @@ export default function SkinAnalysis() {
               </button>
             )}
             <span style={{ flex: 1 }} />
-            {!submitted && step < 3 && (
+            {!submitted && step < 4 && (
               <button
                 type="button"
                 className="btn btn-primary"
-                onClick={() => setStep((s) => Math.min(3, s + 1))}
-                disabled={!canAdvance()}
+                onClick={() => setStep((s) => Math.min(4, s + 1))}
+                disabled={!canAdvance() && step !== 0}
               >
                 Next <ArrowRight size={14} />
               </button>
             )}
-            {!submitted && step === 3 && (
+            {!submitted && step === 4 && (
               <button
                 type="button"
                 className="btn btn-primary"
                 onClick={handleSubmit}
-                disabled={submitting || !canAdvance()}
+                disabled={submitting || !canAdvance() || !result}
               >
                 {submitting ? "Generating…" : "Get my full PDF report"}{" "}
                 {!submitting && <ArrowRight size={14} />}
@@ -479,29 +664,50 @@ export default function SkinAnalysis() {
           )}
         </div>
 
-        <aside className={"tool-result tool-result-" + scoreBand}>
+        <aside
+          className={
+            "tool-result" + (scoreBand !== "empty" ? " tool-result-" + scoreBand : "")
+          }
+        >
           <div className="tool-result-eyebrow">Live skin score</div>
-          <div className="tool-result-num">{result.healthScore}</div>
-          <div className="tool-result-range">
-            out of 100 ·{" "}
-            <strong>
-              {scoreBand === "good"
-                ? "Strong baseline"
-                : scoreBand === "moderate"
-                ? "Room to improve"
-                : "Active care advised"}
-            </strong>
+          <div className="tool-result-num">
+            {result ? displayedScore : "—"}
           </div>
+          <div className="tool-result-range">
+            {result ? (
+              <>
+                out of 100 ·{" "}
+                <strong>
+                  {scoreBand === "good"
+                    ? "Strong baseline"
+                    : scoreBand === "moderate"
+                    ? "Room to improve"
+                    : "Active care advised"}
+                </strong>
+              </>
+            ) : (
+              "Upload a photo or fill the questions to begin"
+            )}
+          </div>
+
+          <div className="tool-result-progress">
+            <div
+              className="tool-result-progress-bar"
+              style={{ width: `${completeness}%` }}
+            />
+            <span>{completeness}% complete</span>
+          </div>
+
           <div className="tool-result-sep" />
           <div className="tool-result-meta">
             <div className="tool-result-meta-row">
               <span>Fitzpatrick</span>
-              <strong>Type {fitzpatrick}</strong>
+              <strong>{fitzpatrick ? `Type ${fitzpatrick}` : "—"}</strong>
             </div>
             <div className="tool-result-meta-row">
               <span>Skin type</span>
               <strong style={{ textTransform: "capitalize" }}>
-                {skinType}
+                {skinType ?? "—"}
               </strong>
             </div>
             <div className="tool-result-meta-row">
@@ -513,7 +719,7 @@ export default function SkinAnalysis() {
               <strong>{lifestyle.length}</strong>
             </div>
           </div>
-          {result.riskFactors.length > 0 && (
+          {result && result.riskFactors.length > 0 && (
             <>
               <div className="tool-result-sep" />
               <div className="tool-result-flag-title">
@@ -528,12 +734,67 @@ export default function SkinAnalysis() {
           )}
           <div className="tool-result-sep" />
           <div className="tool-result-note">
-            This expert-system analysis isn't a medical diagnosis. Final
-            recommendations are confirmed at consultation with a board-
-            certified RenovaAura consultant.
+            This expert-system analysis isn&apos;t a medical diagnosis.
+            Final recommendations are confirmed at consultation with a
+            board-certified RenovaAura consultant.
           </div>
         </aside>
       </div>
+    </div>
+  );
+}
+
+// =========================================================================
+// Photo uploader subcomponent (with analysing state)
+// =========================================================================
+function PhotoUploader({
+  photo,
+  onChange,
+  helper,
+  analysing,
+}: {
+  photo: string | null;
+  onChange: (file: File | null) => void;
+  helper: string;
+  analysing: boolean;
+}) {
+  return (
+    <div className="tool-photo">
+      {photo ? (
+        <div className="tool-photo-preview">
+          <img src={photo} alt="Uploaded face" />
+          {analysing && (
+            <div className="tool-photo-analysing">
+              <div className="tool-photo-spinner" />
+              Analysing pixels…
+            </div>
+          )}
+          <button
+            type="button"
+            className="tool-photo-remove"
+            onClick={() => onChange(null)}
+          >
+            ✕ Remove
+          </button>
+        </div>
+      ) : (
+        <label className="tool-photo-drop">
+          <input
+            type="file"
+            accept="image/*"
+            onChange={(e) => {
+              const file = e.target.files?.[0] ?? null;
+              onChange(file);
+            }}
+            style={{ display: "none" }}
+          />
+          <div className="tool-photo-icon">📷</div>
+          <div className="tool-photo-cta">
+            <strong>Click to upload</strong> or drag &amp; drop
+          </div>
+          <div className="tool-photo-help">{helper}</div>
+        </label>
+      )}
     </div>
   );
 }

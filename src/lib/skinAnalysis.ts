@@ -171,20 +171,41 @@ export function analyseSkin(input: AnalysisInput): AnalysisResult {
     );
   }
 
-  // ---- Health score (illustrative) ----
-  let score = 80;
-  for (const _c of concerns) score -= 4;
-  for (const l of lifestyle) {
-    if (l === "smoker") score -= 8;
-    if (l === "high-sun-exposure") score -= 5;
-    if (l === "low-sleep") score -= 4;
-    if (l === "high-stress") score -= 3;
-    if (l === "alcohol") score -= 3;
-    if (l === "screen-heavy") score -= 2;
+  // ---- Health score (additive, starts at 0) ----
+  // We BUILD the score from completeness + healthy-lifestyle signals,
+  // rather than starting at an arbitrary 80 and deducting. Patient
+  // sees 0 until they've answered enough, then watches it grow.
+  let score = 0;
+  // Baseline points for answering the core profile
+  if (fitzpatrick) score += 10;
+  if (skinType) score += 10;
+  if (ageBracket) score += 5;
+  // Healthy skin baseline — fewer concerns reported → higher score
+  const concernPenalty = concerns.length * 5;
+  const baseHealth = Math.max(0, 50 - concernPenalty); // 0–50 depending on concerns
+  score += baseHealth;
+  // Lifestyle penalties (only after lifestyle has been answered)
+  if (lifestyle.length > 0 || concerns.length > 0) {
+    for (const l of lifestyle) {
+      if (l === "smoker") score -= 8;
+      if (l === "high-sun-exposure") score -= 5;
+      if (l === "low-sleep") score -= 4;
+      if (l === "high-stress") score -= 3;
+      if (l === "alcohol") score -= 3;
+      if (l === "screen-heavy") score -= 2;
+    }
+    // Younger patients with no concerns get a small bonus
+    if (
+      ageBracket === "u25" &&
+      concerns.length === 0 &&
+      lifestyle.length === 0
+    ) {
+      score += 10;
+    }
+    if (ageBracket === "45-54") score -= 2;
+    if (ageBracket === "o55") score -= 5;
   }
-  if (ageBracket === "45-54") score -= 4;
-  if (ageBracket === "o55") score -= 8;
-  const healthScore = Math.max(35, Math.min(95, score));
+  const healthScore = Math.max(0, Math.min(95, score));
 
   const concernsText = concerns.length
     ? concerns.map((c) => c.replace("-", " ")).join(", ")

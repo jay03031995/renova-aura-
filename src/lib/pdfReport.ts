@@ -58,6 +58,14 @@ export type ReportInput = {
   sections: ReportSection[];
   /** Footer line above clinic info. */
   disclaimer?: string;
+  /**
+   * Patient-uploaded photo as a data URL (any image format jsPDF accepts:
+   * JPEG, PNG, WebP). Embedded as a captioned image block at the end of
+   * the report.
+   */
+  patientPhotoDataUrl?: string;
+  /** Caption shown below the embedded photo. */
+  patientPhotoCaption?: string;
 };
 
 const CLINIC = {
@@ -83,31 +91,83 @@ function setStroke(doc: jsPDF, c: [number, number, number]) {
   doc.setDrawColor(c[0], c[1], c[2]);
 }
 
-/** Draw the RenovaAura masthead at the top of every page. */
-function drawHeader(doc: jsPDF) {
-  // Background band
+/** Draw the RenovaAura masthead — cocoa band with embedded logo + tagline. */
+function drawHeader(doc: jsPDF, logoDataUrl?: string) {
+  // Background band — taller to accommodate the logo
   setFill(doc, PALETTE.cocoa);
-  doc.rect(0, 0, PAGE.w, 22, "F");
-  // Wordmark (text-based — embedding the PNG would inflate the file)
-  setColor(doc, PALETTE.cream);
-  doc.setFont("helvetica", "bold");
-  doc.setFontSize(18);
-  doc.text("RenovaAura", PAGE.marginX, 13);
+  doc.rect(0, 0, PAGE.w, 26, "F");
+
+  if (logoDataUrl) {
+    try {
+      // Logo on the left, height ~14mm, white-tinted via PNG with transparency
+      doc.addImage(logoDataUrl, "PNG", PAGE.marginX, 5, 38, 17);
+    } catch {
+      // If addImage fails (e.g. unsupported format), fall through to wordmark
+      setColor(doc, PALETTE.cream);
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(18);
+      doc.text("RenovaAura", PAGE.marginX, 14);
+    }
+  } else {
+    // Text wordmark fallback
+    setColor(doc, PALETTE.cream);
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(18);
+    doc.text("RenovaAura", PAGE.marginX, 14);
+  }
+
+  // Tagline right of logo (small caps)
+  setColor(doc, PALETTE.sand);
   doc.setFont("helvetica", "normal");
-  doc.setFontSize(8);
-  setColor(doc, PALETTE.sand);
-  doc.text(CLINIC.tagline.toUpperCase(), PAGE.marginX, 18);
+  doc.setFontSize(7);
+  doc.text(CLINIC.tagline.toUpperCase(), PAGE.marginX + 42, 22);
+
   // Right-aligned date
-  setColor(doc, PALETTE.sand);
   doc.setFontSize(8);
   const now = new Date().toLocaleDateString("en-IN", {
     day: "2-digit",
     month: "short",
     year: "numeric",
   });
-  doc.text(`Report generated · ${now}`, PAGE.w - PAGE.marginX, 13, {
+  doc.text(`Report generated · ${now}`, PAGE.w - PAGE.marginX, 14, {
     align: "right",
   });
+  doc.setFontSize(7);
+  setColor(doc, PALETTE.tan);
+  doc.text(CLINIC.web, PAGE.w - PAGE.marginX, 22, { align: "right" });
+}
+
+/** Diagonal watermark across each page. Very low opacity. */
+function drawWatermark(doc: jsPDF) {
+  const gs = (doc as unknown as {
+    GState: new (opts: { opacity: number }) => unknown;
+    setGState: (s: unknown) => void;
+  });
+  let restored = false;
+  try {
+    if (gs.GState && gs.setGState) {
+      gs.setGState(new gs.GState({ opacity: 0.05 }));
+      restored = true;
+    }
+  } catch {
+    /* opacity not supported; watermark just renders at full opacity which
+       is fine because we use very pale tan colour anyway */
+  }
+  setColor(doc, PALETTE.tan);
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(72);
+  // Centre point of the page
+  const x = PAGE.w / 2;
+  const y = PAGE.h / 2 + 20;
+  // jsPDF rotates around the anchor point; use 45° diagonal
+  doc.text("RenovaAura", x, y, { align: "center", angle: 30 });
+  if (restored) {
+    try {
+      gs.setGState(new gs.GState({ opacity: 1 }));
+    } catch {
+      /* noop */
+    }
+  }
 }
 
 /** Bottom-of-page clinic block + pagination. */
@@ -153,26 +213,55 @@ class Cursor {
   }
 
   reset() {
-    this.y = PAGE.marginTop + 22; // below header band
+    this.y = PAGE.marginTop + 26; // below header band (logo height + padding)
   }
+
+  logoDataUrl?: string;
 
   ensure(spaceNeeded: number) {
     if (this.y + spaceNeeded > PAGE.h - PAGE.marginBottom - 4) {
       this.doc.addPage();
       this.page += 1;
-      drawHeader(this.doc);
+      drawWatermark(this.doc);
+      drawHeader(this.doc, this.logoDataUrl);
       this.reset();
     }
   }
 }
 
 /**
- * Generate the PDF and trigger a download in the user's browser.
+ * Fetch the RenovaAura logo, convert to data URL. Runs in the browser
+ * before generation so the embed call doesn't block.
  */
-export function generateReport(input: ReportInput): void {
+async function loadLogoDataUrl(): Promise<string | undefined> {
+  if (typeof window === "undefined") return undefined;
+  try {
+    const res = await fetch("/renovaaura-logo.png");
+    if (!res.ok) return undefined;
+    const blob = await res.blob();
+    return await new Promise<string>((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(String(reader.result));
+      reader.onerror = () => reject(reader.error);
+      reader.readAsDataURL(blob);
+    });
+  } catch {
+    return undefined;
+  }
+}
+
+/**
+ * Generate the PDF and trigger a download in the user's browser.
+ * Async because we fetch + embed the RenovaAura logo (PNG) for the
+ * masthead. Falls back to a text wordmark if the logo can't be loaded.
+ */
+export async function generateReport(input: ReportInput): Promise<void> {
+  const logoDataUrl = await loadLogoDataUrl();
   const doc = new jsPDF({ unit: "mm", format: "a4" });
-  drawHeader(doc);
+  drawWatermark(doc);
+  drawHeader(doc, logoDataUrl);
   const cursor = new Cursor(doc);
+  cursor.logoDataUrl = logoDataUrl;
 
   // Title block
   cursor.ensure(28);
@@ -233,6 +322,55 @@ export function generateReport(input: ReportInput): void {
   // Sections
   for (const section of input.sections) {
     renderSection(doc, cursor, section);
+  }
+
+  // Embedded patient photo
+  if (input.patientPhotoDataUrl) {
+    cursor.ensure(80);
+    setColor(doc, PALETTE.cocoa);
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(13);
+    doc.text("Reference photograph", PAGE.marginX, cursor.y);
+    cursor.y += 3;
+    setStroke(doc, PALETTE.espresso);
+    doc.setLineWidth(0.6);
+    doc.line(PAGE.marginX, cursor.y, PAGE.marginX + 12, cursor.y);
+    cursor.y += 8;
+    try {
+      const imgWidth = 80; // mm
+      const imgHeight = 80; // mm — square crop
+      doc.addImage(
+        input.patientPhotoDataUrl,
+        "JPEG",
+        PAGE.marginX,
+        cursor.y,
+        imgWidth,
+        imgHeight,
+      );
+      // Caption beside
+      const captionX = PAGE.marginX + imgWidth + 8;
+      setColor(doc, PALETTE.muted);
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(9);
+      const caption =
+        input.patientPhotoCaption ??
+        "Patient-uploaded reference photograph. Used at the consultation for visual confirmation.";
+      const captionLines = doc.splitTextToSize(
+        caption,
+        PAGE.w - captionX - PAGE.marginX,
+      );
+      doc.text(captionLines, captionX, cursor.y + 6);
+      cursor.y += imgHeight + 4;
+    } catch {
+      setColor(doc, PALETTE.muted);
+      doc.setFontSize(9);
+      doc.text(
+        "(Reference photograph could not be embedded — please bring the original to your consultation.)",
+        PAGE.marginX,
+        cursor.y,
+      );
+      cursor.y += 5;
+    }
   }
 
   // Disclaimer
