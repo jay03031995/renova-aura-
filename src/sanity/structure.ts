@@ -77,6 +77,67 @@ export const structure = (S: StructureBuilder) =>
             ]),
         ),
       S.divider(),
+      // Leads — captured from /tools (AI Skin Analysis + Graft Calculator)
+      S.listItem()
+        .title("🧪 Tool Leads")
+        .child(
+          S.list()
+            .title("Leads")
+            .items([
+              S.listItem()
+                .title("🟠 New leads")
+                .child(
+                  S.documentTypeList("lead")
+                    .title("New leads")
+                    .filter('_type == "lead" && status == "new"')
+                    .defaultOrdering([
+                      { field: "submittedAt", direction: "desc" },
+                    ]),
+                ),
+              S.listItem()
+                .title("📞 Contacted")
+                .child(
+                  S.documentTypeList("lead")
+                    .title("Contacted")
+                    .filter('_type == "lead" && status == "contacted"')
+                    .defaultOrdering([
+                      { field: "submittedAt", direction: "desc" },
+                    ]),
+                ),
+              S.divider(),
+              S.listItem()
+                .title("Skin Analysis leads")
+                .child(
+                  S.documentTypeList("lead")
+                    .title("Skin Analysis leads")
+                    .filter('_type == "lead" && tool == "skin-analysis"')
+                    .defaultOrdering([
+                      { field: "submittedAt", direction: "desc" },
+                    ]),
+                ),
+              S.listItem()
+                .title("Graft Calculator leads")
+                .child(
+                  S.documentTypeList("lead")
+                    .title("Graft Calculator leads")
+                    .filter('_type == "lead" && tool == "graft-calculator"')
+                    .defaultOrdering([
+                      { field: "submittedAt", direction: "desc" },
+                    ]),
+                ),
+              S.divider(),
+              S.listItem()
+                .title("All leads")
+                .child(
+                  S.documentTypeList("lead")
+                    .title("All leads")
+                    .defaultOrdering([
+                      { field: "submittedAt", direction: "desc" },
+                    ]),
+                ),
+            ]),
+        ),
+      S.divider(),
       // Singletons
       ...Array.from(singletonTypes).map((type) =>
         S.listItem()

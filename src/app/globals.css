@@ -1082,6 +1082,92 @@ p { margin: 0; color: var(--muted); }
   letter-spacing: 0.02em;
 }
 .fab-shop svg { flex-shrink: 0; }
+
+/* Tools FAB — replaces Shop. */
+.fab-tools-wrap { position: relative; }
+.fab-tools {
+  background: linear-gradient(135deg, var(--sage), var(--cocoa));
+  width: auto;
+  height: 54px;
+  border-radius: 999px;
+  padding: 0 22px 0 18px;
+  display: flex;
+  gap: 10px;
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  color: var(--cream);
+  border: none;
+  cursor: pointer;
+  position: relative;
+}
+.fab-tools::after {
+  content: "";
+  position: absolute;
+  top: -2px; right: -2px;
+  width: 12px; height: 12px;
+  border-radius: 50%;
+  background: var(--sand);
+  border: 2px solid var(--cream);
+  animation: fab-tools-pulse 2.4s infinite;
+}
+@keyframes fab-tools-pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.4); }
+}
+.fab-tools svg { flex-shrink: 0; }
+.fab-tools-menu {
+  position: absolute;
+  bottom: calc(100% + 12px);
+  right: 0;
+  width: 280px;
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  z-index: 10;
+  animation: fab-menu-in .2s var(--ease);
+}
+@keyframes fab-menu-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.fab-tools-item {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  padding: 12px 14px;
+  border-radius: var(--radius);
+  text-decoration: none;
+  color: var(--cocoa);
+  transition: background .15s var(--ease);
+}
+.fab-tools-item:hover { background: var(--cream-2); }
+.fab-tools-item strong { display: block; font-size: 14px; font-weight: 500; color: var(--cocoa); }
+.fab-tools-item small { display: block; font-size: 11px; color: var(--muted); margin-top: 2px; }
+.fab-tools-item-icon {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--sand), var(--sage));
+  color: var(--cream);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+.fab-tools-all {
+  border-top: 1px solid var(--line);
+  margin-top: 6px;
+  padding-top: 14px;
+  justify-content: center;
+  font-size: 12px;
+  color: var(--tan);
+  letter-spacing: .04em;
+}
+.fab-tools-wrap.open .fab-tools::after { display: none; }
 .fab-tip {
   position: absolute;
   right: calc(100% + 14px);
@@ -2430,6 +2516,329 @@ p { margin: 0; color: var(--muted); }
   .dp-other-img { width: 80px; height: 100px; }
   .dp-other-arrow { display: none; }
   .footer-grid { grid-template-columns: 1fr 1fr; }
+}
+
+/* =========================================================
+   RenovaAura — Tools homepage banner
+   ========================================================= */
+.tools-banner {
+  padding: 70px 0;
+  background: linear-gradient(180deg, var(--cream) 0%, var(--cream-2) 100%);
+  border-bottom: 1px solid var(--line);
+}
+.tools-banner-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr) minmax(0, 1.2fr);
+  gap: 28px;
+  align-items: stretch;
+}
+.tools-banner-intro {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.tools-banner-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: var(--sand);
+  color: var(--cocoa);
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  width: fit-content;
+  margin-bottom: 14px;
+}
+.tools-banner-h {
+  font-size: 28px;
+  font-weight: 400;
+  letter-spacing: -.015em;
+  color: var(--cocoa);
+  margin: 0 0 12px;
+  line-height: 1.15;
+}
+.tools-banner-p {
+  font-size: 14px;
+  color: var(--muted);
+  line-height: 1.6;
+  margin: 0;
+}
+.tools-banner-card {
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  padding: 28px;
+  display: flex;
+  gap: 18px;
+  align-items: flex-start;
+  text-decoration: none;
+  transition: all .25s var(--ease);
+}
+.tools-banner-card:hover {
+  border-color: var(--sage);
+  transform: translateY(-3px);
+  box-shadow: var(--shadow);
+}
+.tools-banner-card-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--sand), var(--sage));
+  color: var(--cream);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  flex-shrink: 0;
+}
+.tools-banner-card-eyebrow {
+  font-size: 10px;
+  letter-spacing: .22em;
+  text-transform: uppercase;
+  color: var(--tan);
+  font-weight: 500;
+  margin-bottom: 6px;
+}
+.tools-banner-card-h {
+  font-size: 19px;
+  font-weight: 500;
+  color: var(--cocoa);
+  margin: 0 0 8px;
+}
+.tools-banner-card-p {
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 1.55;
+  margin: 0 0 12px;
+}
+.tools-banner-card-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--sage);
+  letter-spacing: .04em;
+}
+@media (max-width: 1000px) {
+  .tools-banner-grid { grid-template-columns: 1fr; gap: 18px; }
+}
+
+/* =========================================================
+   RenovaAura — Interactive Tools (/tools/*)
+   Skin Analysis + Graft Calculator shared styles
+   ========================================================= */
+.tool-shell { max-width: 1180px; margin: 0 auto; }
+.tool-shell-head { margin-bottom: 36px; }
+.tool-back {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 13px; color: var(--tan); margin-bottom: 14px;
+}
+.tool-shell-eyebrow {
+  font-size: 11px; letter-spacing: .22em; text-transform: uppercase;
+  color: var(--tan); font-weight: 500; margin-bottom: 12px;
+}
+.tool-shell-title {
+  font-size: clamp(30px, 4vw, 48px); font-weight: 400;
+  letter-spacing: -.02em; color: var(--cocoa); margin: 0 0 14px;
+}
+.tool-shell-sub {
+  font-size: 16px; color: var(--muted); line-height: 1.6;
+  max-width: 720px;
+}
+.tool-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+  gap: 32px;
+  align-items: start;
+}
+.tool-form {
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  padding: 36px;
+}
+.tool-steps { display: flex; gap: 8px; margin-bottom: 18px; }
+.tool-step-dot {
+  width: 24px; height: 4px; border-radius: 999px;
+  background: var(--line); transition: background .25s var(--ease);
+}
+.tool-step-dot.active { background: var(--sage); width: 40px; }
+.tool-step-dot.done { background: var(--cocoa); }
+.tool-step-title {
+  font-size: 22px; color: var(--cocoa); margin: 8px 0 6px;
+  font-weight: 500; letter-spacing: -.01em;
+}
+.tool-step-sub {
+  font-size: 14px; color: var(--muted); line-height: 1.55; margin: 0 0 22px;
+}
+.tool-block-label {
+  font-size: 11px; letter-spacing: .2em; text-transform: uppercase;
+  color: var(--tan); font-weight: 500; margin: 18px 0 10px;
+}
+.tool-options { display: grid; gap: 10px; }
+.tool-options.two-col { grid-template-columns: 1fr 1fr; }
+.tool-option {
+  text-align: left;
+  background: var(--cream);
+  border: 1.5px solid var(--line);
+  border-radius: var(--radius);
+  padding: 14px 16px;
+  cursor: pointer;
+  transition: all .2s var(--ease);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.tool-option:hover { border-color: var(--sage); background: var(--paper); }
+.tool-option.selected {
+  background: var(--paper);
+  border-color: var(--cocoa);
+  box-shadow: 0 0 0 3px rgba(74, 90, 53, .12);
+}
+.tool-option-title { font-size: 14px; font-weight: 500; color: var(--cocoa); }
+.tool-option-desc { font-size: 12px; color: var(--muted); }
+.tool-row { display: flex; flex-wrap: wrap; gap: 8px; }
+.tool-chip {
+  text-align: left;
+  background: var(--cream);
+  border: 1.5px solid var(--line);
+  border-radius: var(--radius);
+  padding: 10px 14px;
+  cursor: pointer;
+  transition: all .2s var(--ease);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 110px;
+}
+.tool-chip:hover { border-color: var(--sage); }
+.tool-chip.selected { background: var(--cocoa); border-color: var(--cocoa); }
+.tool-chip.selected .tool-chip-title,
+.tool-chip.selected .tool-chip-desc { color: var(--cream); }
+.tool-chip-title { font-size: 13px; font-weight: 500; color: var(--cocoa); }
+.tool-chip-desc { font-size: 11px; color: var(--muted); }
+.tool-toggle {
+  display: flex; align-items: flex-start; gap: 10px;
+  padding: 12px 14px;
+  background: var(--cream);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  margin-bottom: 8px;
+  font-size: 14px;
+  cursor: pointer;
+}
+.tool-toggle input { margin-top: 3px; }
+.tool-toggle:has(input:checked) {
+  border-color: var(--cocoa);
+  background: var(--paper);
+}
+.tool-field { margin-bottom: 14px; }
+.tool-field label {
+  display: block;
+  font-size: 12px; color: var(--tan);
+  letter-spacing: .12em; text-transform: uppercase;
+  font-weight: 500; margin-bottom: 6px;
+}
+.tool-field input {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1.5px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--cream);
+  font-size: 14px;
+  color: var(--ink);
+}
+.tool-field input:focus {
+  outline: none;
+  border-color: var(--cocoa);
+  background: var(--paper);
+}
+.tool-error {
+  font-size: 13px;
+  color: #b34040;
+  background: rgba(179, 64, 64, .08);
+  padding: 10px 12px;
+  border-radius: var(--radius);
+  margin-bottom: 12px;
+}
+.tool-hint { font-size: 13px; color: var(--tan); margin-top: 8px; }
+.tool-actions {
+  display: flex; gap: 10px; align-items: center;
+  margin-top: 26px;
+  padding-top: 20px;
+  border-top: 1px solid var(--line);
+}
+.tool-success {
+  margin-top: 24px;
+  padding: 26px;
+  background: var(--cream-2);
+  border-radius: var(--radius-lg);
+  text-align: center;
+}
+.tool-success-icon {
+  width: 48px; height: 48px;
+  border-radius: 50%;
+  background: var(--sage);
+  color: var(--cream);
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 14px;
+}
+.tool-success h3 { font-size: 18px; color: var(--cocoa); margin: 0 0 8px; }
+.tool-success p { font-size: 14px; color: var(--muted); margin: 0 0 12px; }
+
+/* Live-result panel (right side) */
+.tool-result {
+  background: var(--cocoa);
+  color: var(--cream);
+  border-radius: var(--radius-lg);
+  padding: 32px 28px;
+  position: sticky;
+  top: 110px;
+}
+.tool-result-eyebrow {
+  font-size: 11px; letter-spacing: .22em; text-transform: uppercase;
+  color: var(--sand); font-weight: 500; margin-bottom: 14px;
+}
+.tool-result-num {
+  font-size: 56px; font-weight: 300; line-height: 1;
+  letter-spacing: -.02em; color: #ffffff;
+}
+.tool-result-range { font-size: 13px; color: rgba(250, 250, 246, .8); margin-top: 8px; }
+.tool-result-range strong { color: var(--cream); font-weight: 500; }
+.tool-result-sep { height: 1px; background: rgba(216, 222, 199, .2); margin: 22px 0; }
+.tool-result-meta { display: flex; flex-direction: column; gap: 10px; }
+.tool-result-meta-row {
+  display: flex; justify-content: space-between; align-items: center;
+  font-size: 13px; color: rgba(250, 250, 246, .75);
+}
+.tool-result-meta-row strong { color: var(--cream); font-weight: 500; }
+.tool-result-flag-title {
+  font-size: 11px; letter-spacing: .2em; text-transform: uppercase;
+  color: var(--sand); font-weight: 500; margin-bottom: 8px;
+}
+.tool-result-flags { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 10px; }
+.tool-result-flags li {
+  font-size: 12px; color: rgba(250, 250, 246, .85); line-height: 1.5;
+  padding-left: 12px; position: relative;
+}
+.tool-result-flags li::before { content: "▸"; position: absolute; left: 0; color: var(--sand); }
+.tool-result-note {
+  font-size: 11px; color: rgba(250, 250, 246, .6);
+  line-height: 1.5; font-style: italic;
+}
+.tool-result-good { background: linear-gradient(140deg, #4a5a35, #2a3520); }
+.tool-result-moderate { background: linear-gradient(140deg, #7a8c5b, #4a5a35); }
+.tool-result-needs-care { background: linear-gradient(140deg, #a8682e, #6b3f1a); }
+
+@media (max-width: 900px) {
+  .tool-grid { grid-template-columns: 1fr; }
+  .tool-result { position: static; }
+  .tool-options.two-col { grid-template-columns: 1fr; }
+  .tool-form { padding: 24px; }
 }
 
 /* =========================================================

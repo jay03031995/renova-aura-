@@ -15,6 +15,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { path: "/procedures/hair-transplant", priority: 0.95 },
     { path: "/procedures/plastic-surgery", priority: 0.9 },
     { path: "/concerns", priority: 0.9 },
+    { path: "/tools", priority: 0.9 },
+    { path: "/tools/skin-analysis", priority: 0.85 },
+    { path: "/tools/graft-calculator", priority: 0.85 },
     { path: "/doctors", priority: 0.85 },
     // /results withheld from sitemap until RenovaAura's own before/after
     // gallery replaces the dermaheal-era patient photos.

@@ -1,5 +1,6 @@
 import Hero from "@/components/home/Hero";
 import TrustStrip from "@/components/home/TrustStrip";
+import ToolsBanner from "@/components/home/ToolsBanner";
 import HairTransplantFocus from "@/components/home/HairTransplantFocus";
 import PlasticSurgeryFocus from "@/components/home/PlasticSurgeryFocus";
 import SkinConcernsSection from "@/components/home/SkinConcernsSection";
@@ -25,6 +26,7 @@ export default function Home() {
     <>
       <Hero />
       <TrustStrip />
+      <ToolsBanner />
       <HairTransplantFocus />
       <PlasticSurgeryFocus />
       <SkinConcernsSection />

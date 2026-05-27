@@ -1,0 +1,354 @@
+/**
+ * RenovaAura-branded PDF report generator (client-side, jsPDF).
+ *
+ * Used by /tools/skin-analysis and /tools/graft-calculator to produce
+ * a downloadable, shareable report that the patient can:
+ *  - Save / print
+ *  - Forward to family
+ *  - Bring to their consultation
+ *
+ * Layout: A4 portrait, 20mm margins. RenovaAura sage palette translated
+ * to RGB so jsPDF can render without HTML rendering overhead.
+ */
+import { jsPDF } from "jspdf";
+
+/** RenovaAura sage-green palette translated for jsPDF (RGB tuples). */
+const PALETTE = {
+  cocoa: [42, 53, 32] as [number, number, number], // primary dark
+  espresso: [74, 90, 53] as [number, number, number], // accent
+  tan: [122, 140, 91] as [number, number, number], // mid sage
+  sand: [168, 184, 140] as [number, number, number], // light sage
+  cream: [250, 250, 246] as [number, number, number],
+  ink: [26, 31, 21] as [number, number, number],
+  muted: [106, 112, 94] as [number, number, number],
+  line: [216, 222, 199] as [number, number, number],
+};
+
+const PAGE = {
+  w: 210, // A4 width mm
+  h: 297, // A4 height mm
+  marginX: 20,
+  marginTop: 18,
+  marginBottom: 24,
+};
+
+export type ReportSection =
+  | { type: "kv"; label: string; value: string }
+  | { type: "heading"; text: string }
+  | { type: "paragraph"; text: string }
+  | { type: "bullets"; items: string[] }
+  | { type: "divider" }
+  | {
+      type: "stat";
+      label: string;
+      value: string;
+      hint?: string;
+    }
+  | { type: "spacer"; height?: number };
+
+export type ReportInput = {
+  title: string; // e.g. "Personal Skin Analysis Report"
+  subtitle?: string; // e.g. "Prepared for Priya Sharma"
+  patient: {
+    name: string;
+    email?: string;
+    phone?: string;
+    ageRange?: string;
+  };
+  sections: ReportSection[];
+  /** Footer line above clinic info. */
+  disclaimer?: string;
+};
+
+const CLINIC = {
+  name: "RenovaAura",
+  tagline:
+    "Dermatology · Wellness · Aesthetics · Plastic Surgery · Hair Transplant",
+  address:
+    "First Floor, Plot No C/3, Block B, Surya Niketan, Anand Vihar, New Delhi 110092",
+  phone: "+91 00000 00000",
+  email: "hello@renovaaura.com",
+  web: "renovaaura.com",
+};
+
+function setColor(doc: jsPDF, c: [number, number, number]) {
+  doc.setTextColor(c[0], c[1], c[2]);
+}
+
+function setFill(doc: jsPDF, c: [number, number, number]) {
+  doc.setFillColor(c[0], c[1], c[2]);
+}
+
+function setStroke(doc: jsPDF, c: [number, number, number]) {
+  doc.setDrawColor(c[0], c[1], c[2]);
+}
+
+/** Draw the RenovaAura masthead at the top of every page. */
+function drawHeader(doc: jsPDF) {
+  // Background band
+  setFill(doc, PALETTE.cocoa);
+  doc.rect(0, 0, PAGE.w, 22, "F");
+  // Wordmark (text-based — embedding the PNG would inflate the file)
+  setColor(doc, PALETTE.cream);
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(18);
+  doc.text("RenovaAura", PAGE.marginX, 13);
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(8);
+  setColor(doc, PALETTE.sand);
+  doc.text(CLINIC.tagline.toUpperCase(), PAGE.marginX, 18);
+  // Right-aligned date
+  setColor(doc, PALETTE.sand);
+  doc.setFontSize(8);
+  const now = new Date().toLocaleDateString("en-IN", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  });
+  doc.text(`Report generated · ${now}`, PAGE.w - PAGE.marginX, 13, {
+    align: "right",
+  });
+}
+
+/** Bottom-of-page clinic block + pagination. */
+function drawFooter(doc: jsPDF, pageNum: number, totalPages: number) {
+  const y = PAGE.h - PAGE.marginBottom + 8;
+  setStroke(doc, PALETTE.line);
+  doc.setLineWidth(0.3);
+  doc.line(PAGE.marginX, y - 6, PAGE.w - PAGE.marginX, y - 6);
+  setColor(doc, PALETTE.muted);
+  doc.setFontSize(8);
+  doc.setFont("helvetica", "normal");
+  doc.text(CLINIC.address, PAGE.marginX, y);
+  doc.text(
+    `${CLINIC.phone}  ·  ${CLINIC.email}  ·  ${CLINIC.web}`,
+    PAGE.marginX,
+    y + 4,
+  );
+  setColor(doc, PALETTE.tan);
+  doc.text(`Page ${pageNum} of ${totalPages}`, PAGE.w - PAGE.marginX, y + 4, {
+    align: "right",
+  });
+}
+
+/** Disclaimer block above the footer on the last page. */
+function drawDisclaimer(doc: jsPDF, y: number, text: string): number {
+  setColor(doc, PALETTE.muted);
+  doc.setFontSize(7.5);
+  doc.setFont("helvetica", "italic");
+  const lines = doc.splitTextToSize(text, PAGE.w - PAGE.marginX * 2);
+  doc.text(lines, PAGE.marginX, y);
+  return y + lines.length * 3.2;
+}
+
+/** Cursor + page management — auto-paginate when content overflows. */
+class Cursor {
+  doc: jsPDF;
+  y = 0;
+  page = 1;
+
+  constructor(doc: jsPDF) {
+    this.doc = doc;
+    this.reset();
+  }
+
+  reset() {
+    this.y = PAGE.marginTop + 22; // below header band
+  }
+
+  ensure(spaceNeeded: number) {
+    if (this.y + spaceNeeded > PAGE.h - PAGE.marginBottom - 4) {
+      this.doc.addPage();
+      this.page += 1;
+      drawHeader(this.doc);
+      this.reset();
+    }
+  }
+}
+
+/**
+ * Generate the PDF and trigger a download in the user's browser.
+ */
+export function generateReport(input: ReportInput): void {
+  const doc = new jsPDF({ unit: "mm", format: "a4" });
+  drawHeader(doc);
+  const cursor = new Cursor(doc);
+
+  // Title block
+  cursor.ensure(28);
+  setColor(doc, PALETTE.cocoa);
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(22);
+  const titleLines = doc.splitTextToSize(
+    input.title,
+    PAGE.w - PAGE.marginX * 2,
+  );
+  doc.text(titleLines, PAGE.marginX, cursor.y);
+  cursor.y += titleLines.length * 8;
+
+  if (input.subtitle) {
+    setColor(doc, PALETTE.tan);
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(11);
+    doc.text(input.subtitle, PAGE.marginX, cursor.y);
+    cursor.y += 6;
+  }
+
+  cursor.y += 4;
+
+  // Patient details card
+  cursor.ensure(28);
+  setFill(doc, PALETTE.cream);
+  doc.setDrawColor(PALETTE.line[0], PALETTE.line[1], PALETTE.line[2]);
+  doc.setLineWidth(0.2);
+  doc.roundedRect(
+    PAGE.marginX,
+    cursor.y,
+    PAGE.w - PAGE.marginX * 2,
+    22,
+    2,
+    2,
+    "FD",
+  );
+  setColor(doc, PALETTE.tan);
+  doc.setFontSize(8);
+  doc.text("PATIENT DETAILS", PAGE.marginX + 5, cursor.y + 6);
+  setColor(doc, PALETTE.ink);
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(11);
+  doc.text(input.patient.name, PAGE.marginX + 5, cursor.y + 12);
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(9);
+  setColor(doc, PALETTE.muted);
+  const contact = [
+    input.patient.phone,
+    input.patient.email,
+    input.patient.ageRange,
+  ]
+    .filter(Boolean)
+    .join("  ·  ");
+  doc.text(contact, PAGE.marginX + 5, cursor.y + 18);
+  cursor.y += 30;
+
+  // Sections
+  for (const section of input.sections) {
+    renderSection(doc, cursor, section);
+  }
+
+  // Disclaimer
+  cursor.y += 6;
+  cursor.ensure(20);
+  cursor.y = drawDisclaimer(
+    doc,
+    cursor.y,
+    input.disclaimer ??
+      "This report is generated for informational purposes only and does not constitute a medical diagnosis. The graft count and treatment recommendations are estimates based on the inputs you provided and standard clinical references. A board-certified RenovaAura consultant will confirm exact numbers and protocols during your in-person consultation.",
+  );
+
+  // Footer on every page
+  const totalPages = (
+    doc as unknown as { internal: { getNumberOfPages: () => number } }
+  ).internal.getNumberOfPages();
+  for (let i = 1; i <= totalPages; i++) {
+    doc.setPage(i);
+    drawFooter(doc, i, totalPages);
+  }
+
+  const safeName = input.patient.name.replace(/[^a-z0-9]+/gi, "-");
+  doc.save(`renovaaura-report-${safeName}-${Date.now()}.pdf`);
+}
+
+function renderSection(doc: jsPDF, cursor: Cursor, s: ReportSection) {
+  switch (s.type) {
+    case "heading":
+      cursor.ensure(14);
+      setColor(doc, PALETTE.cocoa);
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(13);
+      doc.text(s.text, PAGE.marginX, cursor.y);
+      cursor.y += 3;
+      setStroke(doc, PALETTE.espresso);
+      doc.setLineWidth(0.6);
+      doc.line(PAGE.marginX, cursor.y, PAGE.marginX + 12, cursor.y);
+      cursor.y += 6;
+      break;
+    case "paragraph": {
+      const lines = doc.splitTextToSize(s.text, PAGE.w - PAGE.marginX * 2);
+      cursor.ensure(lines.length * 4.5 + 2);
+      setColor(doc, PALETTE.ink);
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(10);
+      doc.text(lines, PAGE.marginX, cursor.y);
+      cursor.y += lines.length * 4.5 + 2;
+      break;
+    }
+    case "bullets":
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(10);
+      for (const item of s.items) {
+        const lines = doc.splitTextToSize(
+          item,
+          PAGE.w - PAGE.marginX * 2 - 6,
+        );
+        cursor.ensure(lines.length * 4.5 + 2);
+        setColor(doc, PALETTE.espresso);
+        doc.text("•", PAGE.marginX, cursor.y);
+        setColor(doc, PALETTE.ink);
+        doc.text(lines, PAGE.marginX + 5, cursor.y);
+        cursor.y += lines.length * 4.5 + 1;
+      }
+      cursor.y += 2;
+      break;
+    case "kv": {
+      cursor.ensure(6);
+      setColor(doc, PALETTE.muted);
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(9);
+      doc.text(s.label, PAGE.marginX, cursor.y);
+      setColor(doc, PALETTE.ink);
+      doc.setFont("helvetica", "bold");
+      doc.text(s.value, PAGE.w - PAGE.marginX, cursor.y, { align: "right" });
+      cursor.y += 5;
+      break;
+    }
+    case "stat": {
+      cursor.ensure(22);
+      setFill(doc, PALETTE.sand);
+      doc.roundedRect(
+        PAGE.marginX,
+        cursor.y,
+        PAGE.w - PAGE.marginX * 2,
+        18,
+        2,
+        2,
+        "F",
+      );
+      setColor(doc, PALETTE.cocoa);
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(8);
+      doc.text(s.label.toUpperCase(), PAGE.marginX + 5, cursor.y + 6);
+      doc.setFontSize(20);
+      doc.text(s.value, PAGE.marginX + 5, cursor.y + 14);
+      if (s.hint) {
+        setColor(doc, PALETTE.espresso);
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(9);
+        doc.text(s.hint, PAGE.w - PAGE.marginX - 5, cursor.y + 11, {
+          align: "right",
+        });
+      }
+      cursor.y += 24;
+      break;
+    }
+    case "divider":
+      cursor.ensure(4);
+      setStroke(doc, PALETTE.line);
+      doc.setLineWidth(0.2);
+      doc.line(PAGE.marginX, cursor.y, PAGE.w - PAGE.marginX, cursor.y);
+      cursor.y += 4;
+      break;
+    case "spacer":
+      cursor.y += s.height ?? 4;
+      break;
+  }
+}
