@@ -77,26 +77,38 @@ function ConcernDetail({ c }: { c: Concern }) {
           >
             ← Back to Skin Concerns
           </Link>
-          <div
-            style={{
-              fontSize: 40,
-              color: "var(--sage)",
-              marginBottom: 8,
-              lineHeight: 1,
-            }}
-          >
-            {c.icon}
-          </div>
-          <div className="pillar-hero-eyebrow">{c.name}</div>
-          <h1 className="pillar-hero-headline">{c.headline}</h1>
-          <p
-            className="pillar-hero-subtitle"
-            style={{ maxWidth: 760, marginTop: 22 }}
-          >
-            {c.summary}
-          </p>
-          <div style={{ marginTop: 28 }}>
-            <BookButton>Book a consultation</BookButton>
+          <div className="pillar-hero-grid">
+            <div className="pillar-hero-text">
+              <div
+                style={{
+                  fontSize: 40,
+                  color: "var(--sage)",
+                  marginBottom: 8,
+                  lineHeight: 1,
+                }}
+              >
+                {c.icon}
+              </div>
+              <div className="pillar-hero-eyebrow">{c.name}</div>
+              <h1 className="pillar-hero-headline">{c.headline}</h1>
+              <p
+                className="pillar-hero-subtitle"
+                style={{ marginTop: 22 }}
+              >
+                {c.summary}
+              </p>
+              <div style={{ marginTop: 28 }}>
+                <BookButton>Book a consultation</BookButton>
+              </div>
+            </div>
+            {c.image && (
+              <div
+                className="pillar-hero-image"
+                style={{ backgroundImage: `url(${c.image})` }}
+                role="img"
+                aria-label={`${c.name} — illustrative photograph`}
+              />
+            )}
           </div>
         </div>
       </section>

@@ -89,16 +89,28 @@ function ProcedureDetail({ p }: { p: Procedure }) {
               ? "Hair Transplant"
               : "Plastic Surgery"}
           </Link>
-          <div className="pillar-hero-eyebrow">{p.name}</div>
-          <h1 className="pillar-hero-headline">{p.headline}</h1>
-          <p
-            className="pillar-hero-subtitle"
-            style={{ maxWidth: 760, marginTop: 22 }}
-          >
-            {p.overview}
-          </p>
-          <div style={{ marginTop: 28 }}>
-            <BookButton>Book a consultation</BookButton>
+          <div className="pillar-hero-grid">
+            <div className="pillar-hero-text">
+              <div className="pillar-hero-eyebrow">{p.name}</div>
+              <h1 className="pillar-hero-headline">{p.headline}</h1>
+              <p
+                className="pillar-hero-subtitle"
+                style={{ marginTop: 22 }}
+              >
+                {p.overview}
+              </p>
+              <div style={{ marginTop: 28 }}>
+                <BookButton>Book a consultation</BookButton>
+              </div>
+            </div>
+            {p.image && (
+              <div
+                className="pillar-hero-image"
+                style={{ backgroundImage: `url(${p.image})` }}
+                role="img"
+                aria-label={`${p.name} — illustrative photograph`}
+              />
+            )}
           </div>
         </div>
       </section>

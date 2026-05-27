@@ -2759,3 +2759,35 @@ p { margin: 0; color: var(--muted); }
   line-height: 1.6;
 }
 
+/* 2-column hero grid — text left, image right. Used on procedure +
+   concern detail pages. Stacks below 900px wide. */
+.pillar-hero-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 60px;
+  align-items: center;
+}
+.pillar-hero-text {
+  min-width: 0;
+}
+.pillar-hero-image {
+  aspect-ratio: 4 / 5;
+  border-radius: var(--radius-lg);
+  background-size: cover;
+  background-position: center;
+  background-color: var(--cream-2);
+  box-shadow: var(--shadow);
+  max-height: 560px;
+}
+
+@media (max-width: 900px) {
+  .pillar-hero-grid {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+  .pillar-hero-image {
+    aspect-ratio: 16 / 10;
+    max-height: 360px;
+  }
+}
+
