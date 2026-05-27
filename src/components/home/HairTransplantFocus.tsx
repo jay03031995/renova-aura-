@@ -1,11 +1,11 @@
 import Link from "next/link";
 import { ArrowRight } from "@/components/icons";
-import { HAIR_PROCEDURES } from "@/data/procedures";
+import { getProceduresByPillar } from "@/sanity/lib/fetchers";
 
 /**
  * Homepage section: the primary pillar — hair transplant.
- * Lists the 6 most-relevant hair procedures as cards, with a clear path
- * into the full /procedures/hair-transplant listing.
+ * Fetches the 6 most-relevant hair procedures from Sanity (with the
+ * static fallback in place via fetchers.ts).
  */
 const FEATURED_SLUGS = [
   "fue-hair-transplant",
@@ -16,10 +16,15 @@ const FEATURED_SLUGS = [
   "prp-hair-treatment",
 ];
 
-export default function HairTransplantFocus() {
-  const featured = FEATURED_SLUGS.map((s) =>
-    HAIR_PROCEDURES.find((p) => p.slug === s),
-  ).filter((p): p is (typeof HAIR_PROCEDURES)[number] => Boolean(p));
+export default async function HairTransplantFocus() {
+  const all = await getProceduresByPillar("hair-transplant");
+  // Prefer the featured slugs in order; fall back to the first 6 if any
+  // featured slug isn't present (e.g. clinic renamed one in Studio).
+  const bySlug = new Map(all.map((p) => [p.slug, p]));
+  const featured = FEATURED_SLUGS.map((s) => bySlug.get(s))
+    .filter((p): p is NonNullable<typeof p> => Boolean(p))
+    .concat(all.filter((p) => !FEATURED_SLUGS.includes(p.slug)))
+    .slice(0, 6);
 
   return (
     <section className="section" id="hair-transplant">

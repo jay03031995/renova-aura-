@@ -4,15 +4,17 @@ import { notFound } from "next/navigation";
 import { ArrowRight, Check } from "@/components/icons";
 import BookButton from "@/components/BookButton";
 import FaqItem from "@/components/FaqItem";
+import { type Concern } from "@/data/concerns";
+import { PROCEDURE_BY_SLUG, type Procedure } from "@/data/procedures";
 import {
-  CONCERNS,
-  CONCERN_BY_SLUG,
-  type Concern,
-} from "@/data/concerns";
-import { PROCEDURE_BY_SLUG } from "@/data/procedures";
+  getConcernBySlug,
+  getConcernSlugs,
+  getProcedureBySlug,
+} from "@/sanity/lib/fetchers";
 
-export function generateStaticParams() {
-  return CONCERNS.map((c) => ({ slug: c.slug }));
+export async function generateStaticParams() {
+  const slugs = await getConcernSlugs();
+  return slugs.map((slug) => ({ slug }));
 }
 
 export async function generateMetadata({
@@ -21,7 +23,7 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const c = CONCERN_BY_SLUG[slug];
+  const c = await getConcernBySlug(slug);
   if (!c) return {};
   return {
     title: c.name,
@@ -36,12 +38,29 @@ export default async function ConcernPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const c = CONCERN_BY_SLUG[slug];
+  const c = await getConcernBySlug(slug);
   if (!c) return notFound();
-  return <ConcernDetail c={c} />;
+
+  // Resolve related procedures via the fetcher (Sanity-first, static-fallback)
+  // so that a procedure being edited in Studio reflects on the concern page too.
+  const relatedProcedures: Procedure[] = [];
+  for (const procSlug of c.relatedProcedureSlugs) {
+    // Try Sanity first; fall back to local PROCEDURE_BY_SLUG map.
+    const resolved =
+      (await getProcedureBySlug(procSlug)) ?? PROCEDURE_BY_SLUG[procSlug];
+    if (resolved) relatedProcedures.push(resolved);
+  }
+
+  return <ConcernDetail c={c} relatedProcedures={relatedProcedures} />;
 }
 
-function ConcernDetail({ c }: { c: Concern }) {
+function ConcernDetail({
+  c,
+  relatedProcedures,
+}: {
+  c: Concern;
+  relatedProcedures: Procedure[];
+}) {
   // FAQPage JSON-LD for Google rich snippets (EEAT).
   const jsonLd = {
     "@context": "https://schema.org",
@@ -52,10 +71,6 @@ function ConcernDetail({ c }: { c: Concern }) {
       acceptedAnswer: { "@type": "Answer", text: f.a },
     })),
   };
-
-  const relatedProcedures = c.relatedProcedureSlugs
-    .map((s) => PROCEDURE_BY_SLUG[s])
-    .filter(Boolean);
 
   return (
     <>

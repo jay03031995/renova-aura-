@@ -1,18 +1,19 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight } from "@/components/icons";
-import {
-  HAIR_PROCEDURES,
-  PLASTIC_PROCEDURES,
-} from "@/data/procedures";
+import { getProceduresByPillar } from "@/sanity/lib/fetchers";
 
 export const metadata: Metadata = {
   title: "Our Procedures — Hair Transplant & Plastic Surgery",
   description:
-    "RenovaAura offers 11 hair restoration procedures and 10 plastic surgery procedures. FUE, DHI, rhinoplasty, facelift and more — all delivered by board-certified surgeons.",
+    "RenovaAura offers hair restoration and plastic surgery procedures. FUE, DHI, rhinoplasty, facelift and more — all delivered by board-certified surgeons.",
 };
 
-export default function ProceduresIndexPage() {
+export default async function ProceduresIndexPage() {
+  const [HAIR_PROCEDURES, PLASTIC_PROCEDURES] = await Promise.all([
+    getProceduresByPillar("hair-transplant"),
+    getProceduresByPillar("plastic-surgery"),
+  ]);
   return (
     <>
       <section className="pillar-hero">

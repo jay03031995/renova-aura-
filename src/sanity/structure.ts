@@ -14,7 +14,7 @@ const SINGLETON_LABELS: Record<string, string> = {
  */
 export const structure = (S: StructureBuilder) =>
   S.list()
-    .title("Dermaheal Admin")
+    .title("RenovaAura Admin")
     .items([
       // Dashboard — landing view with live counters for clinic staff.
       S.listItem()
@@ -85,9 +85,49 @@ export const structure = (S: StructureBuilder) =>
           .child(S.document().schemaType(type).documentId(type)),
       ),
       S.divider(),
-      // Collections — RenovaAura: hair/plastic procedures are static data
-      // (see src/data/procedures.ts), so only doctor/result content lives
-      // in Sanity for now.
+      // Procedures pillar — hair transplant + plastic surgery
+      S.listItem()
+        .title("💆 Procedures")
+        .child(
+          S.list()
+            .title("Procedures")
+            .items([
+              S.listItem()
+                .title("Hair Transplant (11)")
+                .child(
+                  S.documentTypeList("procedure")
+                    .title("Hair Transplant")
+                    .filter('_type == "procedure" && pillar == "hair-transplant"')
+                    .defaultOrdering([
+                      { field: "order", direction: "asc" },
+                      { field: "name", direction: "asc" },
+                    ]),
+                ),
+              S.listItem()
+                .title("Plastic Surgery (10)")
+                .child(
+                  S.documentTypeList("procedure")
+                    .title("Plastic Surgery")
+                    .filter('_type == "procedure" && pillar == "plastic-surgery"')
+                    .defaultOrdering([
+                      { field: "order", direction: "asc" },
+                      { field: "name", direction: "asc" },
+                    ]),
+                ),
+              S.divider(),
+              S.listItem()
+                .title("All procedures")
+                .child(
+                  S.documentTypeList("procedure")
+                    .title("All procedures")
+                    .defaultOrdering([
+                      { field: "pillar", direction: "asc" },
+                      { field: "order", direction: "asc" },
+                    ]),
+                ),
+            ]),
+        ),
+      S.documentTypeListItem("concern").title("🩹 Skin Concerns"),
       S.documentTypeListItem("doctor").title("Doctors"),
       S.documentTypeListItem("result").title("Patient results"),
       S.divider(),

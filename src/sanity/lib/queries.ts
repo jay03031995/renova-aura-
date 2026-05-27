@@ -31,77 +31,88 @@ const seoProjection = /* groq */ `
   }
 `;
 
-const treatmentCardProjection = /* groq */ `
+// =========================================================================
+// Procedures (Hair Transplant + Plastic Surgery)
+// =========================================================================
+
+const procedureCardProjection = /* groq */ `
   _id,
   name,
   "slug": slug.current,
-  "category": category->{key, title},
-  imageVariant,
-  "thumbnail": thumbnail.asset->{_id, url},
-  shortDescription,
-  duration,
-  tag
+  pillar,
+  tag,
+  headline,
+  "image": image.asset->{_id, url},
+  quickDuration,
+  quickSessions,
+  "order": coalesce(order, 999)
 `;
 
-export const treatmentCardsQuery = /* groq */ `
-  *[_type == "treatment"] | order(category->key asc, name asc){
-    ${treatmentCardProjection}
+export const proceduresQuery = /* groq */ `
+  *[_type == "procedure"] | order(pillar asc, order asc, name asc){
+    ${procedureCardProjection}
   }
 `;
 
-export const treatmentBySlugQuery = /* groq */ `
-  *[_type == "treatment" && slug.current == $slug][0]{
-    ${treatmentCardProjection},
-    headline,
+export const proceduresByPillarQuery = /* groq */ `
+  *[_type == "procedure" && pillar == $pillar] | order(order asc, name asc){
+    ${procedureCardProjection}
+  }
+`;
+
+export const procedureBySlugQuery = /* groq */ `
+  *[_type == "procedure" && slug.current == $slug][0]{
+    ${procedureCardProjection},
     overview,
-    quickDuration,
-    quickSessions,
     quickDowntime,
+    quickAnaesthesia,
     keyPoints,
     suitableFor,
     process[]{title, description},
     benefits[]{icon, title, description},
     faqs[]{question, answer},
-    "heroImage": heroImage.asset->{_id, url},
-    ${seoProjection}
+    medicallyReviewedBy,
+    lastReviewed
   }
 `;
 
-export const treatmentSlugsQuery = /* groq */ `
-  *[_type == "treatment" && defined(slug.current)][].slug.current
+export const procedureSlugsQuery = /* groq */ `
+  *[_type == "procedure" && defined(slug.current)][]{
+    "slug": slug.current,
+    pillar
+  }
 `;
 
-export const treatmentCategoriesQuery = /* groq */ `
-  *[_type == "treatmentCategory"] | order(order asc){ key, title, description }
-`;
+// =========================================================================
+// Skin Concerns
+// =========================================================================
 
-const concernProjection = /* groq */ `
+const concernCardProjection = /* groq */ `
   _id,
   name,
   "slug": slug.current,
   icon,
   cardTagline,
-  imageVariant
+  "image": image.asset->{_id, url},
+  "order": coalesce(order, 999)
 `;
 
 export const concernsQuery = /* groq */ `
   *[_type == "concern"] | order(order asc, name asc){
-    ${concernProjection}
+    ${concernCardProjection}
   }
 `;
 
 export const concernBySlugQuery = /* groq */ `
   *[_type == "concern" && slug.current == $slug][0]{
-    ${concernProjection},
+    ${concernCardProjection},
     headline,
     summary,
     symptoms,
     causes,
     approach,
-    "image": image.asset->{_id, url},
-    "treatments": treatments[]->{ ${treatmentCardProjection}, overview },
-    faqs[]{question, answer},
-    ${seoProjection}
+    "relatedProcedures": relatedProcedures[]->{ ${procedureCardProjection}, overview },
+    faqs[]{question, answer}
   }
 `;
 

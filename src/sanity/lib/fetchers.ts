@@ -14,11 +14,18 @@ import { client, sanityEnabled } from "./client";
 import {
   announcementQuery,
   clinicSettingsQuery,
+  concernBySlugQuery,
+  concernSlugsQuery,
+  concernsQuery,
   doctorBySlugQuery,
   doctorSlugsQuery,
   doctorsQuery,
   eeatPillarsQuery,
   homepageFaqsQuery,
+  procedureBySlugQuery,
+  procedureSlugsQuery,
+  proceduresByPillarQuery,
+  proceduresQuery,
   resultsQuery,
   siteSettingsQuery,
   testimonialsQuery,
@@ -41,6 +48,19 @@ import {
   TRUST_ITEMS as LOCAL_TRUST_ITEMS,
   type Result,
 } from "@/data/site";
+import {
+  PROCEDURES as LOCAL_PROCEDURES,
+  PROCEDURE_SLUGS as LOCAL_PROCEDURE_SLUGS,
+  HAIR_PROCEDURES as LOCAL_HAIR_PROCEDURES,
+  PLASTIC_PROCEDURES as LOCAL_PLASTIC_PROCEDURES,
+  type Procedure,
+  type ProcedurePillar,
+} from "@/data/procedures";
+import {
+  CONCERNS as LOCAL_CONCERNS,
+  CONCERN_SLUGS as LOCAL_CONCERN_SLUGS,
+  type Concern,
+} from "@/data/concerns";
 
 // ----- Shared helpers -------------------------------------------------------
 
@@ -281,4 +301,154 @@ export async function getTrustItems(): Promise<{ icon: string; text: string }[]>
   const docs = await safeFetch<{ icon: string; text: string }[]>(trustItemsQuery);
   if (!isFilled(docs)) return LOCAL_TRUST_ITEMS;
   return docs;
+}
+
+// ----- Procedures -----------------------------------------------------------
+
+type SanityProcedure = {
+  _id: string;
+  name: string;
+  slug: string;
+  pillar: ProcedurePillar;
+  tag?: string;
+  headline: string;
+  overview?: string;
+  image?: { url?: string };
+  quickDuration?: string;
+  quickSessions?: string;
+  quickDowntime?: string;
+  quickAnaesthesia?: string;
+  keyPoints?: string[];
+  suitableFor?: string[];
+  process?: { title: string; description: string }[];
+  benefits?: { icon: string; title: string; description: string }[];
+  faqs?: { question: string; answer: string }[];
+  medicallyReviewedBy?: string;
+  lastReviewed?: string;
+};
+
+function mapProcedure(d: SanityProcedure): Procedure {
+  return {
+    slug: d.slug,
+    name: d.name,
+    pillar: d.pillar,
+    tag: d.tag,
+    image: d.image?.url,
+    headline: d.headline,
+    overview: d.overview ?? "",
+    quick: {
+      duration: d.quickDuration ?? "",
+      sessions: d.quickSessions ?? "",
+      downtime: d.quickDowntime ?? "",
+      anaesthesia: d.quickAnaesthesia,
+    },
+    keyPoints: d.keyPoints ?? [],
+    suitableFor: d.suitableFor ?? [],
+    process: (d.process ?? []).map((s) => ({ t: s.title, d: s.description })),
+    benefits: (d.benefits ?? []).map((b) => ({
+      i: b.icon,
+      t: b.title,
+      d: b.description,
+    })),
+    faqs: (d.faqs ?? []).map((f) => ({ q: f.question, a: f.answer })),
+    medicallyReviewedBy: d.medicallyReviewedBy,
+    lastReviewed: d.lastReviewed,
+  };
+}
+
+export async function getProcedures(): Promise<Procedure[]> {
+  const docs = await safeFetch<SanityProcedure[]>(proceduresQuery);
+  if (!isFilled(docs)) return LOCAL_PROCEDURES;
+  return docs.map(mapProcedure);
+}
+
+export async function getProceduresByPillar(
+  pillar: ProcedurePillar,
+): Promise<Procedure[]> {
+  const docs = await safeFetch<SanityProcedure[]>(proceduresByPillarQuery, {
+    pillar,
+  });
+  if (!isFilled(docs)) {
+    return pillar === "hair-transplant"
+      ? LOCAL_HAIR_PROCEDURES
+      : LOCAL_PLASTIC_PROCEDURES;
+  }
+  return docs.map(mapProcedure);
+}
+
+export async function getProcedureBySlug(
+  slug: string,
+): Promise<Procedure | undefined> {
+  const doc = await safeFetch<SanityProcedure | null>(procedureBySlugQuery, {
+    slug,
+  });
+  if (doc) return mapProcedure(doc);
+  return LOCAL_PROCEDURES.find((p) => p.slug === slug);
+}
+
+export async function getProcedureSlugs(): Promise<
+  { slug: string; pillar: ProcedurePillar }[]
+> {
+  const docs = await safeFetch<{ slug: string; pillar: ProcedurePillar }[]>(
+    procedureSlugsQuery,
+  );
+  if (isFilled(docs)) return docs;
+  return LOCAL_PROCEDURES.map((p) => ({ slug: p.slug, pillar: p.pillar }));
+}
+
+// ----- Skin Concerns --------------------------------------------------------
+
+type SanityConcern = {
+  _id: string;
+  name: string;
+  slug: string;
+  icon?: string;
+  cardTagline?: string;
+  image?: { url?: string };
+  headline?: string;
+  summary?: string;
+  symptoms?: string[];
+  causes?: string[];
+  approach?: string[];
+  relatedProcedures?: SanityProcedure[];
+  faqs?: { question: string; answer: string }[];
+};
+
+function mapConcern(d: SanityConcern): Concern {
+  return {
+    slug: d.slug,
+    name: d.name,
+    icon: d.icon ?? "◍",
+    image: d.image?.url,
+    cardTagline: d.cardTagline ?? "",
+    headline: d.headline ?? "",
+    summary: d.summary ?? "",
+    symptoms: d.symptoms ?? [],
+    causes: d.causes ?? [],
+    approach: d.approach ?? [],
+    // Sanity gives full procedure refs; for the page we just need the slugs
+    // — the existing UI looks them up in PROCEDURE_BY_SLUG anyway.
+    relatedProcedureSlugs: (d.relatedProcedures ?? []).map((p) => p.slug),
+    faqs: (d.faqs ?? []).map((f) => ({ q: f.question, a: f.answer })),
+  };
+}
+
+export async function getConcerns(): Promise<Concern[]> {
+  const docs = await safeFetch<SanityConcern[]>(concernsQuery);
+  if (!isFilled(docs)) return LOCAL_CONCERNS;
+  return docs.map(mapConcern);
+}
+
+export async function getConcernBySlug(slug: string): Promise<Concern | undefined> {
+  const doc = await safeFetch<SanityConcern | null>(concernBySlugQuery, {
+    slug,
+  });
+  if (doc) return mapConcern(doc);
+  return LOCAL_CONCERNS.find((c) => c.slug === slug);
+}
+
+export async function getConcernSlugs(): Promise<string[]> {
+  const slugs = await safeFetch<string[]>(concernSlugsQuery);
+  if (isFilled(slugs)) return slugs;
+  return LOCAL_CONCERN_SLUGS;
 }

@@ -1,14 +1,11 @@
 import Link from "next/link";
 import { ArrowRight } from "@/components/icons";
-import { CONCERNS } from "@/data/concerns";
+import { getConcerns } from "@/sanity/lib/fetchers";
 
 /**
  * Homepage section: the dermatology / skin concerns pillar. Sits between
  * the two surgical pillars to remind visitors RenovaAura also treats
- * everyday dermatology concerns (acne, pigmentation, anti-ageing).
- *
- * Shows 6 most-searched concerns as icon cards with a clear path into
- * the full /concerns listing.
+ * everyday dermatology concerns. Sanity-first via getConcerns().
  */
 const FEATURED_SLUGS = [
   "acne",
@@ -19,10 +16,13 @@ const FEATURED_SLUGS = [
   "scar-reduction",
 ];
 
-export default function SkinConcernsSection() {
-  const featured = FEATURED_SLUGS.map((s) =>
-    CONCERNS.find((c) => c.slug === s),
-  ).filter((c): c is (typeof CONCERNS)[number] => Boolean(c));
+export default async function SkinConcernsSection() {
+  const all = await getConcerns();
+  const bySlug = new Map(all.map((c) => [c.slug, c]));
+  const featured = FEATURED_SLUGS.map((s) => bySlug.get(s))
+    .filter((c): c is NonNullable<typeof c> => Boolean(c))
+    .concat(all.filter((c) => !FEATURED_SLUGS.includes(c.slug)))
+    .slice(0, 6);
 
   return (
     <section className="section" id="skin-concerns">
@@ -71,7 +71,7 @@ export default function SkinConcernsSection() {
 
         <div style={{ marginTop: 36, textAlign: "center" }}>
           <Link href="/concerns" className="btn btn-primary">
-            View all {CONCERNS.length} skin concerns{" "}
+            View all {all.length} skin concerns{" "}
             <ArrowRight size={16} />
           </Link>
         </div>

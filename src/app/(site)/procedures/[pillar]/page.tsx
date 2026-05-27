@@ -2,18 +2,14 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowRight } from "@/components/icons";
-import {
-  HAIR_PROCEDURES,
-  PLASTIC_PROCEDURES,
-  type ProcedurePillar,
-} from "@/data/procedures";
+import { type ProcedurePillar } from "@/data/procedures";
+import { getProceduresByPillar } from "@/sanity/lib/fetchers";
 
 type PillarMeta = {
   eyebrow: string;
   title: string;
   headline: string;
   subtitle: string;
-  procedures: typeof HAIR_PROCEDURES;
 };
 
 const PILLARS: Record<ProcedurePillar, PillarMeta> = {
@@ -23,7 +19,6 @@ const PILLARS: Record<ProcedurePillar, PillarMeta> = {
     headline: "Permanent hair restoration, designed by surgeons.",
     subtitle:
       "From FUE to DHI, beard restoration to eyebrow transplants — every hair procedure we perform is led by a board-certified surgeon and tailored to your hair pattern.",
-    procedures: HAIR_PROCEDURES,
   },
   "plastic-surgery": {
     eyebrow: "Plastic Surgery & Aesthetics",
@@ -31,7 +26,6 @@ const PILLARS: Record<ProcedurePillar, PillarMeta> = {
     headline: "Refined, never overdone.",
     subtitle:
       "Rhinoplasty, facelift, blepharoplasty and a full range of body contouring — delivered with the conservative aesthetic judgement that makes results look natural, not 'done'.",
-    procedures: PLASTIC_PROCEDURES,
   },
 };
 
@@ -62,6 +56,8 @@ export default async function PillarPage({
   const meta = PILLARS[pillar as ProcedurePillar];
   if (!meta) return notFound();
 
+  const procedures = await getProceduresByPillar(pillar as ProcedurePillar);
+
   return (
     <>
       <section className="pillar-hero">
@@ -75,7 +71,7 @@ export default async function PillarPage({
       <section className="section">
         <div className="container">
           <div className="proc-grid">
-            {meta.procedures.map((p) => (
+            {procedures.map((p) => (
               <Link
                 key={p.slug}
                 href={`/procedures/${pillar}/${p.slug}`}

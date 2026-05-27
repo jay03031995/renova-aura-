@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight } from "@/components/icons";
-import { CONCERNS } from "@/data/concerns";
+import { getConcerns } from "@/sanity/lib/fetchers";
 
 export const metadata: Metadata = {
   title: "Skin Concerns — Personalised Dermatology Care",
@@ -9,7 +9,8 @@ export const metadata: Metadata = {
     "Acne, pigmentation, anti-ageing, sensitive skin, dark circles and more. RenovaAura's dermatology team treats skin concerns with calibrated protocols — never generic.",
 };
 
-export default function ConcernsIndexPage() {
+export default async function ConcernsIndexPage() {
+  const CONCERNS = await getConcerns();
   return (
     <>
       <section className="pillar-hero">

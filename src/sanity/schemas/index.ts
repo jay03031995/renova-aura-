@@ -16,12 +16,10 @@ import {
   clinicSettingsSchema,
   siteSettingsSchema,
 } from "./singletons";
-// NOTE: treatment / concern schemas removed in the RenovaAura rebuild —
-// replaced by the static `procedures.ts` data file (hair + plastic surgery).
-// Add Sanity-backed procedure / hairProcedure schemas later if/when the
-// clinic wants to manage procedure content from Studio.
 import { doctorSchema } from "./doctor";
 import { resultSchema } from "./result";
+import { procedureSchema } from "./procedure";
+import { concernSchema } from "./concern";
 import {
   eeatPillarSchema,
   homepageFaqSchema,
@@ -49,6 +47,8 @@ export const schemaTypes = [
   siteSettingsSchema,
   announcementBarSchema,
   // Documents
+  procedureSchema,
+  concernSchema,
   doctorSchema,
   resultSchema,
   testimonialSchema,

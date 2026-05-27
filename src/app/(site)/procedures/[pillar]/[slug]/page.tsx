@@ -4,14 +4,15 @@ import { notFound } from "next/navigation";
 import { ArrowRight, Check, Clock } from "@/components/icons";
 import BookButton from "@/components/BookButton";
 import FaqItem from "@/components/FaqItem";
+import { type Procedure } from "@/data/procedures";
 import {
-  PROCEDURES,
-  PROCEDURE_BY_SLUG,
-  type Procedure,
-} from "@/data/procedures";
+  getProcedureBySlug,
+  getProcedureSlugs,
+} from "@/sanity/lib/fetchers";
 
-export function generateStaticParams() {
-  return PROCEDURES.map((p) => ({ pillar: p.pillar, slug: p.slug }));
+export async function generateStaticParams() {
+  const slugs = await getProcedureSlugs();
+  return slugs.map(({ pillar, slug }) => ({ pillar, slug }));
 }
 
 export async function generateMetadata({
@@ -20,7 +21,7 @@ export async function generateMetadata({
   params: Promise<{ pillar: string; slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const p = PROCEDURE_BY_SLUG[slug];
+  const p = await getProcedureBySlug(slug);
   if (!p) return {};
   return {
     title: p.name,
@@ -35,7 +36,7 @@ export default async function ProcedurePage({
   params: Promise<{ pillar: string; slug: string }>;
 }) {
   const { pillar, slug } = await params;
-  const p = PROCEDURE_BY_SLUG[slug];
+  const p = await getProcedureBySlug(slug);
   if (!p || p.pillar !== pillar) return notFound();
 
   return <ProcedureDetail p={p} />;

@@ -1,9 +1,10 @@
 import Link from "next/link";
 import { ArrowRight } from "@/components/icons";
-import { PLASTIC_PROCEDURES } from "@/data/procedures";
+import { getProceduresByPillar } from "@/sanity/lib/fetchers";
 
 /**
  * Secondary pillar on the homepage — plastic surgery & aesthetics.
+ * Sanity-first via getProceduresByPillar with static fallback.
  */
 const FEATURED_SLUGS = [
   "rhinoplasty",
@@ -14,10 +15,13 @@ const FEATURED_SLUGS = [
   "botox",
 ];
 
-export default function PlasticSurgeryFocus() {
-  const featured = FEATURED_SLUGS.map((s) =>
-    PLASTIC_PROCEDURES.find((p) => p.slug === s),
-  ).filter((p): p is (typeof PLASTIC_PROCEDURES)[number] => Boolean(p));
+export default async function PlasticSurgeryFocus() {
+  const all = await getProceduresByPillar("plastic-surgery");
+  const bySlug = new Map(all.map((p) => [p.slug, p]));
+  const featured = FEATURED_SLUGS.map((s) => bySlug.get(s))
+    .filter((p): p is NonNullable<typeof p> => Boolean(p))
+    .concat(all.filter((p) => !FEATURED_SLUGS.includes(p.slug)))
+    .slice(0, 6);
 
   return (
     <section
