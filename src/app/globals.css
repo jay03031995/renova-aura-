@@ -152,13 +152,19 @@ p { margin: 0; color: var(--muted); }
   position: sticky;
   top: 0;
   z-index: 50;
-  background: rgba(251, 246, 238, .82);
+  /* RenovaAura cream (#FAFAF6) at 96% opacity — enough to fully conceal
+     content underneath while still feeling slightly translucent. */
+  background: rgba(250, 250, 246, .96);
   backdrop-filter: saturate(180%) blur(14px);
   -webkit-backdrop-filter: saturate(180%) blur(14px);
   border-bottom: 1px solid transparent;
-  transition: border-color .3s;
+  transition: border-color .3s, background .2s;
+}
+.nav.scrolled {
+  background: var(--cream);
 }
 .nav.scrolled { border-bottom-color: var(--line); }
+.nav.scrolled { background: var(--cream); }
 .nav-inner {
   max-width: var(--container);
   margin: 0 auto;
