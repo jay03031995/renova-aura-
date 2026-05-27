@@ -51,7 +51,7 @@ const IMG = {
   hairSurgery:
     "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?w=800&q=80",
   hairHealthy:
-    "https://images.unsplash.com/photo-1620331317065-6f9f4b6bb13e?w=800&q=80",
+    "https://images.unsplash.com/photo-1503951914875-452162b0f3f1?w=800&q=80",
   hairWoman:
     "https://images.unsplash.com/photo-1559599101-f09722fb4948?w=800&q=80",
   beard:
@@ -61,11 +61,11 @@ const IMG = {
   injection:
     "https://images.unsplash.com/photo-1607619056574-7b8d3ee536b2?w=800&q=80",
   faceTreatment:
-    "https://images.unsplash.com/photo-1614859275206-fbcb27e57057?w=800&q=80",
+    "https://images.unsplash.com/photo-1522337660859-02fbefca4702?w=800&q=80",
   faceConsult:
     "https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=800&q=80",
   eyesCloseup:
-    "https://images.unsplash.com/photo-1469275606726-7651dcaba2ad?w=800&q=80",
+    "https://images.unsplash.com/photo-1474552226712-ac0f0961a954?w=800&q=80",
   noseProfile:
     "https://images.unsplash.com/photo-1487412947147-5cebf100ffc2?w=800&q=80",
   bodyContour:

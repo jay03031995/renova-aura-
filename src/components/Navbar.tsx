@@ -37,7 +37,13 @@ export default function Navbar() {
     <nav className={"nav" + (scrolled ? " scrolled" : "")}>
       <div className="nav-inner">
         <Link href="/" className="logo" aria-label={CLINIC.name}>
-          <span className="logo-wordmark">RenovaAura</span>
+          <img
+            src="/renovaaura-logo.png"
+            alt={CLINIC.name}
+            className="logo-img"
+            width={180}
+            height={50}
+          />
         </Link>
 
         <div className="nav-links">

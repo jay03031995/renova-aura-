@@ -15,9 +15,13 @@ export default function Footer() {
         <div className="footer-grid">
           <div>
             <Link href="/" className="logo" aria-label={CLINIC.name}>
-              <span className="logo-wordmark logo-wordmark-light">
-                RenovaAura
-              </span>
+              <img
+                src="/renovaaura-logo.png"
+                alt={CLINIC.name}
+                className="logo-img logo-img-light"
+                width={200}
+                height={56}
+              />
             </Link>
             <p className="footer-about">
               {CLINIC.address}

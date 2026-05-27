@@ -2427,8 +2427,21 @@ p { margin: 0; color: var(--muted); }
 }
 
 /* =========================================================
-   RenovaAura — Wordmark (replaces the image logo)
+   RenovaAura — Logo image
    ========================================================= */
+.logo-img {
+  height: 44px;
+  width: auto;
+  display: block;
+  object-fit: contain;
+}
+/* On dark footer background, the green-on-white logo needs a brighten. */
+.logo-img-light {
+  height: 56px;
+  filter: brightness(0) invert(1);
+  opacity: 0.95;
+}
+/* Legacy wordmark — kept so older usages don't break if any remain. */
 .logo-wordmark {
   font-family: var(--font-inter), system-ui, sans-serif;
   font-size: 22px;

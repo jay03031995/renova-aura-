@@ -96,15 +96,15 @@ export default function Contact() {
           <div className="contact-map reveal">
             <iframe
               className="contact-map-frame"
-              src="https://www.google.com/maps?q=Dermaheal+Skin+Clinic+Ramphal+Chowk+Dwarka&output=embed"
+              src="https://www.google.com/maps?q=Surya+Niketan+Anand+Vihar+New+Delhi+110092&output=embed"
               loading="lazy"
               referrerPolicy="no-referrer-when-downgrade"
-              title="Dermaheal Skin & Hair Clinic. Dwarka"
+              title="RenovaAura · Surya Niketan, Anand Vihar"
             />
             <div className="contact-map-foot">
-              <strong>Easy parking · Near Ramphal Chowk Metro</strong>
+              <strong>Easy parking · Near Anand Vihar Metro</strong>
               <a
-                href="https://www.google.com/maps?q=Dermaheal+Skin+Clinic+Ramphal+Chowk+Dwarka"
+                href="https://www.google.com/maps?q=Surya+Niketan+Anand+Vihar+New+Delhi+110092"
                 target="_blank"
                 rel="noopener noreferrer"
               >

@@ -41,7 +41,7 @@ const IMG = {
   pigmentation:
     "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=800&q=80",
   antiAgeing:
-    "https://images.unsplash.com/photo-1614859275206-fbcb27e57057?w=800&q=80",
+    "https://images.unsplash.com/photo-1522337660859-02fbefca4702?w=800&q=80",
   laserHair:
     "https://images.unsplash.com/photo-1559599101-f09722fb4948?w=800&q=80",
   dullSkin:
@@ -49,9 +49,9 @@ const IMG = {
   openPores:
     "https://images.unsplash.com/photo-1571781926291-c477ebfd024b?w=800&q=80",
   darkCircles:
-    "https://images.unsplash.com/photo-1469275606726-7651dcaba2ad?w=800&q=80",
+    "https://images.unsplash.com/photo-1474552226712-ac0f0961a954?w=800&q=80",
   rosacea:
-    "https://images.unsplash.com/photo-1607000975741-79e4a3a2da5b?w=800&q=80",
+    "https://images.unsplash.com/photo-1580618672591-eb180b1a973f?w=800&q=80",
   scars:
     "https://images.unsplash.com/photo-1488477181946-6428a0291777?w=800&q=80",
   stretchMarks:
