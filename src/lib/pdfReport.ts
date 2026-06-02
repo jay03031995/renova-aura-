@@ -72,8 +72,7 @@ const CLINIC = {
   name: "RenovaAura",
   tagline:
     "Dermatology · Wellness · Aesthetics · Plastic Surgery · Hair Transplant",
-  address:
-    "First Floor, Plot No C/3, Block B, Surya Niketan, Anand Vihar, New Delhi 110092",
+  address: "C-3, Anand Vihar, New Delhi, 110092",
   phone: "+91 00000 00000",
   email: "hello@renovaaura.com",
   web: "renovaaura.com",

@@ -96,15 +96,15 @@ export default function Contact() {
           <div className="contact-map reveal">
             <iframe
               className="contact-map-frame"
-              src="https://www.google.com/maps?q=Surya+Niketan+Anand+Vihar+New+Delhi+110092&output=embed"
+              src={`https://www.google.com/maps?q=${CLINIC.mapsQuery}&output=embed`}
               loading="lazy"
               referrerPolicy="no-referrer-when-downgrade"
-              title="RenovaAura · Surya Niketan, Anand Vihar"
+              title="RenovaAura · Anand Vihar, New Delhi"
             />
             <div className="contact-map-foot">
               <strong>Easy parking · Near Anand Vihar Metro</strong>
               <a
-                href="https://www.google.com/maps?q=Surya+Niketan+Anand+Vihar+New+Delhi+110092"
+                href={`https://www.google.com/maps?q=${CLINIC.mapsQuery}`}
                 target="_blank"
                 rel="noopener noreferrer"
               >
