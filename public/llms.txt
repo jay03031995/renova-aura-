@@ -1,0 +1,36 @@
+# RenovaAura
+
+> RenovaAura is a clinical aesthetics practice in Anand Vihar, New Delhi, offering hair transplant, plastic surgery, dermatology, wellness, and aesthetics services. This site provides procedure information, doctor profiles, results, and patient tools.
+
+## About
+
+- Location: C-3, Anand Vihar, New Delhi, 110092, India
+- Hours: Mon–Sat 10:00 AM – 7:30 PM; Sun by appointment
+- Focus areas: Hair Transplant, Plastic Surgery, Dermatology, Wellness, Aesthetics
+
+## Procedures
+
+- [Hair Transplant](https://renovaaura.com/procedures/hair-transplant): Hair restoration procedures including beard transplant.
+- [Plastic Surgery](https://renovaaura.com/procedures/plastic-surgery): Cosmetic and reconstructive procedures including blepharoplasty, botox, and more.
+- [All Procedures](https://renovaaura.com/procedures): Full directory of treatments organized by pillar.
+
+## Doctors
+
+- [Dr. Ankur Bhatia](https://renovaaura.com/doctors/ankur-bhatia)
+- [Dr. Bhawna Bhardwaj](https://renovaaura.com/doctors/bhawna-bhardwaj)
+- [All Doctors](https://renovaaura.com/doctors): Profiles of the clinical team.
+
+## Tools
+
+- [Graft Calculator](https://renovaaura.com/tools/graft-calculator): Estimate the number of grafts needed for a hair transplant.
+- [Skin Analysis](https://renovaaura.com/tools/skin-analysis): Guided skin assessment tool.
+
+## Resources
+
+- [Results](https://renovaaura.com/results): Before-and-after outcomes and case studies.
+- [Sitemap](https://renovaaura.com/sitemap.xml)
+
+## Notes
+
+- This is a medical and aesthetics information site. Content is for general information and is not a substitute for professional medical advice. Always consult a qualified clinician before making treatment decisions.
+- For appointments and clinical questions, contact the clinic directly via the website.
