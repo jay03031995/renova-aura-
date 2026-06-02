@@ -20,8 +20,14 @@ const bgImg = (url?: string): React.CSSProperties | undefined =>
       }
     : undefined;
 
+const NUM_WORD = ["", "One", "Two", "Three", "Four", "Five", "Six", "Seven"];
+
 export default async function DoctorsPage() {
   const doctors = await getDoctors();
+  const n = doctors.length;
+  const word = NUM_WORD[n] ?? String(n);
+  const docNoun = n === 1 ? "doctor" : "doctors";
+  const subNoun = n === 1 ? "subspecialty" : "subspecialties";
 
   return (
     <>
@@ -31,7 +37,7 @@ export default async function DoctorsPage() {
             Our dermatology team
           </div>
           <h1>
-            Three doctors. Three subspecialties.
+            {word} {docNoun}. {word} {subNoun}.
             <br />
             <em>One philosophy of care.</em>
           </h1>

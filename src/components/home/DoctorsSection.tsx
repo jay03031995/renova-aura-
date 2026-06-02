@@ -10,8 +10,14 @@ const bgImg = (url?: string): React.CSSProperties | undefined =>
       }
     : undefined;
 
+const NUM_WORD = ["", "One", "Two", "Three", "Four", "Five", "Six", "Seven"];
+
 export default async function DoctorsSection() {
   const doctors = await getDoctors();
+  const n = doctors.length;
+  const word = NUM_WORD[n] ?? String(n);
+  const docNoun = n === 1 ? "doctor" : "doctors";
+  const subNoun = n === 1 ? "subspecialty" : "subspecialties";
 
   return (
     <section className="section doctors" id="doctors">
@@ -20,7 +26,7 @@ export default async function DoctorsSection() {
           <div className="section-head-copy">
             <div className="eyebrow">Meet our dermatologists</div>
             <h2>
-              Three doctors. Three subspecialties.{" "}
+              {word} {docNoun}. {word} {subNoun}.{" "}
               <span className="serif-italic" style={{ color: "var(--sage)" }}>
                 One philosophy.
               </span>
