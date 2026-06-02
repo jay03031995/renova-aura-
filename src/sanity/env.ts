@@ -11,7 +11,13 @@
  *   SANITY_API_TOKEN=...  (server-only, used by the seed script)
  *   NEXT_PUBLIC_SANITY_STUDIO_URL=/studio
  */
-export const projectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID ?? "";
+// projectId and dataset are public (NEXT_PUBLIC_*), so we hardcode the real
+// values as defaults. This keeps the Studio + CMS working on any deployment
+// even if the env vars aren't set on the host (e.g. Vercel). Env vars still
+// take precedence when present. The empty `production` dataset is fine — the
+// page fetchers fall back to local TS data until content is published.
+export const projectId =
+  process.env.NEXT_PUBLIC_SANITY_PROJECT_ID ?? "eqn3mfxm";
 export const dataset = process.env.NEXT_PUBLIC_SANITY_DATASET ?? "production";
 export const apiVersion =
   process.env.NEXT_PUBLIC_SANITY_API_VERSION ?? "2024-11-01";
