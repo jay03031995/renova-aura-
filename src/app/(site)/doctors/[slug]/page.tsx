@@ -176,7 +176,7 @@ export default async function DoctorDetailPage(props: {
           </div>
           <div className="dp-treats">
             {d.treatments.map((t, i) => (
-              <Link key={i} className="dp-treat" href="/treatments">
+              <Link key={i} className="dp-treat" href="/procedures">
                 <div className="dp-treat-icon">{t.i}</div>
                 <div className="dp-treat-body">
                   <div className="dp-treat-name">{t.n}</div>
