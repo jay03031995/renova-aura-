@@ -23,6 +23,7 @@ import {
   eeatPillarsQuery,
   heroSlidesQuery,
   homepageFaqsQuery,
+  packagesQuery,
   procedureBySlugQuery,
   procedureSlugsQuery,
   proceduresByPillarQuery,
@@ -62,6 +63,10 @@ import {
   CONCERN_SLUGS as LOCAL_CONCERN_SLUGS,
   type Concern,
 } from "@/data/concerns";
+import {
+  PACKAGES as LOCAL_PACKAGES,
+  type TreatmentPackage,
+} from "@/data/packages";
 
 // ----- Shared helpers -------------------------------------------------------
 
@@ -281,6 +286,41 @@ export async function getSiteSettings(): Promise<SiteSettingsData> {
     defaultMetaDescription: doc.defaultMetaDescription,
     defaultOgImageUrl: doc.defaultOgImage?.url,
   };
+}
+
+// ----- Treatment packages ---------------------------------------------------
+
+/** All enabled packages, ordered. Falls back to local data when Sanity empty. */
+export async function getPackages(): Promise<TreatmentPackage[]> {
+  const docs = await safeFetch<
+    {
+      slug: string;
+      name: string;
+      category: string;
+      includes?: string;
+      price?: string;
+      concernSlug?: string;
+      order?: number;
+    }[]
+  >(packagesQuery);
+  if (!isFilled(docs)) return LOCAL_PACKAGES;
+  return docs.map((d) => ({
+    slug: d.slug,
+    name: d.name,
+    category: d.category as TreatmentPackage["category"],
+    includes: d.includes ?? "",
+    price: d.price,
+    concernSlug: d.concernSlug || undefined,
+    order: d.order ?? 0,
+  }));
+}
+
+/** Packages tied to a given concern slug (for the per-concern section). */
+export async function getPackagesByConcern(
+  concernSlug: string,
+): Promise<TreatmentPackage[]> {
+  const all = await getPackages();
+  return all.filter((p) => p.concernSlug === concernSlug);
 }
 
 // ----- Hero carousel --------------------------------------------------------

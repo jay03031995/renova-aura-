@@ -23,6 +23,7 @@ import { createClient } from "@sanity/client";
 import { DOCTORS } from "../src/data/doctors";
 import { PROCEDURES } from "../src/data/procedures";
 import { CONCERNS } from "../src/data/concerns";
+import { PACKAGES } from "../src/data/packages";
 import { EEAT, FAQS, TESTIMONIALS, TRUST_ITEMS } from "../src/data/site";
 import { CLINIC } from "../src/data/clinic";
 
@@ -405,6 +406,23 @@ async function buildHeroSlides() {
   return docs;
 }
 
+// ---- treatment packages ----------------------------------------------------
+
+function buildPackages() {
+  return PACKAGES.map((p) => ({
+    _id: `package.${p.slug}`,
+    _type: "package",
+    name: p.name,
+    slug: { _type: "slug", current: p.slug },
+    category: p.category,
+    includes: p.includes,
+    ...(p.price ? { price: p.price } : {}),
+    ...(p.concernSlug ? { concernSlug: p.concernSlug } : {}),
+    order: p.order,
+    enabled: true,
+  }));
+}
+
 // ---- run -------------------------------------------------------------------
 
 async function commit(label: string, docs: object[]) {
@@ -430,6 +448,13 @@ async function main() {
   // Targeted, NON-destructive mode: patch only the `specialty` field on each
   // existing doctor doc. Uses .patch().set() (not createOrReplace) so it does
   // NOT touch portraits or any other Studio-edited fields.
+  if (only === "packages") {
+    console.log("Treatment packages only…");
+    await commit("packages", buildPackages());
+    console.log("\n✓ Packages seed complete.");
+    return;
+  }
+
   if (only === "doctor-specialty") {
     console.log("Patching doctor.specialty (non-destructive)…");
     let tx = client.transaction();
@@ -463,6 +488,7 @@ async function main() {
   const heroSlides = await buildHeroSlides();
   await commit("hero slides", heroSlides);
 
+  await commit("packages", buildPackages());
   await commit("testimonials / faqs / eeat / trust", buildSimpleDocs());
   await commit("singletons (clinic / site / announcement)", buildSingletons());
 

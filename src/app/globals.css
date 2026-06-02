@@ -3410,3 +3410,68 @@ p { margin: 0; color: var(--muted); }
   }
 }
 
+/* =========================================================
+   Treatment packages — /packages + concern page sections
+   ========================================================= */
+.pkg-cat { margin-bottom: 56px; scroll-margin-top: 110px; }
+.pkg-cat:last-child { margin-bottom: 0; }
+.pkg-cat-title {
+  font-size: 26px;
+  margin: 0 0 24px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--line);
+  color: var(--ink);
+}
+.pkg-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 20px;
+}
+.pkg-card {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  background: var(--cream);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 24px;
+  transition: all .25s var(--ease);
+}
+.pkg-card:hover {
+  border-color: var(--tan);
+  box-shadow: 0 14px 36px -18px rgba(40, 40, 20, .35);
+  transform: translateY(-2px);
+}
+.pkg-card-top { flex: 1; }
+.pkg-card-name {
+  font-size: 18px;
+  line-height: 1.3;
+  margin: 0 0 8px;
+  color: var(--ink);
+}
+.pkg-card-includes {
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--muted);
+  margin: 0;
+}
+.pkg-card-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding-top: 16px;
+  border-top: 1px solid var(--line);
+}
+.pkg-card-price { font-size: 16px; font-weight: 600; color: var(--sage); }
+.pkg-card-price-muted { font-size: 13px; font-weight: 500; color: var(--muted); }
+.pkg-card-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--tan);
+}
+.pkg-card-link:hover { color: var(--sage); }
+.btn-sm { padding: 9px 18px; font-size: 13px; }
+

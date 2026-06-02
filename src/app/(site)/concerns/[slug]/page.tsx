@@ -6,9 +6,11 @@ import BookButton from "@/components/BookButton";
 import FaqItem from "@/components/FaqItem";
 import { type Concern } from "@/data/concerns";
 import { PROCEDURE_BY_SLUG, type Procedure } from "@/data/procedures";
+import { type TreatmentPackage } from "@/data/packages";
 import {
   getConcernBySlug,
   getConcernSlugs,
+  getPackagesByConcern,
   getProcedureBySlug,
 } from "@/sanity/lib/fetchers";
 
@@ -51,15 +53,25 @@ export default async function ConcernPage({
     if (resolved) relatedProcedures.push(resolved);
   }
 
-  return <ConcernDetail c={c} relatedProcedures={relatedProcedures} />;
+  const packages = await getPackagesByConcern(slug);
+
+  return (
+    <ConcernDetail
+      c={c}
+      relatedProcedures={relatedProcedures}
+      packages={packages}
+    />
+  );
 }
 
 function ConcernDetail({
   c,
   relatedProcedures,
+  packages,
 }: {
   c: Concern;
   relatedProcedures: Procedure[];
+  packages: TreatmentPackage[];
 }) {
   // FAQPage JSON-LD for Google rich snippets (EEAT).
   const jsonLd = {
@@ -250,6 +262,46 @@ function ConcernDetail({
       </section>
 
       {/* Related Procedures */}
+      {packages.length > 0 && (
+        <section className="section" style={{ background: "var(--cream-2)" }}>
+          <div className="container">
+            <div className="eyebrow" style={{ marginBottom: 18 }}>
+              Packages for this concern
+            </div>
+            <h2 style={{ marginBottom: 40 }}>Curated treatment packages.</h2>
+            <div className="pkg-grid">
+              {packages.map((p) => (
+                <div key={p.slug} className="pkg-card">
+                  <div className="pkg-card-top">
+                    <h3 className="pkg-card-name">{p.name}</h3>
+                    {p.includes && (
+                      <p className="pkg-card-includes">{p.includes}</p>
+                    )}
+                  </div>
+                  <div className="pkg-card-foot">
+                    {p.price ? (
+                      <span className="pkg-card-price">{p.price}</span>
+                    ) : (
+                      <span className="pkg-card-price pkg-card-price-muted">
+                        Price on consult
+                      </span>
+                    )}
+                    <BookButton className="btn btn-ghost btn-sm" withArrow={false}>
+                      Enquire
+                    </BookButton>
+                  </div>
+                </div>
+              ))}
+            </div>
+            <div style={{ marginTop: 28 }}>
+              <Link className="proc-card-link" href="/packages">
+                See all packages <ArrowRight size={14} />
+              </Link>
+            </div>
+          </div>
+        </section>
+      )}
+
       {relatedProcedures.length > 0 && (
         <section className="section">
           <div className="container">

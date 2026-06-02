@@ -135,6 +135,12 @@ export default function Navbar() {
           </div>
 
           <div className="nav-item">
+            <Link className="nav-link" href="/packages">
+              Packages
+            </Link>
+          </div>
+
+          <div className="nav-item">
             <Link className="nav-link has-dd" href="/doctors">
               Doctors
             </Link>

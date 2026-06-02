@@ -18,6 +18,7 @@ import {
 } from "./singletons";
 import { doctorSchema } from "./doctor";
 import { heroSlideSchema } from "./heroSlide";
+import { packageSchema } from "./package";
 import { resultSchema } from "./result";
 import { procedureSchema } from "./procedure";
 import { concernSchema } from "./concern";
@@ -50,6 +51,7 @@ export const schemaTypes = [
   announcementBarSchema,
   // Documents
   heroSlideSchema,
+  packageSchema,
   procedureSchema,
   concernSchema,
   doctorSchema,

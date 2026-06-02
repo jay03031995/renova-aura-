@@ -25,6 +25,13 @@ export const announcementQuery = /* groq */ `
   *[_type == "announcementBar"][0]{ enabled, message, linkLabel, linkUrl }
 `;
 
+export const packagesQuery = /* groq */ `
+  *[_type == "package" && enabled != false] | order(order asc, name asc){
+    "slug": slug.current,
+    name, category, includes, price, concernSlug, order
+  }
+`;
+
 export const heroSlidesQuery = /* groq */ `
   *[_type == "heroSlide" && enabled != false] | order(order asc, _createdAt asc){
     eyebrow, headlineLine1, headlineLine2, subtitle,
