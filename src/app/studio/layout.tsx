@@ -1,7 +1,7 @@
 import type { Metadata, Viewport } from "next";
 
 export const metadata: Metadata = {
-  title: "Dermaheal Admin",
+  title: "RenovaAura Admin",
   robots: { index: false, follow: false },
 };
 

@@ -21,7 +21,7 @@ const Studio = dynamic(() => import("./Studio"), {
         color: "#42301f",
       }}
     >
-      Loading Dermaheal admin…
+      Loading RenovaAura admin…
     </div>
   ),
 });
