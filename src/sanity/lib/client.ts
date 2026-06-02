@@ -11,6 +11,13 @@ const baseConfig: ClientConfig = {
   useCdn: false,
   perspective: "published",
   stega: false,
+  // The dataset is private (it also holds appointment/lead PII), so public
+  // reads return nothing without auth. All site fetches run server-side, so
+  // we attach the server-only token here. It is NOT bundled to the browser —
+  // non-NEXT_PUBLIC env vars resolve to undefined client-side — so the
+  // dataset stays private and the token never leaks. Requires
+  // SANITY_API_TOKEN to be set on the host (e.g. Vercel) in production.
+  token: process.env.SANITY_API_TOKEN,
 };
 
 /**
