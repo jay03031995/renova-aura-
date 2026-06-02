@@ -134,6 +134,7 @@ const doctorCardProjection = /* groq */ `
   name,
   "slug": slug.current,
   title,
+  specialty,
   imageVariant,
   years,
   focusLine,

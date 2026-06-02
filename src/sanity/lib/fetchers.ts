@@ -94,6 +94,7 @@ type SanityDoctor = {
   name: string;
   slug: string;
   title: string;
+  specialty?: string;
   imageVariant?: string;
   years?: number;
   focusLine?: string;
@@ -119,6 +120,7 @@ function mapDoctor(d: SanityDoctor): DoctorFetched {
     slug: d.slug,
     name: d.name,
     title: d.title,
+    specialty: d.specialty ?? "",
     img: d.imageVariant ?? "d1",
     focus: d.focusLine ?? "",
     years: d.years ?? 0,

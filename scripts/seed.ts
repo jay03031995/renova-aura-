@@ -198,6 +198,7 @@ async function buildDoctors() {
         name: d.name,
         slug: { _type: "slug", current: d.slug },
         title: d.title,
+        specialty: d.specialty,
         imageVariant: d.img,
         portrait,
         years: d.years,
@@ -423,6 +424,26 @@ async function main() {
     console.log("Hero slides only (uploading images)…");
     await commit("hero slides", await buildHeroSlides());
     console.log("\n✓ Hero seed complete.");
+    return;
+  }
+
+  // Targeted, NON-destructive mode: patch only the `specialty` field on each
+  // existing doctor doc. Uses .patch().set() (not createOrReplace) so it does
+  // NOT touch portraits or any other Studio-edited fields.
+  if (only === "doctor-specialty") {
+    console.log("Patching doctor.specialty (non-destructive)…");
+    let tx = client.transaction();
+    for (const d of DOCTORS) {
+      tx = tx.patch(`doctor.${d.slug}`, (p) =>
+        p.set({ specialty: d.specialty }),
+      );
+    }
+    await tx.commit({ visibility: "async" });
+    console.log(
+      `  ✓ specialty set on ${DOCTORS.length} doctors: ` +
+        DOCTORS.map((d) => `${d.slug}=${d.specialty}`).join(", "),
+    );
+    console.log("\n✓ Doctor specialty patch complete.");
     return;
   }
 

@@ -2,6 +2,7 @@ export type Doctor = {
   slug: string;
   name: string;
   title: string;
+  specialty: string; // short badge label (e.g. "Dermatology", "Plastic Surgery")
   img: string; // d1 | d2 | d3 — variant identifier for placeholder gradient
   /**
    * Optional local portrait path (e.g. "/images/doctors/bhawna-bhardwaj.jpg").
@@ -39,6 +40,7 @@ export const DOCTORS: Doctor[] = [
     slug: "bhawna-bhardwaj",
     name: "Dr. Bhawna Bhardwaj",
     title: "Senior Consultant Dermatologist & Hair Transplant Surgeon",
+    specialty: "Dermatology",
     img: "d1",
     photo: "/images/doctors/bhawna-bhardwaj.jpg",
     focus: "Dermatology · Hair Transplant",
@@ -153,6 +155,7 @@ export const DOCTORS: Doctor[] = [
     slug: "ankur-bhatia",
     name: "Dr. Ankur Bhatia",
     title: "Consultant Plastic & Reconstructive Microsurgeon",
+    specialty: "Plastic Surgery",
     img: "d2",
     photo: "/images/doctors/ankur-bhatia.jpg",
     focus: "Plastic Surgery · Microsurgery",

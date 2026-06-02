@@ -66,6 +66,14 @@ export const doctorSchema = defineType({
     }),
     // Listing
     defineField({
+      name: "specialty",
+      title: "Specialty (badge)",
+      type: "string",
+      group: "listing",
+      description:
+        'Short label shown in the photo badge on the homepage + doctors listing. e.g. "Dermatology", "Plastic Surgery".',
+    }),
+    defineField({
       name: "shortLine",
       title: "Listing eyebrow line",
       type: "string",

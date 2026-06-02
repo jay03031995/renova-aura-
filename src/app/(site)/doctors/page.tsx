@@ -68,7 +68,7 @@ export default async function DoctorsPage() {
                   <div className="doc-badge-icon">MD</div>
                   <div>
                     <div className="doc-badge-label">Specialty</div>
-                    <div className="doc-badge-val">Dermatology</div>
+                    <div className="doc-badge-val">{d.specialty}</div>
                   </div>
                 </div>
                 <div
