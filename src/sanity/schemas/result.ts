@@ -53,7 +53,7 @@ export const resultSchema = defineType({
       name: "treatment",
       title: "Related treatment",
       type: "reference",
-      to: [{ type: "treatment" }],
+      to: [{ type: "procedure" }],
       group: "clinical",
       description: "Linking a treatment lets us cross-promote between the gallery and treatment pages.",
     }),
