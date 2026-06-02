@@ -8,11 +8,17 @@ import RevealInit from "@/components/RevealInit";
 import { CLINIC } from "@/data/clinic";
 
 /**
- * Safety-net revalidation: every page under (site)/ re-renders at most once
- * per 60 seconds, picking up Sanity edits automatically. For instant updates,
- * Sanity's webhook hits /api/revalidate which calls revalidateTag("sanity").
+ * No-cache / always-fresh: every page under (site)/ is rendered dynamically
+ * on each request, so any edit published in Sanity Studio is live immediately
+ * with no caching and no manual "Refresh website" step. `force-dynamic` is
+ * equivalent to setting every fetch to `{ cache: "no-store" }` (see Next 16
+ * "Caching and Revalidating — Previous Model" docs).
+ *
+ * Tradeoff: pages are server-rendered per visit (no static generation), so
+ * each request hits the Sanity API. The /api/revalidate webhook + manual
+ * refresh button are kept as harmless no-ops / safety nets.
  */
-export const revalidate = 60;
+export const dynamic = "force-dynamic";
 
 const jsonLd = {
   "@context": "https://schema.org",

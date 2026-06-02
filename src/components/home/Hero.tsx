@@ -32,7 +32,11 @@ type Slide = {
   imageAlt: string;
 };
 
-const SLIDES: Slide[] = [
+/**
+ * Built-in fallback slides. Used when Sanity has no hero slides (or is
+ * unreachable). When Sanity is seeded, the `slides` prop overrides these.
+ */
+const FALLBACK_SLIDES: Slide[] = [
   {
     eyebrow: "Hair Transplant Specialists",
     headline: { line1: "Restore your hair,", line2: "restore your confidence" },
@@ -67,21 +71,25 @@ const SLIDES: Slide[] = [
     secondaryHref: "/results",
     secondaryLabel: "See Results",
     image:
-      "https://images.unsplash.com/photo-1614859275206-fbcb27e57057?w=1600&q=80",
+      "https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?w=1600&q=80",
     imageAlt: "Patient receiving a precision facial aesthetic treatment",
   },
 ];
 
 const AUTO_ADVANCE_MS = 7000;
 
-export default function Hero() {
+export default function Hero({ slides }: { slides?: Slide[] }) {
+  const SLIDES = slides && slides.length > 0 ? slides : FALLBACK_SLIDES;
   const { open } = useBooking();
   const [index, setIndex] = useState(0);
   const [paused, setPaused] = useState(false);
 
-  const goTo = useCallback((i: number) => {
-    setIndex(((i % SLIDES.length) + SLIDES.length) % SLIDES.length);
-  }, []);
+  const goTo = useCallback(
+    (i: number) => {
+      setIndex(((i % SLIDES.length) + SLIDES.length) % SLIDES.length);
+    },
+    [SLIDES.length],
+  );
 
   const next = useCallback(() => goTo(index + 1), [index, goTo]);
   const prev = useCallback(() => goTo(index - 1), [index, goTo]);

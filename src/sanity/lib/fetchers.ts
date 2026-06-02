@@ -21,6 +21,7 @@ import {
   doctorSlugsQuery,
   doctorsQuery,
   eeatPillarsQuery,
+  heroSlidesQuery,
   homepageFaqsQuery,
   procedureBySlugQuery,
   procedureSlugsQuery,
@@ -74,8 +75,11 @@ function isFilled<T>(v: T | null | undefined): v is T {
 async function safeFetch<T>(query: string, params?: Record<string, unknown>) {
   if (!sanityEnabled) return null;
   try {
+    // No caching — every fetch goes straight to Sanity so published edits
+    // are live immediately. The (site) layout is also force-dynamic; this
+    // also covers fetches outside it (metadata, sitemap, redirects).
     return await client.fetch<T>(query, params ?? {}, {
-      next: { tags: ["sanity"], revalidate: 60 },
+      cache: "no-store",
     });
   } catch (e) {
     console.warn("[sanity] fetch failed, falling back to local data:", e);
@@ -275,6 +279,52 @@ export async function getSiteSettings(): Promise<SiteSettingsData> {
     defaultMetaDescription: doc.defaultMetaDescription,
     defaultOgImageUrl: doc.defaultOgImage?.url,
   };
+}
+
+// ----- Hero carousel --------------------------------------------------------
+
+export type HeroSlideData = {
+  eyebrow: string;
+  headline: { line1: string; line2: string };
+  subtitle: string;
+  ctaLabel: string;
+  secondaryHref: string;
+  secondaryLabel: string;
+  image: string;
+  imageAlt: string;
+};
+
+type SanityHeroSlide = {
+  eyebrow?: string;
+  headlineLine1?: string;
+  headlineLine2?: string;
+  subtitle?: string;
+  ctaLabel?: string;
+  secondaryHref?: string;
+  secondaryLabel?: string;
+  image?: string;
+  imageAlt?: string;
+};
+
+/**
+ * Hero carousel slides from Sanity. Returns `null` when Sanity is empty or
+ * unreachable so the Hero component renders its built-in fallback slides.
+ */
+export async function getHeroSlides(): Promise<HeroSlideData[] | null> {
+  const docs = await safeFetch<SanityHeroSlide[]>(heroSlidesQuery);
+  if (!isFilled(docs)) return null;
+  return docs
+    .filter((d) => d.image && d.headlineLine1)
+    .map((d) => ({
+      eyebrow: d.eyebrow ?? "",
+      headline: { line1: d.headlineLine1 ?? "", line2: d.headlineLine2 ?? "" },
+      subtitle: d.subtitle ?? "",
+      ctaLabel: d.ctaLabel ?? "Book Appointment",
+      secondaryHref: d.secondaryHref ?? "/procedures",
+      secondaryLabel: d.secondaryLabel ?? "Explore Services",
+      image: d.image as string,
+      imageAlt: d.imageAlt ?? "",
+    }));
 }
 
 // ----- Homepage strings -----------------------------------------------------

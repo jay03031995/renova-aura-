@@ -334,6 +334,76 @@ function buildSingletons() {
   return [clinicSettings, siteSettings, announcementBar];
 }
 
+// ---- hero carousel ---------------------------------------------------------
+
+/** Mirrors the FALLBACK_SLIDES in src/components/home/Hero.tsx. */
+const HERO_SLIDES = [
+  {
+    eyebrow: "Hair Transplant Specialists",
+    headlineLine1: "Restore your hair,",
+    headlineLine2: "restore your confidence",
+    subtitle:
+      "Board-certified surgeons. FUE, DHI, FUT — natural, permanent results.",
+    ctaLabel: "Book Appointment",
+    secondaryHref: "/procedures/hair-transplant",
+    secondaryLabel: "Hair Transplant",
+    image:
+      "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?w=1600&q=80",
+    imageAlt:
+      "Surgeon performing a hair transplant procedure in a modern clinic",
+  },
+  {
+    eyebrow: "Plastic Surgery Excellence",
+    headlineLine1: "Sculpt the you,",
+    headlineLine2: "you imagine",
+    subtitle:
+      "Rhinoplasty, facelift, blepharoplasty — refined results, never overdone.",
+    ctaLabel: "Book Appointment",
+    secondaryHref: "/procedures/plastic-surgery",
+    secondaryLabel: "Plastic Surgery",
+    image:
+      "https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=1600&q=80",
+    imageAlt: "Clinic consultation room with patient and aesthetic surgeon",
+  },
+  {
+    eyebrow: "Medical Excellence",
+    headlineLine1: "Real results,",
+    headlineLine2: "lasting beauty",
+    subtitle:
+      "Backed by clinical evidence. Designed for natural-looking outcomes.",
+    ctaLabel: "Book Appointment",
+    secondaryHref: "/results",
+    secondaryLabel: "See Results",
+    image:
+      "https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?w=1600&q=80",
+    imageAlt: "Patient receiving a precision facial aesthetic treatment",
+  },
+];
+
+async function buildHeroSlides() {
+  const docs = [];
+  for (let i = 0; i < HERO_SLIDES.length; i++) {
+    const s = HERO_SLIDES[i];
+    const image = await uploadFromUrl(s.image);
+    docs.push({
+      _id: `heroSlide.${i}`,
+      _type: "heroSlide",
+      eyebrow: s.eyebrow,
+      headlineLine1: s.headlineLine1,
+      headlineLine2: s.headlineLine2,
+      subtitle: s.subtitle,
+      ctaLabel: s.ctaLabel,
+      secondaryHref: s.secondaryHref,
+      secondaryLabel: s.secondaryLabel,
+      ...(image ? { image } : {}),
+      imageAlt: s.imageAlt,
+      order: i,
+      enabled: true,
+    });
+  }
+  return docs;
+}
+
 // ---- run -------------------------------------------------------------------
 
 async function commit(label: string, docs: object[]) {
@@ -346,6 +416,16 @@ async function commit(label: string, docs: object[]) {
 async function main() {
   console.log(`Seeding Sanity → project ${projectId}, dataset ${dataset}\n`);
 
+  // Targeted mode: `npx tsx scripts/seed.ts hero` seeds only the hero
+  // carousel, leaving every other (possibly Studio-edited) document intact.
+  const only = process.argv[2];
+  if (only === "hero") {
+    console.log("Hero slides only (uploading images)…");
+    await commit("hero slides", await buildHeroSlides());
+    console.log("\n✓ Hero seed complete.");
+    return;
+  }
+
   console.log("Procedures (uploading images)…");
   const procedures = await buildProcedures();
   await commit("procedures", procedures);
@@ -357,6 +437,10 @@ async function main() {
   console.log("Doctors (uploading portraits)…");
   const doctors = await buildDoctors();
   await commit("doctors", doctors);
+
+  console.log("Hero slides (uploading images)…");
+  const heroSlides = await buildHeroSlides();
+  await commit("hero slides", heroSlides);
 
   await commit("testimonials / faqs / eeat / trust", buildSimpleDocs());
   await commit("singletons (clinic / site / announcement)", buildSingletons());

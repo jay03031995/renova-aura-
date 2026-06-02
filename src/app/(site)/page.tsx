@@ -1,4 +1,5 @@
 import Hero from "@/components/home/Hero";
+import { getHeroSlides } from "@/sanity/lib/fetchers";
 import TrustStrip from "@/components/home/TrustStrip";
 import ToolsBanner from "@/components/home/ToolsBanner";
 import HairTransplantFocus from "@/components/home/HairTransplantFocus";
@@ -21,10 +22,11 @@ import Contact from "@/components/home/Contact";
  * section, skin concerns is the dermatology pillar, then doctors / FAQ /
  * contact build EEAT trust.
  */
-export default function Home() {
+export default async function Home() {
+  const heroSlides = await getHeroSlides();
   return (
     <>
-      <Hero />
+      <Hero slides={heroSlides ?? undefined} />
       <TrustStrip />
       <ToolsBanner />
       <HairTransplantFocus />

@@ -17,6 +17,7 @@ import {
   siteSettingsSchema,
 } from "./singletons";
 import { doctorSchema } from "./doctor";
+import { heroSlideSchema } from "./heroSlide";
 import { resultSchema } from "./result";
 import { procedureSchema } from "./procedure";
 import { concernSchema } from "./concern";
@@ -48,6 +49,7 @@ export const schemaTypes = [
   siteSettingsSchema,
   announcementBarSchema,
   // Documents
+  heroSlideSchema,
   procedureSchema,
   concernSchema,
   doctorSchema,

@@ -146,6 +146,9 @@ export const structure = (S: StructureBuilder) =>
           .child(S.document().schemaType(type).documentId(type)),
       ),
       S.divider(),
+      // Homepage hero carousel
+      S.documentTypeListItem("heroSlide").title("🖼️ Hero slides"),
+      S.divider(),
       // Procedures pillar — hair transplant + plastic surgery
       S.listItem()
         .title("💆 Procedures")

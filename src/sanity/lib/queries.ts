@@ -25,6 +25,15 @@ export const announcementQuery = /* groq */ `
   *[_type == "announcementBar"][0]{ enabled, message, linkLabel, linkUrl }
 `;
 
+export const heroSlidesQuery = /* groq */ `
+  *[_type == "heroSlide" && enabled != false] | order(order asc, _createdAt asc){
+    eyebrow, headlineLine1, headlineLine2, subtitle,
+    ctaLabel, secondaryLabel, secondaryHref,
+    "image": image.asset->url,
+    imageAlt
+  }
+`;
+
 const seoProjection = /* groq */ `
   seo{ title, description, canonicalUrl, noIndex,
     "ogImage": ogImage.asset->{_id, url}
