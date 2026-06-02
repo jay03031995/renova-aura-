@@ -26,17 +26,17 @@ export const RESULTS: Result[] = [
 export const RESULT_CATS = ["All", "Acne Scars", "Pigmentation", "Hair Loss", "Anti-Ageing"];
 
 export const TESTIMONIALS = [
-  { q: "I had tried multiple clinics for my melasma before Dermaheal. Dr. Arora actually explained what was happening to my skin and built a plan around it. Three months in, the difference is undeniable.", name: "Meera Sharma", detail: "Cosmelan Program · Dwarka" },
-  { q: "What stood out was the honesty in the consultation. They talked me out of one treatment I'd asked for because it wasn't right for me. That kind of integrity is rare in aesthetics.", name: "Karthik Verma", detail: "Acne Management · Dwarka" },
-  { q: "Six sessions of Hair PRP and the regrowth speaks for itself. The team genuinely cares, every follow-up was unhurried and detailed.", name: "Ananya Singh", detail: "Hair PRP · Dwarka" },
+  { q: "I had tried multiple clinics for my melasma before RenovaAura. Dr. Arora actually explained what was happening to my skin and built a plan around it. Three months in, the difference is undeniable.", name: "Meera Sharma", detail: "Cosmelan Program · Anand Vihar" },
+  { q: "What stood out was the honesty in the consultation. They talked me out of one treatment I'd asked for because it wasn't right for me. That kind of integrity is rare in aesthetics.", name: "Karthik Verma", detail: "Acne Management · Anand Vihar" },
+  { q: "Six sessions of Hair PRP and the regrowth speaks for itself. The team genuinely cares, every follow-up was unhurried and detailed.", name: "Ananya Singh", detail: "Hair PRP · Anand Vihar" },
 ];
 
 export const FAQS = [
   { q: "Are your treatments safe for Indian skin tones?", a: "Yes. Every laser, peel and injectable we offer is calibrated for higher-melanin skin. Our protocols are developed in-house and our dermatologists are trained specifically on Indian skin types. If a treatment isn't safe for your skin, we'll tell you and recommend a better-suited alternative." },
   { q: "What does a first consultation include?", a: "A one-on-one session with one of our MD dermatologists. We assess your skin or hair concern, discuss medical history, and share a written treatment plan with realistic timelines. There is no obligation to book any procedure." },
   { q: "How is the cost of a treatment determined?", a: "Your dermatologist shares a complete, itemised plan during your consultation once your skin has been assessed. Plans are shared before any treatment begins, never high-pressure, never surprise-billed. We are happy to share an estimate range on WhatsApp before you book." },
-  { q: "Where is Dermaheal located?", a: "Dermaheal Skin & Hair Clinic is at C-712, Ramphal Chowk, Block D, Sector 7 Dwarka, near Shiksha Bharti School, New Delhi 110075. We are easily reachable from across West Delhi and Gurgaon." },
-  { q: "What are your clinic hours?", a: "Monday to Saturday, 10:00 AM to 7:30 PM. Sunday, 10:00 AM to 7:00 PM. Same-day slots are usually available, call +91 80809 10191 or WhatsApp us to check availability." },
+  { q: "Where is RenovaAura located?", a: "RenovaAura is at First Floor, Plot No C/3, Block B, Surya Niketan, Anand Vihar, New Delhi 110092. We are easily reachable from across East Delhi, Noida and Ghaziabad." },
+  { q: "What are your clinic hours?", a: "Monday to Saturday, 10:00 AM to 7:30 PM. Sunday by appointment. Same-day slots are usually available — call or WhatsApp us to check availability." },
   { q: "What is the typical downtime after a treatment?", a: "Most of our treatments, medifacials, chemical peels, laser toning, IPL, have zero downtime. MNRF, thread lifts and certain laser procedures have 3 to 7 days of social downtime. We always tell you what to expect and plan the procedure around your schedule." },
 ];
 

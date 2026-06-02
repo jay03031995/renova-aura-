@@ -9,6 +9,6 @@ export default function robots(): MetadataRoute.Robots {
         disallow: ["/api/", "/admin/"],
       },
     ],
-    sitemap: "https://dermaheal.co.in/sitemap.xml",
+    sitemap: "https://renovaaura.com/sitemap.xml",
   };
 }

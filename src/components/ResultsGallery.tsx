@@ -30,7 +30,7 @@ export default function ResultsGallery({ results }: { results: ResultFetched[] }
             <div className="tp-ba-frame">
               <img
                 src={r.imageUrl || r.img}
-                alt={`${r.name} before and after at Dermaheal`}
+                alt={`${r.name} before and after at RenovaAura`}
               />
               <div className="tp-ba-pill-row">
                 <span className="tp-ba-pill">Before</span>

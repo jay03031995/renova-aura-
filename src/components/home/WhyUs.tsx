@@ -9,7 +9,7 @@ export default async function WhyUs() {
         <div className="why-grid">
           <div className="why-visual reveal">
             <div className="why-img main">
-              <div className="why-tag">Procedure Room, Dwarka Clinic</div>
+              <div className="why-tag">Procedure Room, Anand Vihar Clinic</div>
             </div>
             <div className="why-img sub" />
             <div className="why-stat">
@@ -21,7 +21,7 @@ export default async function WhyUs() {
           </div>
           <div className="reveal">
             <div className="eyebrow" style={{ marginBottom: 16 }}>
-              The Dermaheal standard · EEAT
+              The RenovaAura standard · EEAT
             </div>
             <h2 style={{ marginBottom: 38 }}>
               Four pillars behind every treatment we perform.

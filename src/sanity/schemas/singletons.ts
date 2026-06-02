@@ -46,7 +46,7 @@ export const siteSettingsSchema = defineType({
   fields: [
     defineField({ name: "siteUrl", title: "Site URL", type: "url", group: "seo", description: "Used as base URL for canonicals, sitemap and metadataBase." }),
     defineField({ name: "defaultMetaTitle", title: "Default meta title", type: "string", group: "seo" }),
-    defineField({ name: "titleTemplate", title: "Title template", type: "string", group: "seo", description: "Use %s as placeholder, e.g. '%s — Dermaheal'." }),
+    defineField({ name: "titleTemplate", title: "Title template", type: "string", group: "seo", description: "Use %s as placeholder, e.g. '%s — RenovaAura'." }),
     defineField({ name: "defaultMetaDescription", title: "Default meta description", type: "text", rows: 3, group: "seo" }),
     defineField({
       name: "defaultOgImage",

@@ -1,14 +1,14 @@
 import type { Metadata } from "next";
-import { ArrowRight, MapPin, Phone } from "@/components/icons";
+import { MapPin, Phone } from "@/components/icons";
 import { CLINIC } from "@/data/clinic";
 import BookButton from "@/components/BookButton";
 import ResultsGallery from "@/components/ResultsGallery";
 import { getResults } from "@/sanity/lib/fetchers";
 
 export const metadata: Metadata = {
-  title: "Patient Results — Before & After at Dermaheal Dwarka",
+  title: "Patient Results — Before & After at RenovaAura",
   description:
-    "Real patient results from Dermaheal Skin & Hair Clinic, Dwarka — acne scars, pigmentation, hair loss and anti-ageing protocols. Photographed and shared with consent.",
+    "Real patient results from RenovaAura, Anand Vihar, New Delhi — acne scars, pigmentation, hair loss and anti-ageing protocols. Photographed and shared with consent.",
   alternates: { canonical: "/results" },
 };
 
@@ -66,20 +66,6 @@ export default async function ResultsPage() {
           </div>
 
           <ResultsGallery results={results} />
-
-          <div style={{ textAlign: "center", marginTop: 44 }}>
-            <a
-              className="btn btn-ghost"
-              href="https://dermaheal.co.in/patient-gallery.html"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Browse the full archive at dermaheal.co.in{" "}
-              <span className="arrow">
-                <ArrowRight />
-              </span>
-            </a>
-          </div>
         </div>
       </section>
 
@@ -103,7 +89,7 @@ export default async function ResultsPage() {
               <Phone /> {CLINIC.phone2}
             </span>
             <span>
-              <MapPin /> Dwarka, New Delhi
+              <MapPin /> Anand Vihar, New Delhi
             </span>
           </div>
         </div>

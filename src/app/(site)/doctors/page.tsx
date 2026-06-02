@@ -5,9 +5,9 @@ import { ArrowRight } from "@/components/icons";
 import BookButton from "@/components/BookButton";
 
 export const metadata: Metadata = {
-  title: "Our Doctors — MD Dermatologists in Dwarka",
+  title: "Our Doctors — MD Dermatologists in Anand Vihar",
   description:
-    "Meet the dermatology team at Dermaheal Skin & Hair Clinic, Dwarka. Three MD dermatologists with subspecialties in cosmetic dermatology, aesthetics and lasers.",
+    "Meet the dermatology team at RenovaAura, Anand Vihar, New Delhi. Three MD dermatologists with subspecialties in cosmetic dermatology, aesthetics and lasers.",
   alternates: { canonical: "/doctors" },
 };
 
@@ -36,7 +36,7 @@ export default async function DoctorsPage() {
             <em>One philosophy of care.</em>
           </h1>
           <p>
-            Every procedure at Dermaheal is performed personally by a
+            Every procedure at RenovaAura is performed personally by a
             board-certified MD dermatologist, never delegated. The same doctor
             sees you from consultation through follow-up.
           </p>

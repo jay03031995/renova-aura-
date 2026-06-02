@@ -22,11 +22,11 @@ export async function generateMetadata(props: {
   const d = await getDoctorBySlug(slug);
   if (!d) return { title: "Doctor Not Found" };
   return {
-    title: `${d.name} — ${d.title}, Dermaheal`,
+    title: `${d.name} — ${d.title}, RenovaAura`,
     description: d.detailBio,
     alternates: { canonical: `/doctors/${slug}` },
     openGraph: {
-      title: `${d.name} — ${d.title} · Dermaheal`,
+      title: `${d.name} — ${d.title} · RenovaAura`,
       description: d.detailBio,
       images: d.imageUrl ? [d.imageUrl] : undefined,
     },
@@ -171,7 +171,7 @@ export default async function DoctorDetailPage(props: {
           <div className="dp-head">
             <div className="eyebrow">Treatments performed</div>
             <h2>
-              What {firstName} {middle} does at Dermaheal.
+              What {firstName} {middle} does at RenovaAura.
             </h2>
           </div>
           <div className="dp-treats">
@@ -214,7 +214,7 @@ export default async function DoctorDetailPage(props: {
         <div className="container">
           <div className="dp-head">
             <div className="eyebrow">Meet the team</div>
-            <h2>Other dermatologists at Dermaheal.</h2>
+            <h2>Other dermatologists at RenovaAura.</h2>
           </div>
           <div className="dp-others">
             {others.map((o) => (
@@ -254,7 +254,7 @@ export default async function DoctorDetailPage(props: {
           </h2>
           <p>
             A one-on-one assessment, a written treatment plan, and honest
-            guidance, that&apos;s how every appointment at Dermaheal begins.
+            guidance, that&apos;s how every appointment at RenovaAura begins.
           </p>
           <BookButton>Book Appointment</BookButton>
         </div>

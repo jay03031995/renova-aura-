@@ -27,7 +27,7 @@ export default async function DoctorsSection() {
             </h2>
           </div>
           <p>
-            Every procedure at Dermaheal is performed by an MD dermatologist,
+            Every procedure at RenovaAura is performed by an MD dermatologist,
             never delegated. The same doctor sees you from consultation through
             follow-up.
           </p>
