@@ -1,17 +1,59 @@
 import Link from "next/link";
-import { CLINIC, waHref } from "@/data/clinic";
+import { CLINIC, telHref, waHref } from "@/data/clinic";
 import { FOOTER_LINKS } from "@/data/site";
 import {
   InstagramIcon,
   YoutubeIcon,
   LinkedinIcon,
   WhatsappFilled,
+  Phone,
+  MapPin,
+  Calendar,
 } from "@/components/icons";
+import BookButton from "@/components/BookButton";
+import FooterAccordion from "@/components/FooterAccordion";
+
+const mapsUrl = `https://www.google.com/maps?q=${CLINIC.mapsQuery}`;
 
 export default function Footer() {
   return (
     <footer className="footer">
       <div className="container">
+        {/* Mobile quick actions (phone only) */}
+        <div className="footer-actions">
+          <a className="footer-action" href={telHref()} aria-label="Call the clinic">
+            <Phone size={18} />
+            <span>Call</span>
+          </a>
+          <a
+            className="footer-action"
+            href={waHref("Hi RenovaAura, I'd like to ask about a treatment.")}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Chat on WhatsApp"
+          >
+            <WhatsappFilled />
+            <span>WhatsApp</span>
+          </a>
+          <a
+            className="footer-action"
+            href={mapsUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Get directions"
+          >
+            <MapPin size={18} />
+            <span>Directions</span>
+          </a>
+          <BookButton
+            className="footer-action footer-action-book"
+            withArrow={false}
+          >
+            <Calendar />
+            <span>Book</span>
+          </BookButton>
+        </div>
+
         <div className="footer-grid">
           <div>
             <Link href="/" className="logo" aria-label={CLINIC.name}>
@@ -24,7 +66,14 @@ export default function Footer() {
               />
             </Link>
             <p className="footer-about">
-              {CLINIC.address}
+              <a
+                href={mapsUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="footer-address-link"
+              >
+                {CLINIC.address}
+              </a>
               <br />
               <br />
               {CLINIC.hours}
@@ -65,24 +114,7 @@ export default function Footer() {
             </div>
           </div>
 
-          {Object.entries(FOOTER_LINKS).map(([title, links]) => (
-            <div className="footer-col" key={title}>
-              <h5>{title}</h5>
-              <ul>
-                {links.map((l) => (
-                  <li key={l.label + l.href}>
-                    {l.href.startsWith("http") ? (
-                      <a href={l.href} target="_blank" rel="noopener noreferrer">
-                        {l.label}
-                      </a>
-                    ) : (
-                      <Link href={l.href}>{l.label}</Link>
-                    )}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
+          <FooterAccordion groups={FOOTER_LINKS} />
         </div>
 
         <div className="footer-bottom">

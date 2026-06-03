@@ -2,25 +2,39 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { CLINIC } from "@/data/clinic";
+import { CLINIC, telHref, waHref } from "@/data/clinic";
 import { DOCTORS } from "@/data/doctors";
 import {
   HAIR_PROCEDURES,
   PLASTIC_PROCEDURES,
 } from "@/data/procedures";
 import { CONCERNS } from "@/data/concerns";
-import { ArrowRight, Phone } from "@/components/icons";
+import { ArrowRight, Phone, WhatsappLine } from "@/components/icons";
 import BookButton from "@/components/BookButton";
+import { useBooking } from "@/components/BookingContext";
 
 /**
  * RenovaAura primary navigation.
  *
- * Two procedure pillars (Hair Transplant / Plastic Surgery) each get a
- * mega-menu dropdown listing the top 6 procedures by pillar plus a "see
- * all" link to the pillar listing page.
+ * Desktop: two procedure pillars (Hair Transplant / Plastic Surgery) plus
+ * Skin Concerns / Doctors get mega-menu dropdowns.
+ * Mobile (≤980px): the link bar is hidden and replaced by a WhatsApp quick
+ * link + a hamburger that opens a slide-in drawer with the full menu and
+ * tap actions.
  */
+const MOBILE_LINKS: { label: string; href: string }[] = [
+  { label: "Hair Transplant", href: "/procedures/hair-transplant" },
+  { label: "Plastic Surgery", href: "/procedures/plastic-surgery" },
+  { label: "Skin Concerns", href: "/concerns" },
+  { label: "Packages", href: "/packages" },
+  { label: "Doctors", href: "/doctors" },
+  { label: "Contact", href: "/#contact" },
+];
+
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const { open } = useBooking();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 8);
@@ -28,6 +42,21 @@ export default function Navbar() {
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
+
+  // Lock body scroll + close on Esc while the drawer is open.
+  useEffect(() => {
+    document.body.style.overflow = menuOpen ? "hidden" : "";
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setMenuOpen(false);
+    };
+    if (menuOpen) window.addEventListener("keydown", onKey);
+    return () => {
+      document.body.style.overflow = "";
+      window.removeEventListener("keydown", onKey);
+    };
+  }, [menuOpen]);
+
+  const closeMenu = () => setMenuOpen(false);
 
   const hairTop = HAIR_PROCEDURES.slice(0, 6);
   const plasticTop = PLASTIC_PROCEDURES.slice(0, 6);
@@ -165,9 +194,6 @@ export default function Navbar() {
             </div>
           </div>
 
-          {/* Results link hidden — /results page still shows dermaheal-era
-              patient photos with @DRNAVJOTARORA watermarks. Re-enable once
-              RenovaAura's own before/after gallery is uploaded via /studio. */}
           <Link className="nav-link" href="/#contact">
             Contact
           </Link>
@@ -179,7 +205,96 @@ export default function Navbar() {
           </span>
           <BookButton>Book Consultation</BookButton>
         </div>
+
+        {/* Mobile-only controls (≤980px) */}
+        <div className="nav-mobile-controls">
+          <a
+            className="nav-wa"
+            href={waHref("Hi RenovaAura, I'd like to ask about a treatment.")}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Chat on WhatsApp"
+          >
+            <WhatsappLine size={22} />
+          </a>
+          <button
+            type="button"
+            className={"nav-hamburger" + (menuOpen ? " open" : "")}
+            aria-label={menuOpen ? "Close menu" : "Open menu"}
+            aria-expanded={menuOpen}
+            onClick={() => setMenuOpen((v) => !v)}
+          >
+            <span />
+            <span />
+            <span />
+          </button>
+        </div>
       </div>
+
+      {/* Slide-in drawer (mobile) */}
+      <div
+        className={"nav-drawer-backdrop" + (menuOpen ? " open" : "")}
+        onClick={closeMenu}
+        aria-hidden={!menuOpen}
+      />
+      <aside
+        className={"nav-drawer" + (menuOpen ? " open" : "")}
+        aria-hidden={!menuOpen}
+        aria-label="Menu"
+      >
+        <button
+          type="button"
+          className="nav-drawer-close"
+          aria-label="Close menu"
+          onClick={closeMenu}
+        >
+          ×
+        </button>
+        <nav className="nav-drawer-links">
+          {MOBILE_LINKS.map((l) => (
+            <Link
+              key={l.href}
+              href={l.href}
+              className="nav-drawer-link"
+              onClick={closeMenu}
+            >
+              {l.label}
+              <ArrowRight size={15} />
+            </Link>
+          ))}
+        </nav>
+
+        <div className="nav-drawer-actions">
+          <a className="nav-drawer-action" href={telHref()} onClick={closeMenu}>
+            <Phone size={17} /> Call
+          </a>
+          <a
+            className="nav-drawer-action"
+            href={waHref("Hi RenovaAura, I'd like to ask about a treatment.")}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={closeMenu}
+          >
+            <WhatsappLine size={17} /> WhatsApp
+          </a>
+        </div>
+
+        <button
+          type="button"
+          className="btn btn-primary nav-drawer-book"
+          onClick={() => {
+            closeMenu();
+            open();
+          }}
+        >
+          Book Consultation
+          <span className="arrow">
+            <ArrowRight />
+          </span>
+        </button>
+
+        <div className="nav-drawer-hours">{CLINIC.hours}</div>
+      </aside>
     </nav>
   );
 }
