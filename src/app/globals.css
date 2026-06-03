@@ -1538,6 +1538,16 @@ p { margin: 0; color: var(--muted); }
 }
 .modal-close:hover { background: var(--cocoa); color: var(--cream); transform: rotate(90deg); }
 
+.modal-prefill-note {
+  background: var(--cream-2, #f3efe7);
+  border: 1px solid var(--line, #e7e2d8);
+  border-radius: 12px;
+  padding: 10px 14px;
+  margin-bottom: 18px;
+  font-size: 13.5px;
+  color: var(--muted, #6b6253);
+}
+.modal-prefill-note strong { color: var(--ink, #2c2418); font-weight: 600; }
 .steps-indicator { display: flex; gap: 6px; margin-bottom: 24px; }
 .step-dot { flex: 1; height: 3px; background: var(--line); border-radius: 2px; transition: background .25s; }
 .step-dot.active { background: var(--cocoa); }

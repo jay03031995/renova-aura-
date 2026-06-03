@@ -54,7 +54,7 @@ export const FOOTER_LINKS: Record<string, { label: string; href: string }[]> = {
     { label: "DHI Hair Transplant", href: "/procedures/hair-transplant/dhi-hair-transplant" },
     { label: "FUT Hair Transplant", href: "/procedures/hair-transplant/fut-hair-transplant" },
     { label: "Beard Transplant", href: "/procedures/hair-transplant/beard-transplant" },
-    { label: "PRP for Hair Loss", href: "/procedures/hair-transplant/prp-hair-treatment" },
+    { label: "Renova Follicle Boost", href: "/procedures/hair-transplant/renova-follicle-boost" },
     { label: "All Hair Procedures", href: "/procedures/hair-transplant" },
   ],
   "Plastic Surgery": [

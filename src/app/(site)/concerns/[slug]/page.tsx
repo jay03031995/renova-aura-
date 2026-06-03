@@ -286,8 +286,15 @@ function ConcernDetail({
                         Price on consult
                       </span>
                     )}
-                    <BookButton className="btn btn-ghost btn-sm" withArrow={false}>
-                      Enquire
+                    <BookButton
+                      className="btn btn-primary btn-sm"
+                      withArrow={false}
+                      prefill={{
+                        concern: `Package: ${p.name}`,
+                        source: "website-package",
+                      }}
+                    >
+                      Book this package
                     </BookButton>
                   </div>
                 </div>

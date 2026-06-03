@@ -396,9 +396,9 @@ const HAIR: Procedure[] = [
     faqs: [{ q: "Surgery or transplant?", a: "Transplant for most — surgical forehead reduction works faster but leaves a thin scar along the hairline. We'll review both options at consultation." }],
   },
   {
-    slug: "prp-hair-treatment",
+    slug: "renova-follicle-boost",
     image: IMG.injection,
-    name: "PRP for Hair Loss",
+    name: "Renova Follicle Boost",
     pillar: "hair-transplant",
     headline: "Concentrated platelets from your own blood, injected to slow loss and stimulate regrowth.",
     overview:
@@ -434,9 +434,9 @@ const HAIR: Procedure[] = [
     ],
   },
   {
-    slug: "gfc-hair-therapy",
+    slug: "aura-pure-gfc",
     image: IMG.injection,
-    name: "GFC Hair Therapy",
+    name: "Aura Pure GFC",
     pillar: "hair-transplant",
     headline: "Growth Factor Concentrate — next-generation PRP with higher growth factor yield.",
     overview:
@@ -463,9 +463,9 @@ const HAIR: Procedure[] = [
     faqs: [{ q: "GFC or PRP?", a: "GFC if your scalp didn't respond to PRP or if you want faster results and don't mind the extra cost. PRP if budget-conscious." }],
   },
   {
-    slug: "mesotherapy-for-hair",
+    slug: "aura-meso-infusion",
     image: IMG.injection,
-    name: "Mesotherapy for Hair",
+    name: "Aura Meso-Infusion",
     pillar: "hair-transplant",
     headline: "Custom cocktail of vitamins, peptides and DHT-blockers injected into the scalp.",
     overview:

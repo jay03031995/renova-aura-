@@ -13,7 +13,7 @@ const FEATURED_SLUGS = [
   "sapphire-fue-hair-transplant",
   "beard-transplant",
   "eyebrow-transplant",
-  "prp-hair-treatment",
+  "renova-follicle-boost",
 ];
 
 export default async function HairTransplantFocus() {

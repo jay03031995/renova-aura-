@@ -42,7 +42,7 @@ const EMPTY: FormData = {
 };
 
 export default function BookingModal() {
-  const { isOpen, close } = useBooking();
+  const { isOpen, close, prefill } = useBooking();
   const [step, setStep] = useState(0);
   const [data, setData] = useState<FormData>(EMPTY);
   const [errors, setErrors] = useState<Partial<Record<keyof FormData, string>>>(
@@ -61,6 +61,10 @@ export default function BookingModal() {
       setData(EMPTY);
       setSubmitError(null);
       setSubmitting(false);
+    } else if (prefill?.concern) {
+      // Opened from a package card — pre-fill the concern and skip step 0.
+      setData({ ...EMPTY, concern: prefill.concern });
+      setStep(1);
     }
   }
 
@@ -109,7 +113,7 @@ export default function BookingModal() {
           city: data.city,
           date: data.date,
           time: data.time,
-          source: "website-booking-modal",
+          source: prefill?.source ?? "website-booking-modal",
         }),
       });
       const payload = (await res.json().catch(() => ({}))) as {
@@ -229,6 +233,11 @@ export default function BookingModal() {
         </aside>
 
         <div className="modal-body">
+          {prefill?.concern && step < 3 && (
+            <div className="modal-prefill-note">
+              You&apos;re booking: <strong>{prefill.concern}</strong>
+            </div>
+          )}
           {step < 3 && (
             <>
               <div className="steps-indicator">

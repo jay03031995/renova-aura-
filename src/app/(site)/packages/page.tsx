@@ -59,10 +59,14 @@ export default async function PackagesPage() {
                           </span>
                         )}
                         <BookButton
-                          className="btn btn-ghost btn-sm"
+                          className="btn btn-primary btn-sm"
                           withArrow={false}
+                          prefill={{
+                            concern: `Package: ${p.name}`,
+                            source: "website-package",
+                          }}
                         >
-                          Enquire
+                          Book this package
                         </BookButton>
                       </div>
                       {p.concernSlug && (
