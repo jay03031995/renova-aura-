@@ -3371,6 +3371,49 @@ button.sbv-card-clickable:focus-visible {
   .hero-headline { font-size: clamp(34px, 9vw, 56px); }
 }
 
+/* Phone hero — rounded "card" framing, bolder headline, full-width CTA */
+@media (max-width: 640px) {
+  .hero-carousel {
+    height: auto;
+    min-height: 0;
+    aspect-ratio: 3 / 4.1;
+    margin: 14px;
+    width: auto;
+    border-radius: 28px;
+    box-shadow: 0 20px 44px -22px rgba(30, 40, 25, 0.55);
+  }
+  .hero-content {
+    padding: 0 22px 30px;
+    justify-content: flex-end;
+  }
+  .hero-eyebrow {
+    font-size: 10px;
+    letter-spacing: 0.16em;
+    padding: 7px 16px;
+    margin-bottom: 16px;
+  }
+  .hero-headline {
+    font-size: clamp(30px, 8.4vw, 42px);
+    font-weight: 600;
+    line-height: 1.08;
+    letter-spacing: -0.02em;
+    margin-bottom: 14px;
+  }
+  .hero-headline-emphasis { font-weight: 600; }
+  .hero-subtitle { font-size: 15px; margin-bottom: 22px; max-width: none; }
+  .hero-cta-row { flex-direction: column; gap: 10px; }
+  .hero-cta-row .btn-hero-primary,
+  .hero-cta-row .btn-hero-secondary {
+    width: 100%;
+    justify-content: center;
+    padding: 16px 24px;
+    font-size: 15px;
+  }
+  /* Arrows clutter the small card — rely on auto-advance + dots */
+  .hero-arrow { display: none; }
+  .hero-dots { bottom: 16px; }
+}
+
 /* =========================================================
    RenovaAura — Procedure pillar pages (hair / plastic surgery)
    ========================================================= */
