@@ -3,6 +3,7 @@ import Announcement from "@/components/Announcement";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import FabStack from "@/components/FabStack";
+import MobileTabBar from "@/components/MobileTabBar";
 import BookingModal from "@/components/BookingModal";
 import RevealInit from "@/components/RevealInit";
 import { CLINIC } from "@/data/clinic";
@@ -73,6 +74,7 @@ export default function SiteLayout({
         <main>{children}</main>
         <Footer />
         <FabStack />
+        <MobileTabBar />
         <BookingModal />
       </BookingProvider>
       <RevealInit />

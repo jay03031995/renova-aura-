@@ -3557,3 +3557,91 @@ button.sbv-card-clickable:focus-visible {
 .pkg-card-link:hover { color: var(--sage); }
 .btn-sm { padding: 9px 18px; font-size: 13px; }
 
+/* =========================================================
+   App-like mobile experience (phone only)
+   ========================================================= */
+.mobile-tabbar { display: none; }
+
+@media (max-width: 640px) {
+  /* --- App-style bottom tab bar (with built-in Book CTA) --- */
+  .mobile-tabbar {
+    display: flex;
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 95;
+    background: rgba(255, 255, 255, 0.94);
+    backdrop-filter: saturate(180%) blur(14px);
+    -webkit-backdrop-filter: saturate(180%) blur(14px);
+    border-top: 1px solid var(--line, #e7e2d8);
+    padding: 6px 6px calc(6px + env(safe-area-inset-bottom, 0px));
+    box-shadow: 0 -8px 24px rgba(30, 30, 20, 0.06);
+  }
+  .mtab {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    padding: 6px 2px;
+    border: none;
+    background: none;
+    cursor: pointer;
+    color: var(--muted, #6b6253);
+    text-decoration: none;
+    font: inherit;
+  }
+  .mtab-ic { width: 23px; height: 23px; display: grid; place-items: center; }
+  .mtab-ic svg { width: 23px; height: 23px; }
+  .mtab-lbl { font-size: 10.5px; letter-spacing: 0.01em; }
+  .mtab.active { color: var(--sage, #3f5e4e); }
+  .mtab-book {
+    color: var(--sage, #3f5e4e);
+    font-weight: 600;
+  }
+  .mtab-book .mtab-ic {
+    background: var(--sage, #3f5e4e);
+    color: #fff;
+    width: 40px;
+    height: 40px;
+    border-radius: 14px;
+    margin-top: -14px;
+    box-shadow: 0 8px 20px -4px rgba(63, 94, 78, 0.5);
+  }
+  .mtab-book .mtab-ic svg { width: 20px; height: 20px; }
+
+  /* Keep page content + floating buttons clear of the bar */
+  main { padding-bottom: 68px; }
+  .fab-stack { bottom: 84px; }
+
+  /* --- Two cards per section: horizontal swipe shelves --- */
+  .proc-grid,
+  .pkg-grid {
+    display: flex;
+    grid-template-columns: none;
+    gap: 12px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 10px;
+    margin-left: -4px;
+    padding-left: 4px;
+    scrollbar-width: none;
+  }
+  .proc-grid::-webkit-scrollbar,
+  .pkg-grid::-webkit-scrollbar { display: none; }
+  .proc-grid > *,
+  .pkg-grid > * {
+    flex: 0 0 calc(50% - 6px);
+    scroll-snap-align: start;
+  }
+
+  /* Skin-concern tiles: simple 2-up grid (tiles are small) */
+  .concerns-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+}
+
