@@ -1469,6 +1469,38 @@ button.sbv-card-clickable:focus-visible {
 .footer-col ul { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 12px; }
 .footer-col a { font-size: 14px; transition: color .2s; }
 .footer-col a:hover { color: var(--sand); }
+.footer-connect {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 16px 48px;
+  padding-top: 30px;
+  margin-top: 10px;
+  border-top: 1px solid rgba(217, 190, 152, .12);
+}
+.fc-group { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+.fc-label {
+  font-size: 12.5px;
+  letter-spacing: 0.04em;
+  color: rgba(251, 246, 238, .75);
+}
+.fc-icons { display: flex; gap: 10px; align-items: center; }
+.fc-icons a {
+  width: 34px; height: 34px;
+  border-radius: 9px;
+  background: rgba(217, 190, 152, .1);
+  display: grid; place-items: center;
+  color: var(--sand);
+  transition: background .2s, color .2s, transform .2s;
+}
+.fc-icons a:hover { background: var(--sand); color: var(--cocoa); transform: translateY(-2px); }
+.fc-icons a svg { width: 17px; height: 17px; display: block; }
+.fc-ai a svg { width: 18px; height: 18px; }
+
+@media (max-width: 640px) {
+  .footer-connect { gap: 18px; flex-direction: column; align-items: flex-start; }
+}
+
 .footer-bottom {
   padding-top: 30px;
   border-top: 1px solid rgba(217, 190, 152, .12);

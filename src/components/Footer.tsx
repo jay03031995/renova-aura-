@@ -12,6 +12,7 @@ import {
 } from "@/components/icons";
 import BookButton from "@/components/BookButton";
 import FooterAccordion from "@/components/FooterAccordion";
+import AskAiBar from "@/components/AskAiBar";
 
 const mapsUrl = `https://www.google.com/maps?q=${CLINIC.mapsQuery}`;
 
@@ -116,6 +117,8 @@ export default function Footer() {
 
           <FooterAccordion groups={FOOTER_LINKS} />
         </div>
+
+        <AskAiBar />
 
         <div className="footer-bottom">
           <span>© 2026 {CLINIC.name} · All rights reserved</span>
