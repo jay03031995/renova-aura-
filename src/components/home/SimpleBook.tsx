@@ -1,4 +1,5 @@
 import BookButton from "@/components/BookButton";
+import SimpleBookCards from "@/components/home/SimpleBookCards";
 import { Check } from "@/components/icons";
 
 export default function SimpleBook() {
@@ -35,40 +36,7 @@ export default function SimpleBook() {
             </div>
           </div>
 
-          <div className="simple-book-visual reveal">
-            <div className="sbv-orbit" />
-            <div className="sbv-card c1">
-              <div className="sbv-hd">Today · 4:30 PM</div>
-              <div className="sbv-title">Dr. Bhawna Bhardwaj</div>
-              <div className="sbv-sub">
-                Dermatology · Hair Transplant Consult
-              </div>
-              <div className="sbv-row">
-                <span style={{ color: "var(--muted)" }}>Availability</span>
-                <span className="pill">2 slots left</span>
-              </div>
-            </div>
-            <div className="sbv-card c2">
-              <div className="sbv-hd">Tomorrow · 11:00 AM</div>
-              <div className="sbv-title">Dr. Ankur Bhatia</div>
-              <div className="sbv-sub">
-                Plastic Surgery · Rhinoplasty Review
-              </div>
-              <div className="sbv-row">
-                <span style={{ color: "var(--muted)" }}>Availability</span>
-                <span className="pill cocoa">Open</span>
-              </div>
-            </div>
-            <div className="sbv-card c3">
-              <div className="sbv-hd">Saturday · 2:00 PM</div>
-              <div className="sbv-title">Dr. Bhawna Bhardwaj</div>
-              <div className="sbv-sub">Laser Hair Reduction · Plan</div>
-              <div className="sbv-row">
-                <span style={{ color: "var(--muted)" }}>Availability</span>
-                <span className="pill">3 slots left</span>
-              </div>
-            </div>
-          </div>
+          <SimpleBookCards />
         </div>
       </div>
     </section>

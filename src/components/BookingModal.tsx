@@ -3,6 +3,13 @@
 import { useEffect, useMemo, useState } from "react";
 import { useBooking } from "@/components/BookingContext";
 import { ArrowRight, Check } from "@/components/icons";
+import {
+  getBookings,
+  getPatients,
+  saveBooking,
+  type SavedBooking,
+  type SavedPatient,
+} from "@/lib/bookingStore";
 
 // RenovaAura services — map to the two surgical pillars + dermatology.
 const CONCERN_CHIPS = [
@@ -18,6 +25,11 @@ const CONCERN_CHIPS = [
 
 const TIMES = ["9:30", "11:00", "12:30", "2:00", "4:30", "6:00", "7:30"];
 const DISABLED_SLOTS = ["12:30", "6:00"];
+// Only surface bookable slots — unavailable ones are hidden, not greyed out.
+const AVAILABLE_TIMES = TIMES.filter((t) => !DISABLED_SLOTS.includes(t));
+
+// Single physical location — preselected, not a dropdown choice.
+const CLINIC = "RenovaAura · Main Clinic";
 
 type FormData = {
   concern: string;
@@ -32,7 +44,7 @@ type FormData = {
 
 const EMPTY: FormData = {
   concern: "",
-  city: "",
+  city: CLINIC,
   date: "",
   time: "",
   name: "",
@@ -51,6 +63,14 @@ export default function BookingModal() {
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
 
+  // On-device memory: saved patients + their booking history (private, no server).
+  const [savedPatients, setSavedPatients] = useState<SavedPatient[]>([]);
+  const [savedBookings, setSavedBookings] = useState<SavedBooking[]>([]);
+  useEffect(() => {
+    setSavedPatients(getPatients());
+    setSavedBookings(getBookings());
+  }, []);
+
   // Reset form when the modal closes — adjusted during render per React docs.
   const [prevIsOpen, setPrevIsOpen] = useState(isOpen);
   if (prevIsOpen !== isOpen) {
@@ -61,10 +81,19 @@ export default function BookingModal() {
       setData(EMPTY);
       setSubmitError(null);
       setSubmitting(false);
-    } else if (prefill?.concern) {
-      // Opened from a package card — pre-fill the concern and skip step 0.
-      setData({ ...EMPTY, concern: prefill.concern });
-      setStep(1);
+    } else {
+      // Opening — prefill personal details from the most-recent patient saved
+      // on this device, plus any package/doctor concern passed in.
+      const patient = savedPatients[savedPatients.length - 1];
+      setData({
+        ...EMPTY,
+        concern: prefill?.concern ?? "",
+        name: patient?.name ?? "",
+        phone: patient?.phone ?? "",
+        email: patient?.email ?? "",
+        age: patient?.age ?? "",
+      });
+      setStep(prefill?.concern ? 1 : 0);
     }
   }
 
@@ -84,7 +113,6 @@ export default function BookingModal() {
     if (step === 0) {
       if (!data.concern) e.concern = "Pick what brought you here";
     } else if (step === 1) {
-      if (!data.city) e.city = "Pick a city";
       if (!data.date) e.date = "Pick a date";
       if (!data.time) e.time = "Pick a time";
     } else if (step === 2) {
@@ -126,6 +154,18 @@ export default function BookingModal() {
             `Booking failed (${res.status}). Please call the clinic.`,
         );
       }
+      saveBooking({
+        name: data.name,
+        phone: data.phone,
+        email: data.email || undefined,
+        age: data.age || undefined,
+        concern: data.concern || undefined,
+        clinic: data.city,
+        date: data.date || undefined,
+        time: data.time || undefined,
+      });
+      setSavedPatients(getPatients());
+      setSavedBookings(getBookings());
       setStep(3);
     } catch (err) {
       setSubmitError(
@@ -255,6 +295,26 @@ export default function BookingModal() {
             </>
           )}
 
+          {step === 0 && savedBookings.length > 0 && (
+            <div className="your-appts">
+              <div className="your-appts-title">Your appointments</div>
+              {savedBookings.slice(0, 4).map((b) => (
+                <div className="your-appt" key={b.id}>
+                  <div className="your-appt-main">
+                    <strong>{b.name}</strong>
+                    {b.concern ? ` · ${b.concern}` : ""}
+                  </div>
+                  <div className="your-appt-meta">
+                    {[b.date, b.time, b.clinic].filter(Boolean).join(" · ")}
+                  </div>
+                </div>
+              ))}
+              <div className="your-appts-note">
+                Saved on this device. Book another below.
+              </div>
+            </div>
+          )}
+
           {step === 0 && (
             <>
               <h4>What brings you in today?</h4>
@@ -296,19 +356,9 @@ export default function BookingModal() {
           {step === 1 && (
             <>
               <h4>Pick a slot that suits you.</h4>
-              <div className={"field" + (errors.city ? " error" : "")}>
-                <label htmlFor="bk-city">City / Clinic</label>
-                <select
-                  id="bk-city"
-                  value={data.city}
-                  onChange={(e) => set("city", e.target.value)}
-                >
-                  <option value="">Select a clinic…</option>
-                  <option>RenovaAura · Main Clinic</option>
-                </select>
-                {errors.city && (
-                  <div className="field-error">{errors.city}</div>
-                )}
+              <div className="field">
+                <label>Clinic</label>
+                <div className="field-static">{data.city}</div>
               </div>
 
               <div className={"field" + (errors.date ? " error" : "")}>
@@ -345,13 +395,12 @@ export default function BookingModal() {
                 <label>Time</label>
                 <div
                   className="slot-grid"
-                  style={{ gridTemplateColumns: "repeat(7, 1fr)" }}
+                  style={{ gridTemplateColumns: "repeat(5, 1fr)" }}
                 >
-                  {TIMES.map((t) => (
+                  {AVAILABLE_TIMES.map((t) => (
                     <button
                       key={t}
                       type="button"
-                      disabled={DISABLED_SLOTS.includes(t)}
                       className={
                         "slot" + (data.time === t ? " selected" : "")
                       }
@@ -391,10 +440,57 @@ export default function BookingModal() {
           {step === 2 && (
             <>
               <h4>A few details to confirm.</h4>
+              {savedPatients.length > 0 && (
+                <div className="patient-picker">
+                  <label>Booking for</label>
+                  <div className="patient-chip-row">
+                    {savedPatients.map((p) => (
+                      <button
+                        key={`${p.name}|${p.phone}`}
+                        type="button"
+                        className={
+                          "patient-chip" +
+                          (data.name === p.name && data.phone === p.phone
+                            ? " selected"
+                            : "")
+                        }
+                        onClick={() =>
+                          setData((d) => ({
+                            ...d,
+                            name: p.name,
+                            phone: p.phone,
+                            email: p.email ?? "",
+                            age: p.age ?? "",
+                          }))
+                        }
+                      >
+                        {p.name}
+                      </button>
+                    ))}
+                    <button
+                      type="button"
+                      className="patient-chip patient-chip-add"
+                      onClick={() =>
+                        setData((d) => ({
+                          ...d,
+                          name: "",
+                          email: "",
+                          age: "",
+                          // keep phone — a family often shares one number
+                        }))
+                      }
+                    >
+                      + Add new patient
+                    </button>
+                  </div>
+                </div>
+              )}
               <div className={"field" + (errors.name ? " error" : "")}>
                 <label htmlFor="bk-name">Full name</label>
                 <input
                   id="bk-name"
+                  name="name"
+                  autoComplete="name"
                   value={data.name}
                   onChange={(e) => set("name", e.target.value)}
                   placeholder="e.g. Priya Sharma"
@@ -408,6 +504,10 @@ export default function BookingModal() {
                   <label htmlFor="bk-phone">Phone</label>
                   <input
                     id="bk-phone"
+                    name="phone"
+                    type="tel"
+                    inputMode="tel"
+                    autoComplete="tel"
                     value={data.phone}
                     onChange={(e) => set("phone", e.target.value)}
                     placeholder="+91 98765 43210"
@@ -439,6 +539,9 @@ export default function BookingModal() {
                 <label htmlFor="bk-email">Email</label>
                 <input
                   id="bk-email"
+                  name="email"
+                  type="email"
+                  autoComplete="email"
                   value={data.email}
                   onChange={(e) => set("email", e.target.value)}
                   placeholder="you@example.com"

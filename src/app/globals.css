@@ -1247,6 +1247,21 @@ p { margin: 0; color: var(--muted); }
 .sbv-card.c1 { top: 20px; right: 60px; transform: rotate(-3deg); z-index: 2; }
 .sbv-card.c2 { top: 170px; right: 0; transform: rotate(2deg); z-index: 1; }
 .sbv-card.c3 { bottom: 0; right: 80px; transform: rotate(-1.5deg); z-index: 3; }
+button.sbv-card-clickable {
+  font: inherit;
+  text-align: left;
+  border: none;
+  cursor: pointer;
+  transition: box-shadow 0.2s ease, filter 0.2s ease;
+}
+button.sbv-card-clickable:hover {
+  box-shadow: 0 24px 60px rgba(20, 30, 20, 0.22);
+  filter: brightness(1.015);
+}
+button.sbv-card-clickable:focus-visible {
+  outline: 2px solid var(--sage);
+  outline-offset: 3px;
+}
 .sbv-hd {
   font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase;
   color: var(--tan); margin-bottom: 8px; font-weight: 500;
@@ -1548,6 +1563,55 @@ p { margin: 0; color: var(--muted); }
   color: var(--muted, #6b6253);
 }
 .modal-prefill-note strong { color: var(--ink, #2c2418); font-weight: 600; }
+
+/* Returning-patient: appointments saved on this device */
+.your-appts {
+  background: var(--cream-2, #f3efe7);
+  border: 1px solid var(--line, #e7e2d8);
+  border-radius: 14px;
+  padding: 14px 16px;
+  margin-bottom: 22px;
+}
+.your-appts-title {
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--muted, #6b6253);
+  margin-bottom: 10px;
+}
+.your-appt { padding: 7px 0; border-top: 1px solid var(--line, #e7e2d8); }
+.your-appt:first-of-type { border-top: none; }
+.your-appt-main { font-size: 14px; color: var(--ink, #2c2418); }
+.your-appt-meta { font-size: 12px; color: var(--muted, #6b6253); margin-top: 2px; }
+.your-appts-note { font-size: 11px; color: var(--muted, #6b6253); margin-top: 10px; font-style: italic; }
+
+/* Multi-patient picker */
+.patient-picker { margin-bottom: 16px; }
+.patient-picker > label {
+  display: block;
+  font-size: 12px;
+  color: var(--muted, #6b6253);
+  margin-bottom: 8px;
+}
+.patient-chip-row { display: flex; flex-wrap: wrap; gap: 8px; }
+.patient-chip {
+  font: inherit;
+  font-size: 13px;
+  padding: 7px 14px;
+  border-radius: 999px;
+  border: 1px solid var(--line, #e7e2d8);
+  background: var(--paper, #fff);
+  color: var(--ink, #2c2418);
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+.patient-chip:hover { border-color: var(--sage, #3f5e4e); }
+.patient-chip.selected {
+  background: var(--sage, #3f5e4e);
+  border-color: var(--sage, #3f5e4e);
+  color: #fff;
+}
+.patient-chip-add { color: var(--sage, #3f5e4e); border-style: dashed; }
 .steps-indicator { display: flex; gap: 6px; margin-bottom: 24px; }
 .step-dot { flex: 1; height: 3px; background: var(--line); border-radius: 2px; transition: background .25s; }
 .step-dot.active { background: var(--cocoa); }
@@ -1573,6 +1637,14 @@ p { margin: 0; color: var(--muted); }
 .field.error input,
 .field.error select { border-color: #b34a3a; }
 .field-error { font-size: 11px; color: #b34a3a; }
+.field-static {
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: var(--cream-2, #f3efe7);
+  border: 1px solid var(--line, #e7e2d8);
+  font-size: 15px;
+  color: var(--ink, #2c2418);
+}
 .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 .chip-grid {
   display: grid;
