@@ -5,7 +5,7 @@ import {
   InstagramIcon,
   YoutubeIcon,
   LinkedinIcon,
-  WhatsappFilled,
+  WhatsappLogo,
   Phone,
   MapPin,
   Calendar,
@@ -33,7 +33,7 @@ export default function Footer() {
             rel="noopener noreferrer"
             aria-label="Chat on WhatsApp"
           >
-            <WhatsappFilled />
+            <WhatsappLogo size={18} />
             <span>WhatsApp</span>
           </a>
           <a
@@ -110,7 +110,7 @@ export default function Footer() {
                 rel="noopener noreferrer"
                 aria-label="WhatsApp"
               >
-                <WhatsappFilled />
+                <WhatsappLogo size={17} />
               </a>
             </div>
           </div>

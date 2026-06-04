@@ -5,7 +5,7 @@ import {
   Mail,
   MapPin,
   Phone,
-  WhatsappLine,
+  WhatsappLogo,
 } from "@/components/icons";
 
 export default function Contact() {
@@ -55,7 +55,7 @@ export default function Contact() {
               </div>
               <div className="contact-item">
                 <div className="contact-item-icon">
-                  <WhatsappLine />
+                  <WhatsappLogo size={18} />
                 </div>
                 <div>
                   <div className="contact-item-label">WhatsApp</div>

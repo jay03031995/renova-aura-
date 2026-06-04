@@ -12,7 +12,7 @@ import {
   InstagramIcon,
   YoutubeIcon,
   LinkedinIcon,
-  WhatsappFilled,
+  WhatsappLogo,
 } from "@/components/icons";
 
 const Q = encodeURIComponent(
@@ -103,7 +103,7 @@ export default function AskAiBar() {
             <YoutubeIcon />
           </a>
           <a href={waHref()} target="_blank" rel="noopener noreferrer" aria-label="WhatsApp">
-            <WhatsappFilled />
+            <WhatsappLogo size={17} />
           </a>
         </div>
       </div>

@@ -9,7 +9,7 @@ import {
   PLASTIC_PROCEDURES,
 } from "@/data/procedures";
 import { CONCERNS } from "@/data/concerns";
-import { ArrowRight, Phone, WhatsappLine } from "@/components/icons";
+import { ArrowRight, Phone, WhatsappLogo } from "@/components/icons";
 import BookButton from "@/components/BookButton";
 import { useBooking } from "@/components/BookingContext";
 
@@ -215,7 +215,7 @@ export default function Navbar() {
             rel="noopener noreferrer"
             aria-label="Chat on WhatsApp"
           >
-            <WhatsappLine size={22} />
+            <WhatsappLogo size={24} />
           </a>
           <button
             type="button"
@@ -275,7 +275,7 @@ export default function Navbar() {
             rel="noopener noreferrer"
             onClick={closeMenu}
           >
-            <WhatsappLine size={17} /> WhatsApp
+            <WhatsappLogo size={18} /> WhatsApp
           </a>
         </div>
 

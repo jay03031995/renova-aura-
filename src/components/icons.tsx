@@ -119,6 +119,18 @@ export const WhatsappLine = ({ size = 16, stroke = 1.5, ...p }: IconProps) => (
   </Stroke>
 );
 
+/* Official WhatsApp logo (green glyph) — public/whatsapp.svg */
+export const WhatsappLogo = ({ size = 18 }: { size?: number }) => (
+  // eslint-disable-next-line @next/next/no-img-element
+  <img
+    src="/whatsapp.svg"
+    alt="WhatsApp"
+    width={size}
+    height={size}
+    style={{ objectFit: "contain", display: "block" }}
+  />
+);
+
 /* Filled brand icons for the footer */
 export const InstagramIcon = ({ className }: { className?: string }) => (
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className={className} aria-hidden="true">
