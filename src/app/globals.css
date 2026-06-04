@@ -3632,6 +3632,14 @@ button.sbv-card-clickable:focus-visible {
 .pkg-card-link:hover { color: var(--sage); }
 .btn-sm { padding: 9px 18px; font-size: 13px; }
 
+/* Logo header on tool pages (graft calculator, skin analysis) */
+.tool-logo-header { display: flex; justify-content: center; margin-bottom: 30px; }
+.tool-logo-img { height: 54px; width: auto; display: block; }
+@media (max-width: 640px) {
+  .tool-logo-img { height: 44px; }
+  .tool-logo-header { margin-bottom: 22px; }
+}
+
 /* =========================================================
    App-like mobile experience (phone only)
    ========================================================= */
