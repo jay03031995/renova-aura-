@@ -3691,16 +3691,18 @@ button.sbv-card-clickable:focus-visible {
   main { padding-bottom: 68px; }
   .fab-stack { bottom: 84px; }
 
-  /* --- Two cards per section: horizontal swipe shelves --- */
+  /* --- Swipeable card shelves: one readable card + a peek of the next.
+     (A true 2-up made these content-rich cards too narrow — titles, copy
+     and the quick-stats wrapped to a tall, broken-looking column.) --- */
   .proc-grid,
   .pkg-grid {
     display: flex;
     grid-template-columns: none;
-    gap: 12px;
+    gap: 14px;
     overflow-x: auto;
     scroll-snap-type: x mandatory;
     -webkit-overflow-scrolling: touch;
-    padding-bottom: 10px;
+    padding-bottom: 12px;
     margin-left: -4px;
     padding-left: 4px;
     scrollbar-width: none;
@@ -3709,7 +3711,8 @@ button.sbv-card-clickable:focus-visible {
   .pkg-grid::-webkit-scrollbar { display: none; }
   .proc-grid > *,
   .pkg-grid > * {
-    flex: 0 0 calc(50% - 6px);
+    flex: 0 0 82%;
+    max-width: 330px;
     scroll-snap-align: start;
   }
 
