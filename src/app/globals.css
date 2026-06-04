@@ -3718,6 +3718,33 @@ button.sbv-card-clickable:focus-visible {
     grid-template-columns: 1fr 1fr;
     gap: 12px;
   }
+
+  /* FIX: SimpleBook appointment cards were absolutely-positioned with a
+     260px min-width inside a 320px box — they overflowed the screen and
+     overlapped on phone. Stack them as clean, static full-width cards. */
+  .simple-book-visual {
+    position: static;
+    height: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    margin-top: 4px;
+  }
+  .sbv-orbit { display: none; }
+  .sbv-card {
+    position: static;
+    min-width: 0;
+    width: 100%;
+  }
+  .sbv-card.c1,
+  .sbv-card.c2,
+  .sbv-card.c3 {
+    top: auto;
+    right: auto;
+    bottom: auto;
+    transform: none;
+  }
+  button.sbv-card-clickable:hover { transform: translateY(-2px); }
 }
 
 /* =========================================================
