@@ -3691,9 +3691,8 @@ button.sbv-card-clickable:focus-visible {
   main { padding-bottom: 68px; }
   .fab-stack { bottom: 84px; }
 
-  /* --- Swipeable card shelves: one readable card + a peek of the next.
-     (A true 2-up made these content-rich cards too narrow — titles, copy
-     and the quick-stats wrapped to a tall, broken-looking column.) --- */
+  /* --- Strict 2-up swipe shelves: two cards per row, swipe for more.
+     Cards are slimmed below so the rich content fits at half-width. --- */
   .proc-grid,
   .pkg-grid {
     display: flex;
@@ -3711,10 +3710,48 @@ button.sbv-card-clickable:focus-visible {
   .pkg-grid::-webkit-scrollbar { display: none; }
   .proc-grid > *,
   .pkg-grid > * {
-    flex: 0 0 82%;
-    max-width: 330px;
+    flex: 0 0 calc(50% - 7px);
     scroll-snap-align: start;
   }
+
+  /* Slimmed procedure card for 2-up */
+  .proc-card-inner { padding: 15px 15px 17px; }
+  .proc-card-tag { font-size: 9.5px; padding: 4px 9px; margin-bottom: 12px; }
+  .proc-card-title { font-size: 16px; line-height: 1.15; margin-bottom: 8px; }
+  .proc-card-headline {
+    font-size: 12.5px;
+    line-height: 1.45;
+    margin-bottom: 12px;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  /* Long duration/sessions strings wrap badly at half-width — full detail
+     lives on the procedure page. */
+  .proc-card-meta { display: none; }
+  .proc-card-link { font-size: 12.5px; }
+
+  /* Slimmed package card for 2-up */
+  .pkg-card { padding: 15px; gap: 11px; }
+  .pkg-card-name {
+    font-size: 14.5px;
+    line-height: 1.2;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .pkg-card-includes {
+    font-size: 12px;
+    line-height: 1.45;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .pkg-card-foot { flex-direction: column; align-items: stretch; gap: 9px; }
+  .pkg-card-foot .btn-sm { width: 100%; padding: 10px 12px; font-size: 12.5px; }
 
   /* Skin-concern tiles: simple 2-up grid (tiles are small) */
   .concerns-grid {
