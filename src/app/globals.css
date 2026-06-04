@@ -3753,6 +3753,25 @@ button.sbv-card-clickable:focus-visible {
   .pkg-card-foot { flex-direction: column; align-items: stretch; gap: 9px; }
   .pkg-card-foot .btn-sm { width: 100%; padding: 10px 12px; font-size: 12.5px; }
 
+  /* EEAT / "Why Us" pillar cards as a swipe shelf (1 card + peek) */
+  .eeat-list {
+    display: flex;
+    gap: 14px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 12px;
+    margin-left: -4px;
+    padding-left: 4px;
+    scrollbar-width: none;
+  }
+  .eeat-list::-webkit-scrollbar { display: none; }
+  .eeat-card {
+    flex: 0 0 85%;
+    max-width: 340px;
+    scroll-snap-align: start;
+  }
+
   /* Skin-concern tiles: simple 2-up grid (tiles are small) */
   .concerns-grid {
     grid-template-columns: 1fr 1fr;
