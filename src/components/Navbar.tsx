@@ -219,6 +219,13 @@ export default function Navbar() {
           </a>
           <button
             type="button"
+            className="nav-book-mobile"
+            onClick={() => open()}
+          >
+            Book
+          </button>
+          <button
+            type="button"
             className={"nav-hamburger" + (menuOpen ? " open" : "")}
             aria-label={menuOpen ? "Close menu" : "Open menu"}
             aria-expanded={menuOpen}
