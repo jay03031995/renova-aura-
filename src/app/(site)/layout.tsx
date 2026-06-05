@@ -1,5 +1,6 @@
 import { BookingProvider } from "@/components/BookingContext";
 import Announcement from "@/components/Announcement";
+import TopContactBar from "@/components/TopContactBar";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import FabStack from "@/components/FabStack";
@@ -70,6 +71,7 @@ export default function SiteLayout({
       />
       <BookingProvider>
         <Announcement />
+        <TopContactBar />
         <Navbar />
         <main>{children}</main>
         <Footer />

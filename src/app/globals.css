@@ -249,6 +249,50 @@ p { margin: 0; color: var(--muted); }
 .announce-dot { width: 4px; height: 4px; border-radius: 50%; background: var(--sand); opacity: .5; }
 .announce a { border-bottom: 1px solid rgba(217, 190, 152, .4); padding-bottom: 1px; }
 
+/* Desktop contact/location strip (MedLinks-style) — hidden ≤980px */
+.topbar { display: none; }
+@media (min-width: 981px) {
+  .topbar {
+    display: block;
+    background: var(--cream);
+    border-bottom: 1px solid var(--line);
+    font-size: 12.5px;
+  }
+  .topbar-inner {
+    max-width: var(--container);
+    margin: 0 auto;
+    padding: 8px 28px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+  }
+  .topbar-group { display: flex; align-items: center; gap: 22px; }
+  .topbar-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    color: var(--muted);
+    transition: color .2s;
+  }
+  .topbar-item:hover { color: var(--sage); }
+  .topbar-item svg { color: var(--sage); flex-shrink: 0; }
+  .topbar-social {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    padding-left: 16px;
+    border-left: 1px solid var(--line);
+  }
+  .topbar-social a { color: var(--tan); transition: color .2s; }
+  .topbar-social a:hover { color: var(--sage); }
+  .topbar-social a svg { width: 15px; height: 15px; display: block; }
+}
+/* Drop the hours on narrower desktops so the strip doesn't crowd */
+@media (max-width: 1140px) {
+  .topbar-hours { display: none; }
+}
+
 /* ---------- Hero ---------- */
 .hero { padding: 60px 0 90px; position: relative; overflow: hidden; }
 .hero-grid {
