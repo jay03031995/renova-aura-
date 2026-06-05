@@ -3417,14 +3417,15 @@ button.sbv-card-clickable:focus-visible {
 
 /* Phone hero — rounded "card" framing, bolder headline, full-width CTA */
 @media (max-width: 640px) {
+  /* Full-bleed hero slider (edge-to-edge) */
   .hero-carousel {
     height: auto;
     min-height: 0;
-    aspect-ratio: 3 / 4.1;
-    margin: 14px;
-    width: auto;
-    border-radius: 28px;
-    box-shadow: 0 20px 44px -22px rgba(30, 40, 25, 0.55);
+    aspect-ratio: 3 / 3.9;
+    margin: 0;
+    width: 100%;
+    border-radius: 0;
+    box-shadow: none;
   }
   .hero-content {
     padding: 0 22px 30px;
@@ -3809,6 +3810,9 @@ button.sbv-card-clickable:focus-visible {
     box-shadow: 0 8px 20px -4px rgba(63, 94, 78, 0.5);
   }
   .mtab-book .mtab-ic svg { width: 20px; height: 20px; }
+
+  /* Tighter side padding on phone — 28px wasted too much width */
+  .container { padding: 0 18px; }
 
   /* Keep page content + floating buttons clear of the bar */
   main { padding-bottom: 68px; }
