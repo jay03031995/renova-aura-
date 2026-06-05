@@ -3641,6 +3641,67 @@ button.sbv-card-clickable:focus-visible {
 }
 
 /* =========================================================
+   MedLinks-style content cards — image on top, pale-sage tinted body,
+   centered bold title + short (3-line) description. Applies to procedure,
+   concern and homepage cards (.proc-card) and package cards (.pkg-card).
+   ========================================================= */
+.proc-card {
+  overflow: hidden;
+  text-align: center;
+  border-color: transparent;
+  background: #edf2ec;
+  box-shadow: 0 12px 32px -20px rgba(30, 40, 25, 0.4);
+}
+.proc-card-inner { background: #edf2ec; }
+.proc-card-tag { display: block; width: fit-content; margin: 0 auto 12px; }
+.proc-card-title { text-align: center; font-weight: 600; }
+.proc-card-headline {
+  text-align: center;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+/* MedLinks cards show just title + short copy */
+.proc-card-meta { display: none; }
+.proc-card-link { justify-content: center; }
+.proc-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 44px -20px rgba(30, 40, 25, 0.5);
+}
+
+/* Packages have no photos yet → a sage gradient header stands in as the image */
+.pkg-card {
+  overflow: hidden;
+  text-align: center;
+  border-color: transparent;
+  background: #edf2ec;
+  box-shadow: 0 12px 32px -20px rgba(30, 40, 25, 0.4);
+}
+.pkg-card::before {
+  content: "";
+  display: block;
+  height: 92px;
+  margin: -24px -24px 6px;
+  background: linear-gradient(135deg, var(--sage), var(--sand));
+}
+.pkg-card-name { text-align: center; }
+.pkg-card-includes {
+  text-align: center;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.pkg-card-price { text-align: center; }
+.pkg-card-foot { flex-direction: column; align-items: stretch; gap: 10px; }
+.pkg-card-link { justify-content: center; }
+.pkg-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 44px -20px rgba(30, 40, 25, 0.5);
+}
+
+/* =========================================================
    App-like mobile experience (phone only)
    ========================================================= */
 .mobile-tabbar { display: none; }
@@ -3742,6 +3803,7 @@ button.sbv-card-clickable:focus-visible {
 
   /* Slimmed package card for 2-up */
   .pkg-card { padding: 15px; gap: 11px; }
+  .pkg-card::before { height: 72px; margin: -15px -15px 4px; }
   .pkg-card-name {
     font-size: 14.5px;
     line-height: 1.2;
