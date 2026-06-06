@@ -207,7 +207,10 @@ export const homepageFaqsQuery = /* groq */ `
 `;
 
 export const eeatPillarsQuery = /* groq */ `
-  *[_type == "eeatPillar"] | order(order asc){ letter, title, description }
+  *[_type == "eeatPillar"] | order(order asc){
+    letter, title, description,
+    "imageUrl": image.asset->url
+  }
 `;
 
 export const trustItemsQuery = /* groq */ `

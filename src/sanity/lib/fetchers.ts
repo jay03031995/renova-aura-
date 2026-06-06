@@ -384,9 +384,19 @@ export async function getHomepageFaqs() {
 }
 
 export async function getEeatPillars() {
-  const docs = await safeFetch<{ letter: string; title: string; description: string }[]>(eeatPillarsQuery);
-  if (!isFilled(docs)) return LOCAL_EEAT;
-  return docs.map((d) => ({ letter: d.letter, title: d.title, desc: d.description }));
+  const docs = await safeFetch<{
+    letter: string;
+    title: string;
+    description: string;
+    imageUrl?: string;
+  }[]>(eeatPillarsQuery);
+  if (!isFilled(docs)) return LOCAL_EEAT.map((e) => ({ ...e, imageUrl: undefined }));
+  return docs.map((d) => ({
+    letter: d.letter,
+    title: d.title,
+    desc: d.description,
+    imageUrl: d.imageUrl,
+  }));
 }
 
 export async function getTrustItems(): Promise<{ icon: string; text: string }[]> {

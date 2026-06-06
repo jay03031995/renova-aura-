@@ -29,9 +29,18 @@ export default async function WhyUs() {
             <div className="eeat-list">
               {pillars.map((e, i) => (
                 <div className="eeat-card" key={i}>
-                  <div className="eeat-icon">
-                    <span className="eeat-letter">{e.letter}</span>
-                  </div>
+                  {e.imageUrl ? (
+                    <div
+                      className="eeat-img"
+                      style={{ backgroundImage: `url(${e.imageUrl})` }}
+                      role="img"
+                      aria-label={e.title}
+                    />
+                  ) : (
+                    <div className="eeat-icon">
+                      <span className="eeat-letter">{e.letter}</span>
+                    </div>
+                  )}
                   <div>
                     <div className="eeat-title">{e.title}</div>
                     <div className="eeat-desc">{e.desc}</div>

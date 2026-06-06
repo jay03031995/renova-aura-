@@ -60,14 +60,21 @@ export const eeatPillarSchema = defineType({
     }),
     defineField({ name: "title", title: "Title", type: "string", validation: (r) => r.required() }),
     defineField({ name: "description", title: "Description", type: "text", rows: 3, validation: (r) => r.required() }),
+    defineField({
+      name: "image",
+      title: "Pillar image",
+      type: "image",
+      options: { hotspot: true },
+      description: "Optional background / illustration for this pillar card.",
+    }),
     defineField({ name: "order", title: "Sort order", type: "number", initialValue: 0 }),
   ],
   orderings: [
     { name: "order", title: "Manual order", by: [{ field: "order", direction: "asc" }] },
   ],
   preview: {
-    select: { letter: "letter", title: "title" },
-    prepare: ({ letter, title }) => ({ title: `${letter} — ${title}` }),
+    select: { letter: "letter", title: "title", media: "image" },
+    prepare: ({ letter, title, media }) => ({ title: `${letter} — ${title}`, media }),
   },
 });
 

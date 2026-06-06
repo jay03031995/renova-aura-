@@ -634,6 +634,15 @@ p { margin: 0; color: var(--muted); }
 }
 .eeat-title { font-size: 17px; font-weight: 500; color: var(--cocoa); margin-bottom: 4px; }
 .eeat-desc { font-size: 14px; color: var(--muted); line-height: 1.55; }
+/* EEAT card image (when uploaded in Sanity Studio) */
+.eeat-img {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background-size: cover;
+  background-position: center;
+  border-radius: 12px;
+  margin-bottom: 4px;
+}
 
 .why-visual { position: relative; height: 560px; }
 .why-img {
@@ -3271,8 +3280,8 @@ button.sbv-card-clickable:focus-visible {
 .hero-content {
   position: relative;
   z-index: 2;
-  max-width: 1400px;
-  margin: 0 auto;
+  max-width: 770px;
+  margin: 0;
   padding: 0 64px;
   display: flex;
   flex-direction: column;
@@ -3602,13 +3611,16 @@ button.sbv-card-clickable:focus-visible {
   min-width: 0;
 }
 .pillar-hero-image {
-  aspect-ratio: 4 / 5;
+  /* Free-size: no fixed aspect-ratio so the image's natural proportions
+     show through. Minimum height keeps it from collapsing. */
+  min-height: 300px;
+  max-height: 600px;
   border-radius: var(--radius-lg);
-  background-size: cover;
+  background-size: contain;
   background-position: center;
+  background-repeat: no-repeat;
   background-color: var(--cream-2);
   box-shadow: var(--shadow);
-  max-height: 560px;
 }
 
 @media (max-width: 900px) {
@@ -3882,23 +3894,39 @@ button.sbv-card-clickable:focus-visible {
   .pkg-card-foot .btn-sm { width: 100%; padding: 10px 12px; font-size: 12.5px; }
 
   /* EEAT / "Why Us" pillar cards as a swipe shelf (1 card + peek) */
+  /* EEAT swipe shelf — 1 card + peek, vertical layout on mobile */
   .eeat-list {
     display: flex;
     gap: 14px;
     overflow-x: auto;
     scroll-snap-type: x mandatory;
     -webkit-overflow-scrolling: touch;
-    padding-bottom: 12px;
-    margin-left: -4px;
-    padding-left: 4px;
+    padding: 4px 4px 14px;
+    margin: 0 -18px;
+    padding-left: 18px;
     scrollbar-width: none;
   }
   .eeat-list::-webkit-scrollbar { display: none; }
   .eeat-card {
-    flex: 0 0 85%;
-    max-width: 340px;
+    flex: 0 0 78%;
+    max-width: 300px;
     scroll-snap-align: start;
+    /* vertical layout (MedLinks-style): icon top, text below */
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto auto;
+    gap: 12px;
+    padding: 22px 20px;
+    border-radius: 18px;
+    text-align: center;
   }
+  .eeat-icon {
+    /* Larger icon centered at top */
+    width: 60px; height: 60px; border-radius: 16px;
+    margin: 0 auto;
+  }
+  .eeat-letter { font-size: 26px; }
+  .eeat-title { font-size: 16px; }
+  .eeat-desc { font-size: 13px; }
 
   /* Tools: two cards per row, less descriptive */
   .tools-banner-grid { grid-template-columns: 1fr 1fr; gap: 12px; }
