@@ -17,6 +17,7 @@ export const siteSettingsQuery = /* groq */ `
     "defaultOgImage": defaultOgImage.asset->{_id, url},
     footerColumns[]{title, links[]{label, href}},
     footerBottomNote,
+    featuredSocial,
     heroEyebrow, heroHeadline, heroSubhead
   }
 `;

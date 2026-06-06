@@ -10,13 +10,33 @@ import {
   MapPin,
   Calendar,
 } from "@/components/icons";
+import { getSiteSettings } from "@/sanity/lib/fetchers";
 import BookButton from "@/components/BookButton";
 import FooterAccordion from "@/components/FooterAccordion";
 import AskAiBar from "@/components/AskAiBar";
 
 const mapsUrl = `https://www.google.com/maps?q=${CLINIC.mapsQuery}`;
 
-export default function Footer() {
+const SOCIAL_ICON: Record<string, React.ElementType> = {
+  instagram: InstagramIcon,
+  youtube: YoutubeIcon,
+  linkedin: LinkedinIcon,
+  whatsapp: WhatsappLogo,
+};
+
+export default async function Footer() {
+  const settings = await getSiteSettings();
+  // Which single social icon to feature — editable in Sanity Studio
+  // under Site Settings → Footer → Featured social network.
+  const featuredSocial = (settings?.featuredSocial as string | undefined) ?? "instagram";
+  const socialUrl =
+    featuredSocial === "instagram" ? CLINIC.social.instagram
+    : featuredSocial === "youtube" ? CLINIC.social.youtube
+    : featuredSocial === "linkedin" ? CLINIC.social.linkedin
+    : featuredSocial === "whatsapp" ? waHref()
+    : CLINIC.social.instagram;
+  const SocialIcon = SOCIAL_ICON[featuredSocial] ?? InstagramIcon;
+
   return (
     <footer className="footer">
       <div className="container">
@@ -81,36 +101,12 @@ export default function Footer() {
             </p>
             <div className="footer-social">
               <a
-                href={CLINIC.social.instagram}
+                href={socialUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                aria-label="Instagram"
+                aria-label={featuredSocial.charAt(0).toUpperCase() + featuredSocial.slice(1)}
               >
-                <InstagramIcon />
-              </a>
-              <a
-                href={CLINIC.social.youtube}
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="YouTube"
-              >
-                <YoutubeIcon />
-              </a>
-              <a
-                href={CLINIC.social.linkedin}
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="LinkedIn"
-              >
-                <LinkedinIcon />
-              </a>
-              <a
-                href={waHref()}
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="WhatsApp"
-              >
-                <WhatsappLogo size={17} />
+                <SocialIcon size={17} />
               </a>
             </div>
           </div>

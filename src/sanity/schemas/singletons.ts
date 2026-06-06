@@ -71,6 +71,23 @@ export const siteSettingsSchema = defineType({
       description: "Default: © 2026 …. Falls back to copyright string if empty.",
     }),
     defineField({
+      name: "featuredSocial",
+      title: "Featured social icon in footer",
+      type: "string",
+      group: "footer",
+      description: "Which single social icon to show in the footer brand block. Instagram is the default.",
+      options: {
+        list: [
+          { title: "Instagram", value: "instagram" },
+          { title: "YouTube",   value: "youtube" },
+          { title: "LinkedIn",  value: "linkedin" },
+          { title: "WhatsApp",  value: "whatsapp" },
+        ],
+        layout: "radio",
+      },
+      initialValue: "instagram",
+    }),
+    defineField({
       name: "heroHeadline",
       title: "Hero headline (HTML allowed)",
       type: "text",

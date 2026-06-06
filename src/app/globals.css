@@ -3244,8 +3244,8 @@ button.sbv-card-clickable:focus-visible {
 .hero-carousel {
   position: relative;
   width: 100%;
-  height: 88vh;
-  min-height: 600px;
+  height: 75vh;
+  min-height: 520px;
   overflow: hidden;
   background: var(--cocoa);
 }
@@ -3416,7 +3416,7 @@ button.sbv-card-clickable:focus-visible {
 .hero-dot:hover { background: rgba(255, 255, 255, .75); }
 
 @media (max-width: 900px) {
-  .hero-carousel { height: 82vh; min-height: 520px; }
+  .hero-carousel { height: 70vh; min-height: 480px; }
   .hero-content { padding: 0 24px; }
   .hero-arrow { width: 40px; height: 40px; }
   .hero-arrow-left { left: 12px; }
@@ -3426,11 +3426,11 @@ button.sbv-card-clickable:focus-visible {
 
 /* Phone hero — rounded "card" framing, bolder headline, full-width CTA */
 @media (max-width: 640px) {
-  /* Full-bleed hero slider (edge-to-edge) */
+  /* Full-bleed hero slider — height auto-fits the screen */
   .hero-carousel {
-    height: auto;
-    min-height: 0;
-    aspect-ratio: 3 / 3.9;
+    height: 65vw;
+    min-height: 380px;
+    max-height: 78vh;
     margin: 0;
     width: 100%;
     border-radius: 0;
@@ -3829,6 +3829,9 @@ button.sbv-card-clickable:focus-visible {
   /* Keep page content + floating buttons clear of the bar */
   main { padding-bottom: 68px; }
   .fab-stack { bottom: 84px; }
+  /* WhatsApp FAB hidden on mobile — the tab bar already has WhatsApp in drawer
+     and the footer has a WhatsApp quick-action. Call button stays. */
+  .fab-wa { display: none; }
 
   /* --- Strict 2-up swipe shelves: two cards per row, swipe for more.
      Cards are slimmed below so the rich content fits at half-width. --- */
@@ -4280,4 +4283,181 @@ button.sbv-card-clickable:focus-visible {
 @media (max-width: 640px) {
   .location-area-grid { grid-template-columns: 1fr 1fr; gap: 12px; }
   .location-area-card { padding: 16px; }
+}
+
+/* =========================================================
+   DHI-style location landing pages
+   ========================================================= */
+/* Hero banner */
+.loc-hero {
+  position: relative;
+  background: var(--cocoa);
+  background-size: cover;
+  background-position: center;
+  min-height: 400px;
+  display: flex;
+  align-items: flex-end;
+}
+.loc-hero-overlay {
+  position: absolute; inset: 0;
+  background: linear-gradient(180deg, rgba(20,30,20,.45) 0%, rgba(15,25,15,.85) 100%);
+}
+.loc-hero-body {
+  position: relative; z-index: 1;
+  padding-top: 60px; padding-bottom: 56px;
+  color: #fff;
+}
+.loc-breadcrumb-light a, .loc-breadcrumb-light span { color: rgba(255,255,255,.75); }
+.loc-breadcrumb-light a:hover { color: #fff; }
+.loc-hero-title {
+  font-size: clamp(28px, 4vw, 52px);
+  font-weight: 700;
+  line-height: 1.1;
+  margin: 18px 0 16px;
+  max-width: 720px;
+  color: #fff;
+}
+.loc-hero-sub {
+  font-size: clamp(14px, 1.5vw, 17px);
+  color: rgba(255,255,255,.88);
+  max-width: 600px;
+  line-height: 1.65;
+  margin-bottom: 28px;
+}
+.loc-hero-ctas { display: flex; gap: 14px; flex-wrap: wrap; }
+.loc-btn-primary {
+  background: var(--sage); color: #fff;
+  border: 2px solid var(--sage); border-radius: 999px;
+  padding: 14px 28px; font-weight: 600; font-size: 15px;
+  transition: all .2s;
+}
+.loc-btn-primary:hover { background: transparent; color: var(--sage); }
+.loc-btn-ghost {
+  background: transparent; color: #fff;
+  border: 2px solid rgba(255,255,255,.6); border-radius: 999px;
+  padding: 14px 22px; font-size: 15px; font-weight: 500;
+  display: inline-flex; align-items: center; gap: 8px;
+  transition: all .2s;
+}
+.loc-btn-ghost:hover { border-color: #fff; background: rgba(255,255,255,.1); }
+
+/* Trust strip */
+.loc-trust-strip {
+  background: var(--sage);
+  color: #fff;
+  padding: 16px 0;
+}
+.loc-trust-inner {
+  max-width: var(--container);
+  margin: 0 auto;
+  padding: 0 28px;
+  display: flex;
+  justify-content: space-around;
+  flex-wrap: wrap;
+  gap: 14px;
+}
+.loc-trust-item { text-align: center; }
+.loc-trust-num {
+  display: block;
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+.loc-trust-lbl {
+  display: block;
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  opacity: .82;
+  margin-top: 2px;
+}
+
+/* Two-column body */
+.loc-two-col {
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  gap: 50px;
+  align-items: flex-start;
+}
+.loc-benefit-list {
+  list-style: none; padding: 0; margin: 0;
+  display: flex; flex-direction: column; gap: 12px;
+}
+.loc-benefit-list li {
+  display: flex; gap: 12px; align-items: flex-start;
+  font-size: 15px; line-height: 1.6; color: var(--ink);
+}
+.loc-check { color: var(--sage); flex-shrink: 0; margin-top: 3px; }
+
+/* Sidebar */
+.loc-sidebar-card {
+  background: var(--cream);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  padding: 28px;
+  position: sticky;
+  top: 90px;
+}
+.loc-sidebar-title { font-size: 17px; font-weight: 600; color: var(--cocoa); margin-bottom: 10px; }
+.loc-sidebar-meta {
+  display: flex; flex-direction: column; gap: 10px;
+  margin-top: 18px; padding-top: 18px; border-top: 1px solid var(--line);
+}
+.loc-sidebar-meta a, .loc-sidebar-meta span {
+  display: inline-flex; align-items: center; gap: 7px;
+  font-size: 13px; color: var(--muted);
+}
+.loc-sidebar-meta a:hover { color: var(--sage); }
+
+/* Doctor cards */
+.loc-doctor-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 24px;
+}
+.loc-doctor-card {
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+.loc-doctor-img {
+  height: 220px;
+  background-size: cover;
+  background-position: center top;
+  background-color: var(--cream-2);
+}
+.loc-doctor-img.d1 { background: repeating-linear-gradient(135deg,#d9be98 0 14px,#c9ad87 14px 28px); }
+.loc-doctor-img.d2 { background: repeating-linear-gradient(135deg,#8c6e54 0 14px,#7d5f47 14px 28px); }
+.loc-doctor-body { padding: 20px 22px; }
+.loc-doctor-name { font-size: 17px; font-weight: 600; color: var(--cocoa); margin-bottom: 4px; }
+.loc-doctor-title { font-size: 12px; color: var(--sage); text-transform: uppercase; letter-spacing: .08em; margin-bottom: 10px; }
+.loc-doctor-bio { font-size: 13.5px; color: var(--muted); line-height: 1.6;
+  display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+
+/* Map + directions */
+.loc-reach-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 48px;
+  align-items: flex-start;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+  .loc-two-col { grid-template-columns: 1fr; }
+  .loc-sidebar { order: -1; }
+  .loc-sidebar-card { position: static; }
+  .loc-reach-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 640px) {
+  .loc-hero { min-height: 300px; }
+  .loc-hero-title { font-size: clamp(24px, 7vw, 36px); }
+  .loc-trust-inner { gap: 12px 20px; }
+  .loc-trust-num { font-size: 15px; }
+  .loc-doctor-grid { grid-template-columns: 1fr 1fr; }
+  .loc-doctor-img { height: 160px; }
+  .loc-doctor-body { padding: 14px; }
+  .loc-doctor-name { font-size: 14px; }
+  .loc-doctor-bio { display: none; }
 }

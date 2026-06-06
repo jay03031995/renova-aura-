@@ -27,7 +27,6 @@ const MOBILE_LINKS: { label: string; href: string }[] = [
   { label: "Plastic Surgery", href: "/procedures/plastic-surgery" },
   { label: "Skin Concerns", href: "/concerns" },
   { label: "Packages", href: "/packages" },
-  { label: "Locations", href: "/locations" },
   { label: "Doctors", href: "/doctors" },
   { label: "Contact", href: "/#contact" },
 ];
@@ -167,12 +166,6 @@ export default function Navbar() {
           <div className="nav-item">
             <Link className="nav-link" href="/packages">
               Packages
-            </Link>
-          </div>
-
-          <div className="nav-item">
-            <Link className="nav-link" href="/locations">
-              Locations
             </Link>
           </div>
 

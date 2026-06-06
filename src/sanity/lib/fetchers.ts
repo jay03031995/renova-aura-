@@ -268,6 +268,7 @@ export type SiteSettingsData = {
   titleTemplate?: string;
   defaultMetaDescription?: string;
   defaultOgImageUrl?: string;
+  featuredSocial?: string;
 };
 
 export async function getSiteSettings(): Promise<SiteSettingsData> {
@@ -277,6 +278,7 @@ export async function getSiteSettings(): Promise<SiteSettingsData> {
     titleTemplate?: string;
     defaultMetaDescription?: string;
     defaultOgImage?: { url?: string };
+    featuredSocial?: string;
   } | null>(siteSettingsQuery);
   if (!doc) return {};
   return {
@@ -285,6 +287,7 @@ export async function getSiteSettings(): Promise<SiteSettingsData> {
     titleTemplate: doc.titleTemplate,
     defaultMetaDescription: doc.defaultMetaDescription,
     defaultOgImageUrl: doc.defaultOgImage?.url,
+    featuredSocial: doc.featuredSocial,
   };
 }
 
