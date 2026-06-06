@@ -124,14 +124,7 @@ function ProcedureDetail({ p }: { p: Procedure }) {
           borderBottom: "1px solid var(--line)",
         }}
       >
-        <div
-          className="container"
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))",
-            gap: 24,
-          }}
-        >
+        <div className="container dp-quickfacts">
           <QuickFact label="Duration" value={p.quick.duration} />
           <QuickFact label="Sessions" value={p.quick.sessions} />
           <QuickFact label="Downtime" value={p.quick.downtime} />
@@ -143,14 +136,7 @@ function ProcedureDetail({ p }: { p: Procedure }) {
 
       {/* Two-column: key points + suitable for */}
       <section className="section">
-        <div
-          className="container"
-          style={{
-            display: "grid",
-            gridTemplateColumns: "1fr 1fr",
-            gap: 60,
-          }}
-        >
+        <div className="container dp-keypoints">
           <div>
             <div className="eyebrow" style={{ marginBottom: 18 }}>
               Key points
@@ -213,13 +199,7 @@ function ProcedureDetail({ p }: { p: Procedure }) {
           <h2 style={{ marginBottom: 40 }}>
             What happens, step by step.
           </h2>
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
-              gap: 24,
-            }}
-          >
+          <div className="dp-cards-grid">
             {p.process.map((s, i) => (
               <div
                 key={i}
@@ -257,13 +237,7 @@ function ProcedureDetail({ p }: { p: Procedure }) {
             Benefits
           </div>
           <h2 style={{ marginBottom: 40 }}>Why patients choose this.</h2>
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
-              gap: 24,
-            }}
-          >
+          <div className="dp-cards-grid">
             {p.benefits.map((b, i) => (
               <div
                 key={i}

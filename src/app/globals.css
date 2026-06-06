@@ -4547,3 +4547,34 @@ button.sbv-card-clickable:focus-visible {
   .loc-doctor-name { font-size: 14px; }
   .loc-doctor-bio { display: none; }
 }
+
+/* =========================================================
+   Procedure detail (treatment description) page — responsive grids
+   (replaces hardcoded inline grids that couldn't collapse on mobile)
+   ========================================================= */
+.dp-quickfacts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 24px;
+}
+.dp-keypoints {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 60px;
+}
+.dp-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 24px;
+}
+@media (max-width: 760px) {
+  .dp-keypoints { grid-template-columns: 1fr; gap: 32px; }
+}
+@media (max-width: 640px) {
+  .dp-quickfacts { grid-template-columns: 1fr 1fr; gap: 12px; }
+  .dp-cards-grid { grid-template-columns: 1fr; gap: 14px; }
+  /* tighten the detail-page hero + section padding on phone */
+  .pillar-hero { padding-top: 28px; padding-bottom: 8px; }
+  .pillar-hero-headline { font-size: clamp(26px, 7vw, 38px); }
+  .pillar-hero-subtitle { font-size: 14.5px; line-height: 1.6; }
+}
