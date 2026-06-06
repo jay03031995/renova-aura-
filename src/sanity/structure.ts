@@ -201,5 +201,6 @@ export const structure = (S: StructureBuilder) =>
       S.documentTypeListItem("eeatPillar").title("EEAT pillars"),
       S.documentTypeListItem("trustItem").title("Trust strip items"),
       S.divider(),
+      S.documentTypeListItem("location").title("📍 NCR Locations"),
       S.documentTypeListItem("redirect").title("URL redirects"),
     ]);

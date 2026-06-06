@@ -1,5 +1,5 @@
 import type { MetadataRoute } from "next";
-import { getDoctorSlugs } from "@/sanity/lib/fetchers";
+import { getDoctorSlugs, getAllLocations } from "@/sanity/lib/fetchers";
 import { PROCEDURES } from "@/data/procedures";
 import { CONCERNS } from "@/data/concerns";
 
@@ -7,7 +7,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = "https://renovaaura.com";
   const lastModified = new Date();
 
-  const doctorSlugs = await getDoctorSlugs();
+  const [doctorSlugs, locations] = await Promise.all([
+    getDoctorSlugs(),
+    getAllLocations(),
+  ]);
 
   const top = [
     { path: "", priority: 1 },
@@ -38,7 +41,34 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.7,
   }));
 
-  return [...top, ...procedures, ...concerns, ...doctors].map(
+  // Location SEO pages: /locations + all area × treatment combinations
+  // Priority: 0.85 for hair transplant (main pillar), 0.8 for others.
+  const locationIndex = [{ path: "/locations", priority: 0.9 }];
+  const locationPages = locations.flatMap((loc) =>
+    PROCEDURES.map((p) => ({
+      path: `/locations/${loc.citySlug}/${loc.areaSlug}/${p.slug}`,
+      priority: p.pillar === "hair-transplant" ? 0.85 : 0.8,
+    })),
+  );
+  // Doctor-in-location pages
+  const locationDoctorPages = locations.flatMap((loc) =>
+    PROCEDURES.flatMap((p) =>
+      doctorSlugs.map((dSlug) => ({
+        path: `/locations/${loc.citySlug}/${loc.areaSlug}/${p.slug}/${dSlug}`,
+        priority: 0.75,
+      })),
+    ),
+  );
+
+  return [
+    ...top,
+    ...procedures,
+    ...concerns,
+    ...doctors,
+    ...locationIndex,
+    ...locationPages,
+    ...locationDoctorPages,
+  ].map(
     ({ path, priority }) => ({
       url: `${baseUrl}${path}`,
       lastModified,

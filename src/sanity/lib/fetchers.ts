@@ -554,3 +554,62 @@ export async function getConcernSlugs(): Promise<string[]> {
   if (isFilled(slugs)) return slugs;
   return LOCAL_CONCERN_SLUGS;
 }
+
+// ── Location fetchers ────────────────────────────────────────────────────────
+
+import { allLocationsQuery, locationByCityAreaQuery } from "./queries";
+import { NCR_AREAS, type NcrArea } from "@/data/locations";
+
+export type SanityLocation = {
+  _id: string;
+  area: string;
+  areaSlug: string;
+  city: string;
+  citySlug: string;
+  pincode?: string;
+  headline?: string;
+  intro?: string;
+  faqs?: { question: string; answer: string }[];
+  metaTitle?: string;
+  metaDescription?: string;
+};
+
+/** All enabled locations from Sanity, falling back to the static NCR_AREAS. */
+export async function getAllLocations(): Promise<SanityLocation[]> {
+  const docs = await safeFetch<SanityLocation[]>(allLocationsQuery);
+  if (isFilled(docs)) return docs;
+  // Fallback: map static data to the same shape (no overrides)
+  return NCR_AREAS.map((a) => ({
+    _id: `location.${a.areaSlug}`,
+    area: a.area,
+    areaSlug: a.areaSlug,
+    city: a.city,
+    citySlug: a.citySlug,
+    pincode: a.pincode,
+  }));
+}
+
+/** Single location by city + area slug. */
+export async function getLocationByCityArea(
+  citySlug: string,
+  areaSlug: string,
+): Promise<SanityLocation | null> {
+  const doc = await safeFetch<SanityLocation | null>(
+    locationByCityAreaQuery,
+    { citySlug, areaSlug },
+  );
+  if (doc) return doc;
+  // Static fallback
+  const area = NCR_AREAS.find(
+    (a) => a.citySlug === citySlug && a.areaSlug === areaSlug,
+  );
+  if (!area) return null;
+  return {
+    _id: `location.${area.areaSlug}`,
+    area: area.area,
+    areaSlug: area.areaSlug,
+    city: area.city,
+    citySlug: area.citySlug,
+    pincode: area.pincode,
+  };
+}

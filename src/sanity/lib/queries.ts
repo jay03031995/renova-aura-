@@ -216,3 +216,37 @@ export const eeatPillarsQuery = /* groq */ `
 export const trustItemsQuery = /* groq */ `
   *[_type == "trustItem"] | order(order asc){ icon, text }
 `;
+
+// ── Location queries ─────────────────────────────────────────────────────────
+
+export const allLocationsQuery = /* groq */ `
+  *[_type == "location" && enabled != false] | order(citySlug asc, areaSlug.current asc) {
+    _id,
+    area,
+    "areaSlug": areaSlug.current,
+    city,
+    citySlug,
+    pincode,
+    headline,
+    intro,
+    faqs[]{ question, answer },
+    metaTitle,
+    metaDescription
+  }
+`;
+
+export const locationByCityAreaQuery = /* groq */ `
+  *[_type == "location" && citySlug == $citySlug && areaSlug.current == $areaSlug && enabled != false][0] {
+    _id,
+    area,
+    "areaSlug": areaSlug.current,
+    city,
+    citySlug,
+    pincode,
+    headline,
+    intro,
+    faqs[]{ question, answer },
+    metaTitle,
+    metaDescription
+  }
+`;

@@ -31,6 +31,7 @@ import {
 } from "./siteContent";
 import { appointmentSchema } from "./appointment";
 import { leadSchema } from "./lead";
+import { locationSchema } from "./location";
 
 export const schemaTypes = [
   // Objects
@@ -60,6 +61,7 @@ export const schemaTypes = [
   homepageFaqSchema,
   eeatPillarSchema,
   trustItemSchema,
+  locationSchema,
   redirectSchema,
   appointmentSchema,
   leadSchema,
