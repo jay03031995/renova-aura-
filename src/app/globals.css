@@ -1577,7 +1577,7 @@ button.sbv-card-clickable:focus-visible {
   position: fixed; inset: 0;
   background: rgba(42, 24, 16, .55);
   backdrop-filter: blur(6px);
-  z-index: 100;
+  z-index: 120; /* above the mobile nav drawer (111) */
   display: grid;
   place-items: center;
   padding: 30px;
@@ -4156,7 +4156,7 @@ button.sbv-card-clickable:focus-visible {
     opacity: 0;
     pointer-events: none;
     transition: opacity 0.3s ease;
-    z-index: 60;
+    z-index: 110; /* above the bottom tab bar (95) — drawer is portalled to body */
   }
   .nav-drawer-backdrop.open { opacity: 1; pointer-events: auto; }
 
@@ -4171,7 +4171,7 @@ button.sbv-card-clickable:focus-visible {
     background: var(--paper);
     transform: translateX(100%);
     transition: transform 0.32s var(--ease, ease);
-    z-index: 61;
+    z-index: 111; /* above the bottom tab bar (95) */
     overflow-y: auto;
     padding: 22px 22px calc(22px + env(safe-area-inset-bottom, 0px));
     box-shadow: -14px 0 44px rgba(20, 20, 10, 0.22);

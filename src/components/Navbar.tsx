@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import Link from "next/link";
 import { CLINIC, telHref, waHref } from "@/data/clinic";
 import { DOCTORS } from "@/data/doctors";
@@ -34,6 +35,11 @@ const MOBILE_LINKS: { label: string; href: string }[] = [
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  // Portal the drawer to <body> only after mount (avoids SSR mismatch and
+  // escapes the .nav backdrop-filter containing block that was shoving the
+  // fixed drawer off-screen).
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
   const { open } = useBooking();
 
   useEffect(() => {
@@ -238,17 +244,21 @@ export default function Navbar() {
         </div>
       </div>
 
-      {/* Slide-in drawer (mobile) */}
-      <div
-        className={"nav-drawer-backdrop" + (menuOpen ? " open" : "")}
-        onClick={closeMenu}
-        aria-hidden={!menuOpen}
-      />
-      <aside
-        className={"nav-drawer" + (menuOpen ? " open" : "")}
-        aria-hidden={!menuOpen}
-        aria-label="Menu"
-      >
+      {/* Slide-in drawer (mobile) — portalled to <body> so it isn't trapped
+          by the .nav backdrop-filter containing block / stacking context */}
+      {mounted &&
+        createPortal(
+          <>
+            <div
+              className={"nav-drawer-backdrop" + (menuOpen ? " open" : "")}
+              onClick={closeMenu}
+              aria-hidden={!menuOpen}
+            />
+            <aside
+              className={"nav-drawer" + (menuOpen ? " open" : "")}
+              aria-hidden={!menuOpen}
+              aria-label="Menu"
+            >
         <button
           type="button"
           className="nav-drawer-close"
@@ -301,7 +311,10 @@ export default function Navbar() {
         </button>
 
         <div className="nav-drawer-hours">{CLINIC.hours}</div>
-      </aside>
+            </aside>
+          </>,
+          document.body,
+        )}
     </nav>
   );
 }
