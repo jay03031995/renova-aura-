@@ -70,7 +70,9 @@ export default async function PillarPage({
 
       <section className="section">
         <div className="container">
-          <div className="proc-grid">
+          {/* proc-grid-static overrides the homepage swipe-shelf on mobile
+              to give a proper 2×2 grid on the "view all treatments" page */}
+          <div className="proc-grid proc-grid-static">
             {procedures.map((p) => (
               <Link
                 key={p.slug}

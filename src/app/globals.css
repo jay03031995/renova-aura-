@@ -3856,11 +3856,46 @@ button.sbv-card-clickable:focus-visible {
   .modal-backdrop.open .modal { transform: translateY(0); }
   .modal-side { display: none; }
   .modal-body {
-    padding: 24px 20px;
+    padding: 20px 18px 32px;
     overflow-y: auto;
     max-height: 92dvh;
   }
 
+  /* Booking widget: optimise internal elements for the phone bottom-sheet */
+  .modal-body h4 { font-size: 18px; margin-bottom: 18px; }
+  .chip-grid { grid-template-columns: 1fr 1fr; gap: 8px; }
+  .choice-chip { font-size: 12.5px; padding: 9px 10px; }
+  .slot-grid { grid-template-columns: repeat(5, 1fr) !important; gap: 6px; }
+  .slot { font-size: 12px; padding: 9px 4px; }
+  .field-row { grid-template-columns: 1fr; gap: 10px; }
+  .steps-indicator { margin-bottom: 16px; }
+  .step-label { margin-bottom: 8px; }
+  .field input, .field select { font-size: 15px; padding: 11px 14px; }
+  .modal-actions { gap: 8px; }
+  .modal-actions .btn { font-size: 13.5px; padding: 12px 16px; }
+  .patient-chip-row { gap: 6px; }
+  .patient-chip { font-size: 12px; padding: 6px 12px; }
+  .your-appts { margin-bottom: 16px; }
+
+  /* --- "View all treatments" page: proper 2×2 grid (NOT a scroll shelf) --- */
+  /* Override the scroll-shelf rule specifically for pillar listing pages.
+     We use a data attribute set on the pillar page grid to distinguish. */
+  .proc-grid-static {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 12px !important;
+    overflow-x: visible !important;
+    scroll-snap-type: none !important;
+    padding-left: 0 !important;
+    margin-left: 0 !important;
+  }
+  .proc-grid-static > * {
+    flex: none !important;
+    max-width: none !important;
+    scroll-snap-align: none !important;
+  }
+
+  /* --- Homepage/concern swipe shelves (keep as before) --- */
   /* --- Strict 2-up swipe shelves: two cards per row, swipe for more.
      Cards are slimmed below so the rich content fits at half-width. --- */
   .proc-grid,
@@ -4024,6 +4059,29 @@ button.sbv-card-clickable:focus-visible {
     transform: none;
   }
   button.sbv-card-clickable:hover { transform: translateY(-2px); }
+
+  /* ── Procedure detail page (description page) ── */
+  .dp-hero { padding: 32px 0 24px; }
+  .dp-hero-grid { gap: 24px; }
+  .dp-section { padding: 44px 0; }
+  .dp-photo-wrap { aspect-ratio: 4/3; }
+  .dp-hero h1 { font-size: clamp(26px, 7.5vw, 36px); }
+  .dp-doc-title { font-size: 12px; margin-bottom: 8px; }
+  .dp-tagline { font-size: 14px; margin-bottom: 16px; }
+  .dp-bio { font-size: 14px; line-height: 1.65; margin-bottom: 20px; }
+  .dp-cta { flex-direction: column; gap: 10px; }
+  .dp-cta .btn { width: 100%; justify-content: center; }
+  .dp-creds { grid-template-columns: 1fr 1fr; gap: 10px; }
+  .dp-cred { padding: 14px; }
+  .dp-cred-icon { font-size: 22px; }
+  .dp-head { margin-bottom: 28px; padding: 0 4px; }
+  .dp-head h2 { font-size: clamp(22px, 6vw, 28px); }
+  .dp-treats,
+  .dp-quotes { grid-template-columns: 1fr; }
+  .dp-others { grid-template-columns: 1fr 1fr; gap: 12px; }
+  .dp-timeline { padding-left: 28px; }
+  .dp-timeline::before { left: 8px; }
+  .dp-tentry-dot { left: -28px; }
 }
 
 /* =========================================================
