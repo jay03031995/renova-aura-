@@ -225,9 +225,13 @@ export default function SiteLayout({
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
       <BookingProvider>
-        <Announcement />
-        <TopContactBar />
-        <Navbar />
+        {/* Sticky site header — announcement bar + contact strip + nav
+            all stick together as one unit on both mobile and desktop */}
+        <header className="site-header">
+          <Announcement />
+          <TopContactBar />
+          <Navbar />
+        </header>
         <main>{children}</main>
         <Footer />
         <FabStack />

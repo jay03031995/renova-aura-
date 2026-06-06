@@ -5,8 +5,7 @@ import ToolsBanner from "@/components/home/ToolsBanner";
 import HairTransplantFocus from "@/components/home/HairTransplantFocus";
 import PlasticSurgeryFocus from "@/components/home/PlasticSurgeryFocus";
 import SkinConcernsSection from "@/components/home/SkinConcernsSection";
-// WhyUs (EEAT pillars) removed — section caused mobile layout issues;
-// the E-E-A-T trust signals are distributed across other sections.
+import WhyUs from "@/components/home/WhyUs"; // desktop only (hidden ≤640px via CSS)
 import DoctorsSection from "@/components/home/DoctorsSection";
 // Results + Testimonials hidden until RenovaAura's own patient photos and
 // testimonials are available. Re-enable by uncommenting the imports + JSX
@@ -33,6 +32,7 @@ export default async function Home() {
       <HairTransplantFocus />
       <PlasticSurgeryFocus />
       <SkinConcernsSection />
+      <WhyUs />
       <DoctorsSection />
       {/* <Results /> — unpublished until RenovaAura before/after photos exist */}
       {/* <Testimonials /> — unpublished until RenovaAura testimonials exist */}

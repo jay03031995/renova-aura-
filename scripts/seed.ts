@@ -26,6 +26,7 @@ import { CONCERNS } from "../src/data/concerns";
 import { PACKAGES } from "../src/data/packages";
 import { EEAT, FAQS, TESTIMONIALS, TRUST_ITEMS } from "../src/data/site";
 import { CLINIC } from "../src/data/clinic";
+import { NCR_AREAS } from "../src/data/locations";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const PUBLIC_DIR = join(__dirname, "..", "public");
@@ -452,6 +453,31 @@ async function main() {
     console.log("Treatment packages only…");
     await commit("packages", buildPackages());
     console.log("\n✓ Packages seed complete.");
+    return;
+  }
+
+  // Seed the 40 NCR location documents (idempotent — createOrReplace).
+  if (only === "locations") {
+    console.log(`Seeding ${NCR_AREAS.length} NCR location documents…`);
+    const docs = NCR_AREAS.map((a) => ({
+      _id: `location.${a.areaSlug}`,
+      _type: "location",
+      area: a.area,
+      areaSlug: { _type: "slug", current: a.areaSlug },
+      city: a.city,
+      citySlug: a.citySlug,
+      pincode: a.pincode ?? "",
+      enabled: true,
+    }));
+    // Split into batches of 20 to stay under Sanity's transaction size limit.
+    for (let i = 0; i < docs.length; i += 20) {
+      const batch = docs.slice(i, i + 20);
+      let tx = client.transaction();
+      for (const doc of batch) tx = tx.createOrReplace(doc);
+      await tx.commit({ visibility: "async" });
+      console.log(`  ✓ batch ${Math.floor(i / 20) + 1}: seeded ${batch.map((d) => d.area).join(", ")}`);
+    }
+    console.log(`\n✓ ${NCR_AREAS.length} location documents seeded.`);
     return;
   }
 

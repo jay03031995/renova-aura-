@@ -148,10 +148,15 @@ p { margin: 0; color: var(--muted); }
 }
 
 /* ---------- Nav ---------- */
-.nav {
+/* The sticky wrapper now lives on .site-header; .nav stays in-flow */
+.site-header {
   position: sticky;
   top: 0;
   z-index: 50;
+  /* Ensure any open nav dropdowns still appear above page content */
+}
+.nav {
+  position: relative;
   /* RenovaAura cream (#FAFAF6) at 96% opacity — enough to fully conceal
      content underneath while still feeling slightly translucent. */
   background: rgba(250, 250, 246, .96);
@@ -1498,7 +1503,8 @@ button.sbv-card-clickable:focus-visible {
   margin-bottom: 60px;
 }
 .footer .logo { color: var(--cream); margin-bottom: 18px; }
-.footer-about { font-size: 14px; line-height: 1.7; margin-bottom: 24px; max-width: 320px; }
+.footer-about { font-size: 14px; line-height: 1.7; margin-bottom: 24px; max-width: 320px; color: #fff; }
+.footer-map { margin-top: 18px; margin-bottom: 4px; }
 .footer-social { display: flex; gap: 10px; }
 .footer-social a {
   width: 36px; height: 36px;
@@ -1520,7 +1526,7 @@ button.sbv-card-clickable:focus-visible {
   margin: 0 0 22px;
 }
 .footer-col ul { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 12px; }
-.footer-col a { font-size: 14px; transition: color .2s; }
+.footer-col a { font-size: 14px; transition: color .2s; color: #fff; }
 .footer-col a:hover { color: var(--sand); }
 .footer-connect {
   display: flex;
@@ -1556,13 +1562,14 @@ button.sbv-card-clickable:focus-visible {
 
 .footer-bottom {
   padding-top: 30px;
-  border-top: 1px solid rgba(217, 190, 152, .12);
+  border-top: 1px solid rgba(255,255,255,.15);
   display: flex;
   justify-content: space-between;
   font-size: 12px;
   letter-spacing: 0.04em;
   flex-wrap: wrap;
   gap: 14px;
+  color: #fff;
 }
 
 /* ---------- Modal ---------- */
@@ -3833,6 +3840,27 @@ button.sbv-card-clickable:focus-visible {
      and the footer has a WhatsApp quick-action. Call button stays. */
   .fab-wa { display: none; }
 
+  /* EEAT/Why Us section hidden on mobile, visible on desktop */
+  .why { display: none; }
+
+  /* Booking modal — full-screen on phone, scrollable */
+  .modal-backdrop { align-items: flex-end; }
+  .modal {
+    grid-template-columns: 1fr;
+    max-height: 92dvh;
+    width: 100%;
+    max-width: 100%;
+    border-radius: 24px 24px 0 0;
+    transform: translateY(100%);
+  }
+  .modal-backdrop.open .modal { transform: translateY(0); }
+  .modal-side { display: none; }
+  .modal-body {
+    padding: 24px 20px;
+    overflow-y: auto;
+    max-height: 92dvh;
+  }
+
   /* --- Strict 2-up swipe shelves: two cards per row, swipe for more.
      Cards are slimmed below so the rich content fits at half-width. --- */
   .proc-grid,
@@ -4157,8 +4185,8 @@ button.sbv-card-clickable:focus-visible {
   color: inherit;
 }
 .footer-col-chev { display: none; }
-.footer-address-link { color: inherit; text-decoration: none; }
-.footer-address-link:hover { text-decoration: underline; }
+.footer-address-link { color: #fff; text-decoration: none; }
+.footer-address-link:hover { text-decoration: underline; opacity: .85; }
 
 @media (max-width: 640px) {
   .footer-actions {

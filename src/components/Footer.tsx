@@ -2,41 +2,21 @@ import Link from "next/link";
 import { CLINIC, telHref, waHref } from "@/data/clinic";
 import { FOOTER_LINKS } from "@/data/site";
 import {
-  InstagramIcon,
-  YoutubeIcon,
-  LinkedinIcon,
-  WhatsappLogo,
   Phone,
   MapPin,
   Calendar,
+  WhatsappLogo,
 } from "@/components/icons";
-import { getSiteSettings } from "@/sanity/lib/fetchers";
 import BookButton from "@/components/BookButton";
 import FooterAccordion from "@/components/FooterAccordion";
 import AskAiBar from "@/components/AskAiBar";
 
-const mapsUrl = `https://www.google.com/maps?q=${CLINIC.mapsQuery}`;
+// Actual embed URL resolved from https://maps.app.goo.gl/4SYd5TPEHhLbuRhR9
+const MAPS_EMBED =
+  "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3501.0!2d77.3093212!3d28.6537164!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x390cfbe2a421adb7%3A0xf631ccc92514fec0!2sRenovaAura!5e0!3m2!1sen!2sin!4v1";
+const MAPS_LINK = `https://www.google.com/maps?q=${CLINIC.mapsQuery}`;
 
-const SOCIAL_ICON: Record<string, React.ElementType> = {
-  instagram: InstagramIcon,
-  youtube: YoutubeIcon,
-  linkedin: LinkedinIcon,
-  whatsapp: WhatsappLogo,
-};
-
-export default async function Footer() {
-  const settings = await getSiteSettings();
-  // Which single social icon to feature — editable in Sanity Studio
-  // under Site Settings → Footer → Featured social network.
-  const featuredSocial = (settings?.featuredSocial as string | undefined) ?? "instagram";
-  const socialUrl =
-    featuredSocial === "instagram" ? CLINIC.social.instagram
-    : featuredSocial === "youtube" ? CLINIC.social.youtube
-    : featuredSocial === "linkedin" ? CLINIC.social.linkedin
-    : featuredSocial === "whatsapp" ? waHref()
-    : CLINIC.social.instagram;
-  const SocialIcon = SOCIAL_ICON[featuredSocial] ?? InstagramIcon;
-
+export default function Footer() {
   return (
     <footer className="footer">
       <div className="container">
@@ -58,7 +38,7 @@ export default async function Footer() {
           </a>
           <a
             className="footer-action"
-            href={mapsUrl}
+            href={MAPS_LINK}
             target="_blank"
             rel="noopener noreferrer"
             aria-label="Get directions"
@@ -66,10 +46,7 @@ export default async function Footer() {
             <MapPin size={18} />
             <span>Directions</span>
           </a>
-          <BookButton
-            className="footer-action footer-action-book"
-            withArrow={false}
-          >
+          <BookButton className="footer-action footer-action-book" withArrow={false}>
             <Calendar />
             <span>Book</span>
           </BookButton>
@@ -86,9 +63,11 @@ export default async function Footer() {
                 height={56}
               />
             </Link>
+
+            {/* Address + Google Maps embed */}
             <p className="footer-about">
               <a
-                href={mapsUrl}
+                href={MAPS_LINK}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="footer-address-link"
@@ -99,15 +78,19 @@ export default async function Footer() {
               <br />
               {CLINIC.hours}
             </p>
-            <div className="footer-social">
-              <a
-                href={socialUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label={featuredSocial.charAt(0).toUpperCase() + featuredSocial.slice(1)}
-              >
-                <SocialIcon size={17} />
-              </a>
+
+            {/* Embedded map */}
+            <div className="footer-map">
+              <iframe
+                src={MAPS_EMBED}
+                width="100%"
+                height="180"
+                style={{ border: 0, borderRadius: 12, display: "block" }}
+                allowFullScreen
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+                title="RenovaAura Clinic — Anand Vihar, New Delhi"
+              />
             </div>
           </div>
 
