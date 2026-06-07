@@ -44,7 +44,11 @@ export type ReportSection =
       value: string;
       hint?: string;
     }
-  | { type: "spacer"; height?: number };
+  | { type: "spacer"; height?: number }
+  | {
+      type: "scoregrid";
+      items: { label: string; score: number }[];
+    };
 
 export type ReportInput = {
   title: string; // e.g. "Personal Skin Analysis Report"
@@ -190,14 +194,31 @@ function drawFooter(doc: jsPDF, pageNum: number, totalPages: number) {
   });
 }
 
-/** Disclaimer block above the footer on the last page. */
+/** Prominent boxed disclaimer above the footer on the last page. */
 function drawDisclaimer(doc: jsPDF, y: number, text: string): number {
-  setColor(doc, PALETTE.muted);
-  doc.setFontSize(7.5);
-  doc.setFont("helvetica", "italic");
-  const lines = doc.splitTextToSize(text, PAGE.w - PAGE.marginX * 2);
-  doc.text(lines, PAGE.marginX, y);
-  return y + lines.length * 3.2;
+  const innerW = PAGE.w - PAGE.marginX * 2;
+  doc.setFontSize(8);
+  doc.setFont("helvetica", "normal");
+  const lines = doc.splitTextToSize(text, innerW - 12);
+  const boxH = 12 + lines.length * 3.6;
+  // Tinted box with a left accent bar so it stands out
+  setFill(doc, PALETTE.cream);
+  setStroke(doc, PALETTE.tan);
+  doc.setLineWidth(0.3);
+  doc.roundedRect(PAGE.marginX, y, innerW, boxH, 2, 2, "FD");
+  setFill(doc, PALETTE.espresso);
+  doc.rect(PAGE.marginX, y, 1.6, boxH, "F");
+  // Bold title
+  setColor(doc, PALETTE.cocoa);
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(8.5);
+  doc.text("IMPORTANT — PLEASE READ", PAGE.marginX + 6, y + 6);
+  // Body
+  setColor(doc, PALETTE.ink);
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(8);
+  doc.text(lines, PAGE.marginX + 6, y + 11);
+  return y + boxH;
 }
 
 /** Cursor + page management — auto-paginate when content overflows. */
@@ -238,6 +259,24 @@ async function loadLogoDataUrl(): Promise<string | undefined> {
     const res = await fetch("/renovaaura-logo.png");
     if (!res.ok) return undefined;
     const blob = await res.blob();
+    // The base logo is dark — recolour it WHITE so it reads on the cocoa
+    // masthead band. Draw to canvas, then composite white over the alpha mask.
+    try {
+      const bitmap = await createImageBitmap(blob);
+      const canvas = document.createElement("canvas");
+      canvas.width = bitmap.width;
+      canvas.height = bitmap.height;
+      const ctx = canvas.getContext("2d");
+      if (ctx) {
+        ctx.drawImage(bitmap, 0, 0);
+        ctx.globalCompositeOperation = "source-in";
+        ctx.fillStyle = "#ffffff";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        return canvas.toDataURL("image/png");
+      }
+    } catch {
+      /* canvas tint unavailable — fall through to the original logo */
+    }
     return await new Promise<string>((resolve, reject) => {
       const reader = new FileReader();
       reader.onload = () => resolve(String(reader.result));
@@ -374,12 +413,12 @@ export async function generateReport(input: ReportInput): Promise<void> {
 
   // Disclaimer
   cursor.y += 6;
-  cursor.ensure(20);
+  cursor.ensure(34);
   cursor.y = drawDisclaimer(
     doc,
     cursor.y,
     input.disclaimer ??
-      "This report is generated for informational purposes only and does not constitute a medical diagnosis. The graft count and treatment recommendations are estimates based on the inputs you provided and standard clinical references. A board-certified RenovaAura consultant will confirm exact numbers and protocols during your in-person consultation.",
+      "This is NOT a final medical report or diagnosis. The scores and recommendations are AI/expert-system estimates based on the information you provided and standard clinical references. An in-person consultation with a board-certified RenovaAura doctor is essential before starting any treatment, procedure, or product. Do not begin any product or treatment suggested here without that consultation.",
   );
 
   // Footer on every page
@@ -487,5 +526,37 @@ function renderSection(doc: jsPDF, cursor: Cursor, s: ReportSection) {
     case "spacer":
       cursor.y += s.height ?? 4;
       break;
+    case "scoregrid": {
+      // Grid of score circles (4 per row) — the per-attribute skin scores.
+      const perRow = 4;
+      const cellW = (PAGE.w - PAGE.marginX * 2) / perRow;
+      const radius = 8;
+      const rows = Math.ceil(s.items.length / perRow);
+      cursor.ensure(rows * 26 + 2);
+      s.items.forEach((it, i) => {
+        const col = i % perRow;
+        const row = Math.floor(i / perRow);
+        const cx = PAGE.marginX + col * cellW + cellW / 2;
+        const cy = cursor.y + row * 26 + radius + 2;
+        // ring colour by score band
+        const ring =
+          it.score >= 80 ? PALETTE.tan : it.score >= 62 ? PALETTE.espresso : PALETTE.cocoa;
+        setStroke(doc, ring);
+        doc.setLineWidth(1.1);
+        setFill(doc, PALETTE.cream);
+        doc.circle(cx, cy, radius, "FD");
+        setColor(doc, PALETTE.cocoa);
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(11);
+        doc.text(String(it.score), cx, cy + 1.5, { align: "center" });
+        setColor(doc, PALETTE.muted);
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(7);
+        const lbl = doc.splitTextToSize(it.label, cellW - 2);
+        doc.text(lbl[0], cx, cy + radius + 4, { align: "center" });
+      });
+      cursor.y += rows * 26 + 2;
+      break;
+    }
   }
 }

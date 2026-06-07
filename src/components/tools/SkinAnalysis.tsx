@@ -26,6 +26,7 @@ import {
   analyseSkin,
 } from "@/lib/skinAnalysis";
 import { generateReport } from "@/lib/pdfReport";
+import SkinScorecard from "@/components/tools/SkinScorecard";
 import {
   analyseImage,
   downscaleDataUrl,
@@ -283,6 +284,12 @@ export default function SkinAnalysis() {
                 : "Active care recommended",
           },
           { type: "spacer", height: 2 },
+          { type: "heading", text: "Your skin scorecard" },
+          {
+            type: "scoregrid",
+            items: result.metrics.map((m) => ({ label: m.label, score: m.score })),
+          },
+          { type: "spacer", height: 2 },
           { type: "heading", text: "Your skin profile" },
           { type: "paragraph", text: result.skinProfile },
           ...(imageAnalysis
@@ -376,6 +383,19 @@ export default function SkinAnalysis() {
           a downloadable PDF report.
         </p>
       </header>
+
+      {result && result.metrics.length > 0 && (
+        <section className="scorecard-section">
+          <div className="scorecard-section-head">
+            <div className="tool-shell-eyebrow">Your skin map</div>
+            <p>
+              Per-attribute scores mapped from your photo and answers — higher
+              means healthier. Tap any concern below to see matched treatments.
+            </p>
+          </div>
+          <SkinScorecard photo={photo ?? undefined} metrics={result.metrics} />
+        </section>
+      )}
 
       <div className="tool-grid">
         <div className="tool-form">

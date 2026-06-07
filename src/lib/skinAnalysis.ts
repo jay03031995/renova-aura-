@@ -53,9 +53,119 @@ export type AnalysisResult = {
   lifestyleAdvice: string[];
   /** A 0–100 "skin health snapshot" score for visual feedback. */
   healthScore: number;
+  /** Per-attribute scores (0–100, higher = healthier) for the heat-map
+      scorecard overlay + report. */
+  metrics: SkinMetric[];
   /** Compressed one-line summary used as the lead summary. */
   summary: string;
 };
+
+export type SkinMetric = {
+  key: string;
+  label: string;
+  /** 0–100, higher = healthier / fewer issues. */
+  score: number;
+  /** Visual tone band for the ring colour. */
+  tone: "good" | "mid" | "low";
+};
+
+/**
+ * Derive 8 per-attribute scores from the questionnaire. Each starts from a
+ * healthy baseline and is reduced by the concerns / lifestyle factors that
+ * affect it. Higher = healthier (matches the on-screen scorecard rings).
+ */
+function buildMetrics(input: AnalysisInput): SkinMetric[] {
+  const { skinType, ageBracket, concerns, lifestyle } = input;
+  const c = new Set(concerns);
+  const l = new Set(lifestyle);
+  const older = ageBracket === "45-54" || ageBracket === "o55";
+
+  const clamp = (n: number) => Math.max(42, Math.min(99, Math.round(n)));
+  const tone = (s: number): SkinMetric["tone"] =>
+    s >= 80 ? "good" : s >= 62 ? "mid" : "low";
+
+  const defs: { key: string; label: string; base: number; penalty: number }[] = [
+    {
+      key: "hydration",
+      label: "Hydration",
+      base: 90,
+      penalty:
+        (skinType === "dry" ? 22 : 0) +
+        (l.has("low-sleep") ? 8 : 0) +
+        (l.has("alcohol") ? 6 : 0) +
+        (l.has("high-sun-exposure") ? 6 : 0) +
+        (c.has("dull-skin") ? 8 : 0),
+    },
+    {
+      key: "oiliness",
+      label: "Oiliness / Shine",
+      base: 88,
+      penalty:
+        (skinType === "oily" ? 24 : 0) +
+        (c.has("acne") ? 12 : 0) +
+        (c.has("open-pores") ? 10 : 0),
+    },
+    {
+      key: "texture",
+      label: "Texture",
+      base: 92,
+      penalty:
+        (c.has("scars") ? 22 : 0) +
+        (c.has("open-pores") ? 12 : 0) +
+        (c.has("acne") ? 10 : 0),
+    },
+    {
+      key: "dark-spots",
+      label: "Dark Spots",
+      base: 94,
+      penalty:
+        (c.has("pigmentation") ? 26 : 0) +
+        (l.has("high-sun-exposure") ? 10 : 0),
+    },
+    {
+      key: "dark-circles",
+      label: "Dark Circles",
+      base: 86,
+      penalty:
+        (c.has("dark-circles") ? 24 : 0) +
+        (l.has("low-sleep") ? 12 : 0) +
+        (l.has("screen-heavy") ? 6 : 0),
+    },
+    {
+      key: "redness",
+      label: "Redness prone",
+      base: 90,
+      penalty:
+        (c.has("rosacea") ? 26 : 0) +
+        (skinType === "sensitive" ? 14 : 0) +
+        (l.has("alcohol") ? 6 : 0),
+    },
+    {
+      key: "wrinkles",
+      label: "Wrinkles",
+      base: 92,
+      penalty:
+        (c.has("anti-ageing") ? 22 : 0) +
+        (older ? 14 : 0) +
+        (l.has("smoker") ? 10 : 0) +
+        (l.has("high-sun-exposure") ? 6 : 0),
+    },
+    {
+      key: "blemish",
+      label: "Blemish prone",
+      base: 90,
+      penalty:
+        (c.has("acne") ? 24 : 0) +
+        (skinType === "oily" ? 10 : 0) +
+        (c.has("scars") ? 6 : 0),
+    },
+  ];
+
+  return defs.map((d) => {
+    const score = clamp(d.base - d.penalty);
+    return { key: d.key, label: d.label, score, tone: tone(score) };
+  });
+}
 
 // Map concern → procedure recommendations (curated)
 const CONCERN_TO_PROCEDURES: Record<SkinConcern, string[]> = {
@@ -219,6 +329,7 @@ export function analyseSkin(input: AnalysisInput): AnalysisResult {
     recommendedConcernSlugs,
     lifestyleAdvice,
     healthScore,
+    metrics: buildMetrics(input),
     summary,
   };
 }
