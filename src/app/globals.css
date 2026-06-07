@@ -2392,12 +2392,13 @@ button.sbv-card-clickable:focus-visible {
 
 @media (max-width: 980px) {
   .doc-row, .doc-row.reverse {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
     gap: 30px;
     margin-bottom: 70px;
   }
   .doc-row.reverse .doc-photo-wrap { order: 0; }
-  .doc-photo-wrap { height: 420px; }
+  .doc-photo-wrap { height: 420px; min-width: 0; }
+  .doc-body { min-width: 0; }
 }
 @media (max-width: 640px) {
   .doc-photo-wrap { height: 360px; }
@@ -3634,14 +3635,19 @@ button.sbv-card-clickable:focus-visible {
 }
 
 @media (max-width: 900px) {
+  /* minmax(0, 1fr) — NOT plain 1fr — so the image's min-content can't blow
+     the single column wider than the container (caused hero text clipping). */
   .pillar-hero-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
     gap: 40px;
   }
   .pillar-hero-image {
     aspect-ratio: 16 / 10;
     max-height: 360px;
+    min-width: 0;
+    width: 100%;
   }
+  .pillar-hero-text { min-width: 0; }
 }
 
 /* =========================================================
@@ -4639,6 +4645,20 @@ button.sbv-card-clickable:focus-visible {
   .pillar-hero { padding-top: 26px; padding-bottom: 6px; }
   .pillar-hero-subtitle { font-size: 15px; line-height: 1.65; }
   .section-tight { padding: 36px 0; }
+}
+
+/* Header fits on phones: trim nav padding + cap logo so logo + WhatsApp +
+   Book + hamburger never overflow (was clipping at ≤360px). */
+@media (max-width: 640px) {
+  .nav-inner { padding-left: 16px; padding-right: 16px; }
+  .nav .logo img { max-width: 150px; width: auto; height: auto; }
+}
+@media (max-width: 384px) {
+  .nav .logo img { max-width: 124px; }
+  .nav-wa { width: 36px; height: 36px; }
+  .nav-book-mobile { padding: 8px 12px; font-size: 12px; }
+  .nav-hamburger { width: 40px; }
+  .nav-mobile-controls { gap: 4px; }
 }
 
 /* Extra-small phones (≤375px) — slightly tighter type so nothing clips */
