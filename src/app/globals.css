@@ -51,6 +51,9 @@ html, body {
   line-height: 1.55;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
+  /* Guard against accidental horizontal overflow on mobile.
+     `clip` (not `hidden`) so it does NOT break the sticky header. */
+  overflow-x: clip;
 }
 
 html { scroll-behavior: smooth; }
@@ -4577,4 +4580,71 @@ button.sbv-card-clickable:focus-visible {
   .pillar-hero { padding-top: 28px; padding-bottom: 8px; }
   .pillar-hero-headline { font-size: clamp(26px, 7vw, 38px); }
   .pillar-hero-subtitle { font-size: 14.5px; line-height: 1.6; }
+}
+
+/* =========================================================
+   MOBILE RESPONSIVENESS AUDIT (320 / 375 / 390 / 414px)
+   Doctors section, footer, section-head, white-space compaction
+   ========================================================= */
+
+/* Section headers (Doctors "Two doctors…", etc.) stack on phone/tablet
+   so the intro paragraph isn't crushed into a narrow right column. */
+@media (max-width: 820px) {
+  .section-head {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 14px;
+    margin-bottom: 32px;
+  }
+  .section-head-copy { max-width: 100%; }
+  .section-head p { max-width: 100%; }
+}
+
+@media (max-width: 640px) {
+  /* ---- Global white-space compaction ---- */
+  .section { padding: 48px 0; }
+  .section-head { margin-bottom: 26px; }
+  .section-head p { font-size: 15px; line-height: 1.6; }
+
+  /* ---- Doctors section ---- */
+  .section.doctors { padding: 40px 0; }
+  .doc-list { padding: 8px 0 0; }
+  .doc-row,
+  .doc-row.reverse { margin-bottom: 48px; gap: 18px; }
+  .doc-row:last-child { margin-bottom: 0; }
+  /* Portrait sizes to its image instead of a fixed 360px gap */
+  .doc-photo-wrap { height: auto; aspect-ratio: 4 / 5; }
+  .doc-body .eyebrow { margin-bottom: 12px; }
+  .doc-body h2 { font-size: clamp(24px, 7vw, 32px); }
+  .doc-body .doc-title { font-size: 14px; margin-bottom: 14px; }
+  .doc-body .doc-body-bio { font-size: 14.5px; line-height: 1.65; }
+  .doc-creds { gap: 12px; margin: 18px 0; }
+  .doc-cta { flex-direction: column; gap: 10px; }
+  .doc-cta .btn { width: 100%; justify-content: center; }
+
+  /* ---- Footer: single column (brand block, then stacked accordions) ---- */
+  .footer { padding: 56px 0 28px; }
+  .footer-grid { grid-template-columns: 1fr; gap: 4px; margin-bottom: 32px; }
+  .footer-grid > div:first-child { margin-bottom: 22px; }
+  .footer-map { max-width: 360px; }
+  .footer-about { max-width: 100%; }
+  .footer-bottom {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+    text-align: left;
+  }
+
+  /* ---- Procedure detail (treatment description) breathing room ---- */
+  .pillar-hero { padding-top: 26px; padding-bottom: 6px; }
+  .pillar-hero-subtitle { font-size: 15px; line-height: 1.65; }
+  .section-tight { padding: 36px 0; }
+}
+
+/* Extra-small phones (≤375px) — slightly tighter type so nothing clips */
+@media (max-width: 375px) {
+  .container { padding: 0 16px; }
+  .pillar-hero-headline { font-size: clamp(24px, 8vw, 32px); }
+  .loc-hero-title { font-size: clamp(22px, 8vw, 30px); }
+  .doc-cred-num { font-size: 26px; }
 }
