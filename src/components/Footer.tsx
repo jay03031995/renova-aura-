@@ -28,7 +28,7 @@ export default function Footer() {
           </a>
           <a
             className="footer-action"
-            href={waHref("Hi RenovaAura, I'd like to ask about a treatment.")}
+            href={waHref()}
             target="_blank"
             rel="noopener noreferrer"
             aria-label="Chat on WhatsApp"

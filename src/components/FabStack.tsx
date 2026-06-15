@@ -9,7 +9,7 @@ import { Phone } from "@/components/icons";
  * live in the bottom tab bar / Tools section instead.)
  */
 export default function FabStack() {
-  const wa = waHref("Hi RenovaAura, I'd like to book a consultation.");
+  const wa = waHref();
 
   return (
     <div className="fab-stack">

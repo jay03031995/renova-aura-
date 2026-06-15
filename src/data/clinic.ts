@@ -32,10 +32,18 @@ export const CLINIC = {
 
 const digits = (s: string) => s.replace(/[^0-9]/g, "");
 
+/**
+ * Default pre-filled WhatsApp greeting — on-brand and lists the full service
+ * line so every chat opens warmly and advertises what RenovaAura offers.
+ * Single source of truth: pass a custom string to waHref() to override.
+ */
+export const WHATSAPP_GREETING =
+  "Hi RenovaAura 👋 I'd like to know more about your treatments — Hair Transplant, Plastic Surgery, Dermatology, Wellness & Aesthetics. Could you help me book a consultation?";
+
 export const telHref = (phone: string = CLINIC.phone) =>
   "tel:" + phone.replace(/\s/g, "");
 
-export const waHref = (text?: string) => {
+export const waHref = (text: string = WHATSAPP_GREETING) => {
   const base = "https://wa.me/91" + digits(CLINIC.phone).slice(-10);
-  return text ? `${base}?text=${encodeURIComponent(text)}` : base;
+  return `${base}?text=${encodeURIComponent(text)}`;
 };

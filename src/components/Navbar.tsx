@@ -216,7 +216,7 @@ export default function Navbar() {
         <div className="nav-mobile-controls">
           <a
             className="nav-wa"
-            href={waHref("Hi RenovaAura, I'd like to ask about a treatment.")}
+            href={waHref()}
             target="_blank"
             rel="noopener noreferrer"
             aria-label="Chat on WhatsApp"
@@ -287,7 +287,7 @@ export default function Navbar() {
           </a>
           <a
             className="nav-drawer-action"
-            href={waHref("Hi RenovaAura, I'd like to ask about a treatment.")}
+            href={waHref()}
             target="_blank"
             rel="noopener noreferrer"
             onClick={closeMenu}
