@@ -307,7 +307,6 @@ function buildSingletons() {
     address: CLINIC.address,
     hours: CLINIC.hours,
     phone: CLINIC.phone,
-    phone2: CLINIC.phone2,
     email: CLINIC.email,
     googleMapsEmbedUrl: `https://www.google.com/maps?q=${CLINIC.mapsQuery}&output=embed`,
     googleMapsLinkUrl: `https://www.google.com/maps?q=${CLINIC.mapsQuery}`,

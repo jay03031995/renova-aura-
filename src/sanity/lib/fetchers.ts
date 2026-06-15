@@ -216,7 +216,6 @@ export async function getClinic(): Promise<ClinicData> {
     address?: string;
     hours?: string;
     phone?: string;
-    phone2?: string;
     email?: string;
     shopUrl?: string;
     instagramUrl?: string;
@@ -232,7 +231,6 @@ export async function getClinic(): Promise<ClinicData> {
     address: doc.address ?? LOCAL_CLINIC.address,
     hours: doc.hours ?? LOCAL_CLINIC.hours,
     phone: doc.phone ?? LOCAL_CLINIC.phone,
-    phone2: doc.phone2 ?? LOCAL_CLINIC.phone2,
     email: doc.email ?? LOCAL_CLINIC.email,
     shopUrl: doc.shopUrl ?? LOCAL_CLINIC.shopUrl,
     social: {

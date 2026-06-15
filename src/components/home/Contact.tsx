@@ -48,8 +48,6 @@ export default function Contact() {
                   <div className="contact-item-label">Call us</div>
                   <div className="contact-item-val">
                     <a href={telHref(CLINIC.phone)}>{CLINIC.phone}</a>
-                    <br />
-                    <a href={telHref(CLINIC.phone2)}>{CLINIC.phone2}</a>
                   </div>
                 </div>
               </div>

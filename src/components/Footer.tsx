@@ -102,7 +102,7 @@ export default function Footer() {
         <div className="footer-bottom">
           <span>© 2026 {CLINIC.name} · All rights reserved</span>
           <span>
-            {CLINIC.phone} · {CLINIC.phone2} · {CLINIC.email}
+            {CLINIC.phone} · {CLINIC.email}
           </span>
         </div>
       </div>

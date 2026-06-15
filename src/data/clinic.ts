@@ -1,13 +1,12 @@
 /**
- * Clinic-level facts. The address is confirmed; phone, email, and social
+ * Clinic-level facts. The address and phone are confirmed; email and social
  * handles are still placeholders — replace before launch.
  */
 export const CLINIC = {
   name: "RenovaAura",
   tagline:
     "Hair Transplant · Plastic Surgery · Dermatology · Wellness · Aesthetics",
-  phone: "+91 00000 00000",
-  phone2: "+91 00000 00001",
+  phone: "+91 92052 20070",
   email: "hello@renovaaura.com",
   address: "C-3, Anand Vihar, New Delhi, 110092",
   // Structured pieces used for schema.org JSON-LD and Google Maps queries.

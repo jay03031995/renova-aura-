@@ -86,9 +86,6 @@ export default async function ResultsPage() {
               <Phone /> {CLINIC.phone}
             </span>
             <span>
-              <Phone /> {CLINIC.phone2}
-            </span>
-            <span>
               <MapPin /> Anand Vihar, New Delhi
             </span>
           </div>
