@@ -114,7 +114,7 @@ export default async function LocationTreatmentPage({ params }: { params: Params
         <div className="container loc-hero-body">
           <nav className="loc-breadcrumb loc-breadcrumb-light" aria-label="Breadcrumb">
             <Link href="/">Home</Link><span>/</span>
-            <Link href="/locations">Locations</Link><span>/</span>
+            <span>Locations</span><span>/</span>
             <span>{location.city}</span><span>/</span>
             <span>{location.area}</span><span>/</span>
             <span>{procedure.name}</span>

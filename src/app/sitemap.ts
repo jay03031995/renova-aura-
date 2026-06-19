@@ -41,9 +41,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.7,
   }));
 
-  // Location SEO pages: /locations + all area × treatment combinations
+  // Location SEO pages: all area × treatment combinations.
+  // The browsable /locations directory hub is intentionally NOT part of the
+  // public site (no nav link, no index page) — only these deep landing pages
+  // are exposed to search engines via the sitemap.
   // Priority: 0.85 for hair transplant (main pillar), 0.8 for others.
-  const locationIndex = [{ path: "/locations", priority: 0.9 }];
   const locationPages = locations.flatMap((loc) =>
     PROCEDURES.map((p) => ({
       path: `/locations/${loc.citySlug}/${loc.areaSlug}/${p.slug}`,
@@ -65,7 +67,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...procedures,
     ...concerns,
     ...doctors,
-    ...locationIndex,
     ...locationPages,
     ...locationDoctorPages,
   ].map(

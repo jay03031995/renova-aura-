@@ -120,7 +120,7 @@ export default async function LocationDoctorPage({ params }: { params: Params })
           <nav className="loc-breadcrumb" aria-label="Breadcrumb">
             <Link href="/">Home</Link>
             <span>/</span>
-            <Link href="/locations">Locations</Link>
+            <span>Locations</span>
             <span>/</span>
             <Link href={`/locations/${city}/${area}/${treatment}`}>
               {procedure.name} near {location.area}
