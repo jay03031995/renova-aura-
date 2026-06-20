@@ -78,7 +78,7 @@ const CLINIC = {
     "Dermatology · Wellness · Aesthetics · Plastic Surgery · Hair Transplant",
   address: "C-3, Anand Vihar, New Delhi, 110092",
   phone: "+91 92052 20070",
-  email: "hello@renovaaura.com",
+  email: "info@renovaaura.com",
   web: "renovaaura.com",
 };
 

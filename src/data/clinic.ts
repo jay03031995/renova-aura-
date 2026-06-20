@@ -7,7 +7,7 @@ export const CLINIC = {
   tagline:
     "Hair Transplant · Plastic Surgery · Dermatology · Wellness · Aesthetics",
   phone: "+91 92052 20070",
-  email: "hello@renovaaura.com",
+  email: "info@renovaaura.com",
   address: "C-3, Anand Vihar, New Delhi, 110092",
   // Structured pieces used for schema.org JSON-LD and Google Maps queries.
   addressParts: {
