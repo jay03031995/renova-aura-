@@ -7,7 +7,8 @@
  * Brand glyphs are simplified, monochrome (currentColor) marks — recognisable
  * but not pixel-exact logos; swap for official SVGs anytime.
  */
-import { CLINIC, waHref } from "@/data/clinic";
+import { waHref } from "@/data/clinic";
+import { getClinic } from "@/sanity/lib/fetchers";
 import {
   InstagramIcon,
   YoutubeIcon,
@@ -87,19 +88,21 @@ const AIS = [
   { name: "Grok", href: `https://grok.com/?q=${Q}`, Mark: GrokMark },
 ];
 
-export default function AskAiBar() {
+export default async function AskAiBar() {
+  // Social URLs from Sanity Studio (static config as fallback).
+  const { social } = await getClinic();
   return (
     <div className="footer-connect">
       <div className="fc-group">
         <span className="fc-label">Catch us on:</span>
         <div className="fc-icons">
-          <a href={CLINIC.social.instagram} target="_blank" rel="noopener noreferrer" aria-label="Instagram">
+          <a href={social.instagram} target="_blank" rel="noopener noreferrer" aria-label="Instagram">
             <InstagramIcon />
           </a>
-          <a href={CLINIC.social.linkedin} target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
+          <a href={social.linkedin} target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
             <LinkedinIcon />
           </a>
-          <a href={CLINIC.social.youtube} target="_blank" rel="noopener noreferrer" aria-label="YouTube">
+          <a href={social.youtube} target="_blank" rel="noopener noreferrer" aria-label="YouTube">
             <YoutubeIcon />
           </a>
           <a href={waHref()} target="_blank" rel="noopener noreferrer" aria-label="WhatsApp">

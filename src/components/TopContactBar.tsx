@@ -4,6 +4,7 @@
  */
 import Link from "next/link";
 import { CLINIC, telHref, waHref } from "@/data/clinic";
+import { getClinic } from "@/sanity/lib/fetchers";
 import {
   MapPin,
   Phone,
@@ -16,7 +17,10 @@ import {
 
 const mapsUrl = `https://www.google.com/maps?q=${CLINIC.mapsQuery}`;
 
-export default function TopContactBar() {
+export default async function TopContactBar() {
+  // Social URLs come from Sanity Studio (with the static config as fallback),
+  // so links added/edited in the Studio go live with no code change.
+  const { social } = await getClinic();
   return (
     <div className="topbar">
       <div className="topbar-inner">
@@ -52,7 +56,7 @@ export default function TopContactBar() {
           </a>
           <span className="topbar-social">
             <a
-              href={CLINIC.social.instagram}
+              href={social.instagram}
               target="_blank"
               rel="noopener noreferrer"
               aria-label="Instagram"
@@ -60,7 +64,7 @@ export default function TopContactBar() {
               <InstagramIcon />
             </a>
             <a
-              href={CLINIC.social.youtube}
+              href={social.youtube}
               target="_blank"
               rel="noopener noreferrer"
               aria-label="YouTube"
@@ -68,7 +72,7 @@ export default function TopContactBar() {
               <YoutubeIcon />
             </a>
             <Link
-              href={CLINIC.social.linkedin}
+              href={social.linkedin}
               target="_blank"
               rel="noopener noreferrer"
               aria-label="LinkedIn"

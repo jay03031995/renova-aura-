@@ -10,6 +10,7 @@
  * data file directly (see /procedures routes).
  */
 
+import { cache } from "react";
 import { client, sanityEnabled } from "./client";
 import {
   announcementQuery,
@@ -209,7 +210,7 @@ export async function getResults(): Promise<ResultFetched[]> {
 
 export type ClinicData = typeof LOCAL_CLINIC & { logoUrl?: string };
 
-export async function getClinic(): Promise<ClinicData> {
+export const getClinic = cache(async (): Promise<ClinicData> => {
   const doc = await safeFetch<{
     name?: string;
     tagline?: string;
@@ -240,7 +241,7 @@ export async function getClinic(): Promise<ClinicData> {
     },
     logoUrl: doc.logo?.url,
   };
-}
+});
 
 export type AnnouncementData = {
   enabled: boolean;
