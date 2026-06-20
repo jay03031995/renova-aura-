@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { CLINIC } from "@/data/clinic";
+import { getClinic } from "@/sanity/lib/fetchers";
 
 /**
  * Inter is the Google Fonts equivalent of Apple's SF Pro family.
@@ -118,15 +119,23 @@ const rootJsonLd = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
+  // Keep the WebSite publisher.sameAs in sync with the Sanity-managed social
+  // profiles (clone the const — never mutate shared state across requests).
+  const { social } = await getClinic();
+  const ld = structuredClone(rootJsonLd) as typeof rootJsonLd & {
+    publisher: { sameAs?: string[] };
+  };
+  ld.publisher.sameAs = [social.instagram, social.youtube, social.linkedin];
+
   return (
     <html lang="en" className={`${inter.variable} ${mono.variable}`}>
       <body>
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(rootJsonLd) }}
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(ld) }}
         />
         {children}
       </body>
