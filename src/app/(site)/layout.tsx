@@ -8,6 +8,7 @@ import MobileTabBar from "@/components/MobileTabBar";
 import BookingModal from "@/components/BookingModal";
 import RevealInit from "@/components/RevealInit";
 import { CLINIC } from "@/data/clinic";
+import { getClinic } from "@/sanity/lib/fetchers";
 
 /**
  * No-cache / always-fresh: every page under (site)/ is rendered dynamically
@@ -215,14 +216,26 @@ const jsonLd = {
   ],
 };
 
-export default function SiteLayout({
+export default async function SiteLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
+  // Mirror the Sanity-managed social profiles into the structured-data sameAs,
+  // so the JSON-LD stays consistent with the visible social links. Clone the
+  // module const (never mutate shared state across requests).
+  const { social } = await getClinic();
+  const ld = structuredClone(jsonLd) as typeof jsonLd & {
+    "@graph": Array<Record<string, unknown>>;
+  };
+  const org = ld["@graph"].find(
+    (n) => n["@id"] === `${BASE}/#organization`,
+  );
+  if (org) org.sameAs = [social.instagram, social.youtube, social.linkedin, BASE];
+
   return (
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(ld) }}
       />
       <BookingProvider>
         {/* Sticky site header — announcement bar + contact strip + nav
