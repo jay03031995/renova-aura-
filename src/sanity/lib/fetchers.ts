@@ -94,6 +94,22 @@ async function safeFetch<T>(query: string, params?: Record<string, unknown>) {
   }
 }
 
+async function safeFetchWithAvailability<T>(
+  query: string,
+  params?: Record<string, unknown>,
+): Promise<{ available: boolean; data: T | null }> {
+  if (!sanityEnabled) return { available: false, data: null };
+  try {
+    return {
+      available: true,
+      data: await client.fetch<T>(query, params ?? {}, { cache: "no-store" }),
+    };
+  } catch (e) {
+    console.warn("[sanity] fetch failed, falling back to local data:", e);
+    return { available: false, data: null };
+  }
+}
+
 // ----- Doctors --------------------------------------------------------------
 
 type SanityDoctor = {
@@ -515,42 +531,47 @@ function mapProcedure(d: SanityProcedure): Procedure {
 }
 
 export async function getProcedures(): Promise<Procedure[]> {
-  const docs = await safeFetch<SanityProcedure[]>(proceduresQuery);
-  if (!isFilled(docs)) return LOCAL_PROCEDURES;
-  return docs.map(mapProcedure);
+  const { available, data: docs } =
+    await safeFetchWithAvailability<SanityProcedure[]>(proceduresQuery);
+  if (available) return (docs ?? []).map(mapProcedure);
+  return LOCAL_PROCEDURES;
 }
 
 export async function getProceduresByPillar(
   pillar: ProcedurePillar,
 ): Promise<Procedure[]> {
-  const docs = await safeFetch<SanityProcedure[]>(proceduresByPillarQuery, {
-    pillar,
-  });
-  if (!isFilled(docs)) {
-    return pillar === "hair-transplant"
-      ? LOCAL_HAIR_PROCEDURES
-      : LOCAL_PLASTIC_PROCEDURES;
-  }
-  return docs.map(mapProcedure);
+  const { available, data: docs } =
+    await safeFetchWithAvailability<SanityProcedure[]>(
+      proceduresByPillarQuery,
+      { pillar },
+    );
+  if (available) return (docs ?? []).map(mapProcedure);
+  return pillar === "hair-transplant"
+    ? LOCAL_HAIR_PROCEDURES
+    : LOCAL_PLASTIC_PROCEDURES;
 }
 
 export async function getProcedureBySlug(
   slug: string,
 ): Promise<Procedure | undefined> {
-  const doc = await safeFetch<SanityProcedure | null>(procedureBySlugQuery, {
-    slug,
-  });
+  const { available, data: doc } =
+    await safeFetchWithAvailability<SanityProcedure | null>(
+      procedureBySlugQuery,
+      { slug },
+    );
   if (doc) return mapProcedure(doc);
+  if (available) return undefined;
   return LOCAL_PROCEDURES.find((p) => p.slug === slug);
 }
 
 export async function getProcedureSlugs(): Promise<
   { slug: string; pillar: ProcedurePillar }[]
 > {
-  const docs = await safeFetch<{ slug: string; pillar: ProcedurePillar }[]>(
-    procedureSlugsQuery,
-  );
-  if (isFilled(docs)) return docs;
+  const { available, data: docs } =
+    await safeFetchWithAvailability<
+      { slug: string; pillar: ProcedurePillar }[]
+    >(procedureSlugsQuery);
+  if (available) return docs ?? [];
   return LOCAL_PROCEDURES.map((p) => ({ slug: p.slug, pillar: p.pillar }));
 }
 

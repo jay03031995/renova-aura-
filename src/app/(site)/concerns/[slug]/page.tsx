@@ -5,7 +5,7 @@ import { ArrowRight, Check } from "@/components/icons";
 import BookButton from "@/components/BookButton";
 import FaqItem from "@/components/FaqItem";
 import { type Concern } from "@/data/concerns";
-import { PROCEDURE_BY_SLUG, type Procedure } from "@/data/procedures";
+import { type Procedure } from "@/data/procedures";
 import { type TreatmentPackage } from "@/data/packages";
 import {
   getConcernBySlug,
@@ -43,13 +43,11 @@ export default async function ConcernPage({
   const c = await getConcernBySlug(slug);
   if (!c) return notFound();
 
-  // Resolve related procedures via the fetcher (Sanity-first, static-fallback)
-  // so that a procedure being edited in Studio reflects on the concern page too.
+  // Resolve related procedures via the fetcher so Studio edits/deletes are
+  // reflected on the concern page too.
   const relatedProcedures: Procedure[] = [];
   for (const procSlug of c.relatedProcedureSlugs) {
-    // Try Sanity first; fall back to local PROCEDURE_BY_SLUG map.
-    const resolved =
-      (await getProcedureBySlug(procSlug)) ?? PROCEDURE_BY_SLUG[procSlug];
+    const resolved = await getProcedureBySlug(procSlug);
     if (resolved) relatedProcedures.push(resolved);
   }
 

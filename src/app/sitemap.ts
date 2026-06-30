@@ -1,6 +1,10 @@
 import type { MetadataRoute } from "next";
-import { getDoctorSlugs, getAllLocations, getSiteSettings } from "@/sanity/lib/fetchers";
-import { PROCEDURES } from "@/data/procedures";
+import {
+  getDoctorSlugs,
+  getAllLocations,
+  getProcedures,
+  getSiteSettings,
+} from "@/sanity/lib/fetchers";
 import { CONCERNS } from "@/data/concerns";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
@@ -8,9 +12,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = (settings.siteUrl ?? "https://renovaaura.com").replace(/\/$/, "");
   const lastModified = new Date();
 
-  const [doctorSlugs, locations] = await Promise.all([
+  const [doctorSlugs, locations, allProcedures] = await Promise.all([
     getDoctorSlugs(),
     getAllLocations(),
+    getProcedures(),
   ]);
 
   const top = [
@@ -27,7 +32,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     // gallery replaces the dermaheal-era patient photos.
   ];
 
-  const procedures = PROCEDURES.map((p) => ({
+  const procedures = allProcedures.map((p) => ({
     path: `/procedures/${p.pillar}/${p.slug}`,
     priority: p.pillar === "hair-transplant" ? 0.85 : 0.8,
   }));
@@ -48,14 +53,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // are exposed to search engines via the sitemap.
   // Priority: 0.85 for hair transplant (main pillar), 0.8 for others.
   const locationPages = locations.flatMap((loc) =>
-    PROCEDURES.map((p) => ({
+    allProcedures.map((p) => ({
       path: `/locations/${loc.citySlug}/${loc.areaSlug}/${p.slug}`,
       priority: p.pillar === "hair-transplant" ? 0.85 : 0.8,
     })),
   );
   // Doctor-in-location pages
   const locationDoctorPages = locations.flatMap((loc) =>
-    PROCEDURES.flatMap((p) =>
+    allProcedures.flatMap((p) =>
       doctorSlugs.map((dSlug) => ({
         path: `/locations/${loc.citySlug}/${loc.areaSlug}/${p.slug}/${dSlug}`,
         priority: 0.75,

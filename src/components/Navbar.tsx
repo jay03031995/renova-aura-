@@ -6,10 +6,7 @@ import Link from "next/link";
 import { telHref, waHref } from "@/data/clinic";
 import type { ClinicData } from "@/sanity/lib/fetchers";
 import { DOCTORS } from "@/data/doctors";
-import {
-  HAIR_PROCEDURES,
-  PLASTIC_PROCEDURES,
-} from "@/data/procedures";
+import type { Procedure } from "@/data/procedures";
 import { CONCERNS } from "@/data/concerns";
 import { ArrowRight, Phone, WhatsappLogo } from "@/components/icons";
 import BookButton from "@/components/BookButton";
@@ -33,7 +30,15 @@ const MOBILE_LINKS: { label: string; href: string }[] = [
   { label: "Contact", href: "/#contact" },
 ];
 
-export default function Navbar({ clinic }: { clinic: ClinicData }) {
+export default function Navbar({
+  clinic,
+  hairProcedures,
+  plasticProcedures,
+}: {
+  clinic: ClinicData;
+  hairProcedures: Procedure[];
+  plasticProcedures: Procedure[];
+}) {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   // Portal the drawer to <body> only after mount (avoids SSR mismatch and
@@ -65,8 +70,8 @@ export default function Navbar({ clinic }: { clinic: ClinicData }) {
 
   const closeMenu = () => setMenuOpen(false);
 
-  const hairTop = HAIR_PROCEDURES.slice(0, 6);
-  const plasticTop = PLASTIC_PROCEDURES.slice(0, 6);
+  const hairTop = hairProcedures.slice(0, 6);
+  const plasticTop = plasticProcedures.slice(0, 6);
   const concernTop = CONCERNS.slice(0, 6);
 
   return (
@@ -92,7 +97,7 @@ export default function Navbar({ clinic }: { clinic: ClinicData }) {
             </Link>
             <div className="nav-dd wide">
               <div className="nav-dd-hd">
-                Hair restoration · {HAIR_PROCEDURES.length} procedures
+                Hair restoration · {hairProcedures.length} procedures
               </div>
               {hairTop.map((p) => (
                 <Link
@@ -122,7 +127,7 @@ export default function Navbar({ clinic }: { clinic: ClinicData }) {
             </Link>
             <div className="nav-dd wide">
               <div className="nav-dd-hd">
-                Plastic surgery · {PLASTIC_PROCEDURES.length} procedures
+                Plastic surgery · {plasticProcedures.length} procedures
               </div>
               {plasticTop.map((p) => (
                 <Link

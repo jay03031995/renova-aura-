@@ -3,13 +3,14 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowRight, MapPin, Check } from "@/components/icons";
 import BookButton from "@/components/BookButton";
-import { PROCEDURE_BY_SLUG, PROCEDURES } from "@/data/procedures";
 import { NCR_AREAS } from "@/data/locations";
 import {
   getDoctors,
   getDoctorBySlug,
   getClinic,
   getLocationByCityArea,
+  getProcedureBySlug,
+  getProcedures,
 } from "@/sanity/lib/fetchers";
 
 type Params = Promise<{
@@ -21,10 +22,13 @@ type Params = Promise<{
 
 /** Build all static params: area × treatment × doctor. */
 export async function generateStaticParams() {
-  const doctors = await getDoctors();
+  const [doctors, procedures] = await Promise.all([
+    getDoctors(),
+    getProcedures(),
+  ]);
   const params = [];
   for (const a of NCR_AREAS) {
-    for (const p of PROCEDURES) {
+    for (const p of procedures) {
       for (const d of doctors) {
         params.push({
           city: a.citySlug,
@@ -40,9 +44,11 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({ params }: { params: Params }): Promise<Metadata> {
   const { city, area, treatment, doctor } = await params;
-  const procedure = PROCEDURE_BY_SLUG[treatment];
-  const location = await getLocationByCityArea(city, area);
-  const doctorData = await getDoctorBySlug(doctor);
+  const [procedure, location, doctorData] = await Promise.all([
+    getProcedureBySlug(treatment),
+    getLocationByCityArea(city, area),
+    getDoctorBySlug(doctor),
+  ]);
 
   if (!procedure || !location || !doctorData) return {};
 
@@ -61,7 +67,7 @@ export default async function LocationDoctorPage({ params }: { params: Params })
   const { city, area, treatment, doctor } = await params;
 
   const [procedure, location, doctorData, clinic] = await Promise.all([
-    Promise.resolve(PROCEDURE_BY_SLUG[treatment]),
+    getProcedureBySlug(treatment),
     getLocationByCityArea(city, area),
     getDoctorBySlug(doctor),
     getClinic(),

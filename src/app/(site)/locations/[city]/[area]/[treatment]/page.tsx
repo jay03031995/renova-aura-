@@ -4,12 +4,13 @@ import { notFound } from "next/navigation";
 import { ArrowRight, Check, MapPin, Phone, Clock } from "@/components/icons";
 import BookButton from "@/components/BookButton";
 import FaqItem from "@/components/FaqItem";
-import { PROCEDURE_BY_SLUG, PROCEDURES } from "@/data/procedures";
 import { NCR_AREAS } from "@/data/locations";
 import {
   getDoctors,
   getClinic,
   getLocationByCityArea,
+  getProcedureBySlug,
+  getProcedures,
 } from "@/sanity/lib/fetchers";
 import { telHref, waHref } from "@/data/clinic";
 import { WhatsappLogo } from "@/components/icons";
@@ -17,8 +18,9 @@ import { WhatsappLogo } from "@/components/icons";
 type Params = Promise<{ city: string; area: string; treatment: string }>;
 
 export async function generateStaticParams() {
+  const procedures = await getProcedures();
   return NCR_AREAS.flatMap((a) =>
-    PROCEDURES.map((p) => ({
+    procedures.map((p) => ({
       city: a.citySlug,
       area: a.areaSlug,
       treatment: p.slug,
@@ -28,8 +30,10 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({ params }: { params: Params }): Promise<Metadata> {
   const { city, area, treatment } = await params;
-  const procedure = PROCEDURE_BY_SLUG[treatment];
-  const location = await getLocationByCityArea(city, area);
+  const [procedure, location] = await Promise.all([
+    getProcedureBySlug(treatment),
+    getLocationByCityArea(city, area),
+  ]);
   if (!procedure || !location) return {};
 
   const title =
@@ -49,8 +53,10 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
 
 export default async function LocationTreatmentPage({ params }: { params: Params }) {
   const { city, area, treatment } = await params;
-  const procedure = PROCEDURE_BY_SLUG[treatment];
-  const location = await getLocationByCityArea(city, area);
+  const [procedure, location] = await Promise.all([
+    getProcedureBySlug(treatment),
+    getLocationByCityArea(city, area),
+  ]);
 
   if (!procedure || !location) return notFound();
 

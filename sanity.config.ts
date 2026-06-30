@@ -19,10 +19,17 @@ export default defineConfig({
       templates.filter(({ schemaType }) => !singletonTypes.has(schemaType)),
   },
   document: {
-    // Prevent duplicating singletons.
-    actions: (input, context) =>
-      singletonTypes.has(context.schemaType)
-        ? input.filter(({ action }) => action !== "duplicate" && action !== "delete")
-        : input,
+    // Prevent duplicating/deleting only true singletons. Collections such as
+    // procedures must retain Sanity's default create/edit/delete actions.
+    actions: (input, context) => {
+      const schemaType = context.schemaType;
+
+      if (schemaType === "procedure") return input;
+      if (!schemaType || !singletonTypes.has(schemaType)) return input;
+
+      return input.filter(
+        ({ action }) => action !== "duplicate" && action !== "delete",
+      );
+    },
   },
 });
