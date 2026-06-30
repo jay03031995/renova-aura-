@@ -7,7 +7,6 @@ import FabStack from "@/components/FabStack";
 import MobileTabBar from "@/components/MobileTabBar";
 import BookingModal from "@/components/BookingModal";
 import RevealInit from "@/components/RevealInit";
-import { CLINIC } from "@/data/clinic";
 import { getClinic } from "@/sanity/lib/fetchers";
 
 /**
@@ -36,14 +35,6 @@ export const dynamic = "force-dynamic";
  *   Treatments → Doctors → Book Appointment → Locations → Take Hair Test → Skin Analysis
  */
 const BASE = "https://renovaaura.com";
-const ADDR = {
-  "@type": "PostalAddress",
-  streetAddress: CLINIC.addressParts.streetAddress,
-  addressLocality: CLINIC.addressParts.locality,
-  addressRegion: CLINIC.addressParts.region,
-  postalCode: CLINIC.addressParts.postalCode,
-  addressCountry: CLINIC.addressParts.country,
-};
 const GEO = { "@type": "GeoCoordinates", latitude: "28.6488", longitude: "77.3025" };
 const HOURS = [
   {
@@ -79,14 +70,14 @@ const jsonLd = {
       },
       image: { "@id": `${BASE}/#logo` },
       description: "Hair transplant, plastic surgery and dermatology clinic in Anand Vihar, New Delhi. Board-certified consultants delivering FUE, DHI, rhinoplasty, facelift and skin care.",
-      telephone: CLINIC.phone,
-      email: CLINIC.email,
-      address: ADDR,
+      telephone: "",
+      email: "",
+      address: {},
       geo: GEO,
       contactPoint: [
         {
           "@type": "ContactPoint",
-          telephone: CLINIC.phone,
+          telephone: "",
           contactType: "customer service",
           contactOption: "TollFree",
           areaServed: "IN",
@@ -94,15 +85,12 @@ const jsonLd = {
         },
         {
           "@type": "ContactPoint",
-          telephone: CLINIC.phone,
+          telephone: "",
           contactType: "appointment booking",
           areaServed: "IN",
         },
       ],
       sameAs: [
-        CLINIC.social.instagram,
-        CLINIC.social.youtube,
-        CLINIC.social.linkedin,
         BASE,
       ],
       foundingDate: "2020",
@@ -124,9 +112,9 @@ const jsonLd = {
       url: BASE,
       image: `${BASE}/renovaaura-logo.png`,
       priceRange: "₹₹",
-      telephone: CLINIC.phone,
-      email: CLINIC.email,
-      address: ADDR,
+      telephone: "",
+      email: "",
+      address: {},
       geo: GEO,
       openingHoursSpecification: HOURS,
       medicalSpecialty: [
@@ -134,7 +122,7 @@ const jsonLd = {
         "Plastic Surgery",
         "Hair Restoration",
       ],
-      hasMap: `https://www.google.com/maps?q=${CLINIC.mapsQuery}`,
+      hasMap: "",
       parentOrganization: { "@id": `${BASE}/#organization` },
     },
 
@@ -222,14 +210,72 @@ export default async function SiteLayout({
   // Mirror the Sanity-managed social profiles into the structured-data sameAs,
   // so the JSON-LD stays consistent with the visible social links. Clone the
   // module const (never mutate shared state across requests).
-  const { social } = await getClinic();
+  const clinic = await getClinic();
+  const logoUrl = clinic.logoUrl ?? `${BASE}/renovaaura-logo.png`;
+  const address = {
+    "@type": "PostalAddress",
+    streetAddress: clinic.addressParts.streetAddress,
+    addressLocality: clinic.addressParts.locality,
+    addressRegion: clinic.addressParts.region,
+    postalCode: clinic.addressParts.postalCode,
+    addressCountry: clinic.addressParts.country,
+  };
   const ld = structuredClone(jsonLd) as typeof jsonLd & {
     "@graph": Array<Record<string, unknown>>;
   };
   const org = ld["@graph"].find(
     (n) => n["@id"] === `${BASE}/#organization`,
   );
-  if (org) org.sameAs = [social.instagram, social.youtube, social.linkedin, BASE];
+  if (org) {
+    org.name = clinic.name;
+    org.url = clinic.shopUrl;
+    org.logo = {
+      "@type": "ImageObject",
+      "@id": `${BASE}/#logo`,
+      url: logoUrl,
+      contentUrl: logoUrl,
+      width: 360,
+      height: 100,
+      caption: `${clinic.name} — Hair Transplant & Plastic Surgery Specialists`,
+    };
+    org.telephone = clinic.phone;
+    org.email = clinic.email;
+    org.address = address;
+    org.sameAs = [clinic.social.instagram, clinic.social.youtube, clinic.social.linkedin, BASE];
+    org.contactPoint = [
+      {
+        "@type": "ContactPoint",
+        telephone: clinic.phone,
+        contactType: "customer service",
+        contactOption: "TollFree",
+        areaServed: "IN",
+        availableLanguage: ["English", "Hindi"],
+      },
+      {
+        "@type": "ContactPoint",
+        telephone: clinic.phone,
+        contactType: "appointment booking",
+        areaServed: "IN",
+      },
+    ];
+  }
+  const medicalBusiness = ld["@graph"].find(
+    (n) => n["@id"] === `${BASE}/#medicalbusiness`,
+  );
+  if (medicalBusiness) {
+    medicalBusiness.name = clinic.name;
+    medicalBusiness.url = clinic.shopUrl;
+    medicalBusiness.image = logoUrl;
+    medicalBusiness.telephone = clinic.phone;
+    medicalBusiness.email = clinic.email;
+    medicalBusiness.address = address;
+    medicalBusiness.hasMap = clinic.googleMapsLinkUrl;
+  }
+  const website = ld["@graph"].find((n) => n["@id"] === `${BASE}/#website`);
+  if (website) {
+    website.name = clinic.name;
+    website.description = clinic.tagline;
+  }
 
   return (
     <>
@@ -243,13 +289,13 @@ export default async function SiteLayout({
         <header className="site-header">
           <Announcement />
           <TopContactBar />
-          <Navbar />
+          <Navbar clinic={clinic} />
         </header>
         <main>{children}</main>
         <Footer />
-        <FabStack />
+        <FabStack clinic={clinic} />
         <MobileTabBar />
-        <BookingModal />
+        <BookingModal clinicName={clinic.name} />
       </BookingProvider>
       <RevealInit />
     </>

@@ -6,6 +6,7 @@ const SINGLETON_LABELS: Record<string, string> = {
   clinicSettings: "Clinic settings",
   siteSettings: "Site settings & SEO",
   announcementBar: "Announcement bar",
+  whyUsSection: "Why Us section",
 };
 
 /**

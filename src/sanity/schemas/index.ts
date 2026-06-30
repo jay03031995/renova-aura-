@@ -15,6 +15,7 @@ import {
   announcementBarSchema,
   clinicSettingsSchema,
   siteSettingsSchema,
+  whyUsSectionSchema,
 } from "./singletons";
 import { doctorSchema } from "./doctor";
 import { heroSlideSchema } from "./heroSlide";
@@ -50,6 +51,7 @@ export const schemaTypes = [
   clinicSettingsSchema,
   siteSettingsSchema,
   announcementBarSchema,
+  whyUsSectionSchema,
   // Documents
   heroSlideSchema,
   packageSchema,
@@ -71,4 +73,5 @@ export const singletonTypes = new Set([
   "clinicSettings",
   "siteSettings",
   "announcementBar",
+  "whyUsSection",
 ]);

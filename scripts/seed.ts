@@ -320,6 +320,9 @@ function buildSingletons() {
     _id: "siteSettings",
     _type: "siteSettings",
     siteUrl: "https://renovaaura.com",
+    canonicalUrl: "https://renovaaura.com",
+    defaultSeoTitle: "RenovaAura — Hair Transplant & Plastic Surgery Specialists",
+    defaultSeoDescription: CLINIC.tagline,
     titleTemplate: "%s — RenovaAura",
     defaultMetaDescription: CLINIC.tagline,
   };
@@ -333,7 +336,14 @@ function buildSingletons() {
     linkUrl: "/#book",
   };
 
-  return [clinicSettings, siteSettings, announcementBar];
+  const whyUsSection = {
+    _id: "whyUsSection",
+    _type: "whyUsSection",
+    mainImageAlt: "Procedure room at RenovaAura Anand Vihar Clinic",
+    supportingImageAlt: "RenovaAura clinic detail",
+  };
+
+  return [clinicSettings, siteSettings, announcementBar, whyUsSection];
 }
 
 // ---- hero carousel ---------------------------------------------------------

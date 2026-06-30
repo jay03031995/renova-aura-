@@ -1,9 +1,8 @@
 import type { Metadata } from "next";
 import { MapPin, Phone } from "@/components/icons";
-import { CLINIC } from "@/data/clinic";
 import BookButton from "@/components/BookButton";
 import ResultsGallery from "@/components/ResultsGallery";
-import { getResults } from "@/sanity/lib/fetchers";
+import { getClinic, getResults } from "@/sanity/lib/fetchers";
 
 export const metadata: Metadata = {
   title: "Patient Results — Before & After at RenovaAura",
@@ -13,7 +12,7 @@ export const metadata: Metadata = {
 };
 
 export default async function ResultsPage() {
-  const results = await getResults();
+  const [results, clinic] = await Promise.all([getResults(), getClinic()]);
 
   return (
     <>
@@ -83,7 +82,7 @@ export default async function ResultsPage() {
           <BookButton>Book a consultation</BookButton>
           <div className="tp-cta-contacts">
             <span>
-              <Phone /> {CLINIC.phone}
+              <Phone /> {clinic.phone}
             </span>
             <span>
               <MapPin /> Anand Vihar, New Delhi

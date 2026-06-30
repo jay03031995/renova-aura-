@@ -30,6 +30,7 @@ import {
   downscaleDataUrl,
   readFileAsDataUrl,
 } from "@/lib/imageAnalysis";
+import type { ClinicData } from "@/sanity/lib/fetchers";
 import { NORWOOD_ICONS } from "./NorwoodIcons";
 
 const NORWOOD_OPTIONS: {
@@ -74,6 +75,11 @@ const AGE_OPTIONS: { value: AgeBracket; label: string }[] = [
 
 type Patient = { name: string; phone: string; email: string };
 
+type ToolClinic = Pick<
+  ClinicData,
+  "name" | "tagline" | "address" | "phone" | "email" | "shopUrl"
+>;
+
 const PROCEDURE_LABEL: Record<string, string> = {
   "fue-hair-transplant": "FUE Hair Transplant",
   "fut-hair-transplant": "FUT Hair Transplant",
@@ -81,7 +87,7 @@ const PROCEDURE_LABEL: Record<string, string> = {
   "sapphire-fue-hair-transplant": "Sapphire FUE Hair Transplant",
 };
 
-export default function GraftCalculator() {
+export default function GraftCalculator({ clinic }: { clinic: ToolClinic }) {
   const [step, setStep] = useState(0);
 
   // Photo upload (step 1)
@@ -231,6 +237,14 @@ export default function GraftCalculator() {
       await generateReport({
         title: "Personalised Hair Transplant Graft Estimate",
         subtitle: `Prepared for ${patient.name}`,
+        clinic: {
+          name: clinic.name,
+          tagline: clinic.tagline,
+          address: clinic.address,
+          phone: clinic.phone,
+          email: clinic.email,
+          web: clinic.shopUrl.replace(/^https?:\/\//, ""),
+        },
         patient: {
           name: patient.name,
           phone: patient.phone,

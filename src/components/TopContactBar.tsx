@@ -3,7 +3,7 @@
  * Hidden ≤980px, where the mobile header + drawer take over.
  */
 import Link from "next/link";
-import { CLINIC, telHref, waHref } from "@/data/clinic";
+import { telHref, waHref } from "@/data/clinic";
 import { getClinic } from "@/sanity/lib/fetchers";
 import {
   MapPin,
@@ -15,39 +15,35 @@ import {
   LinkedinIcon,
 } from "@/components/icons";
 
-const mapsUrl = `https://www.google.com/maps?q=${CLINIC.mapsQuery}`;
-
 export default async function TopContactBar() {
-  // Social URLs come from Sanity Studio (with the static config as fallback),
-  // so links added/edited in the Studio go live with no code change.
-  const { social } = await getClinic();
+  const clinic = await getClinic();
   return (
     <div className="topbar">
       <div className="topbar-inner">
         <div className="topbar-group">
           <a
             className="topbar-item"
-            href={mapsUrl}
+            href={clinic.googleMapsLinkUrl}
             target="_blank"
             rel="noopener noreferrer"
           >
             <MapPin size={15} />
-            {CLINIC.address}
+            {clinic.address}
           </a>
           <span className="topbar-item topbar-hours">
             <Clock size={15} />
-            {CLINIC.hours}
+            {clinic.hours}
           </span>
         </div>
 
         <div className="topbar-group">
-          <a className="topbar-item" href={telHref()}>
+          <a className="topbar-item" href={telHref(clinic.phone)}>
             <Phone size={14} />
-            {CLINIC.phone}
+            {clinic.phone}
           </a>
           <a
             className="topbar-item"
-            href={waHref()}
+            href={waHref(undefined, clinic.phone)}
             target="_blank"
             rel="noopener noreferrer"
           >
@@ -56,7 +52,7 @@ export default async function TopContactBar() {
           </a>
           <span className="topbar-social">
             <a
-              href={social.instagram}
+              href={clinic.social.instagram}
               target="_blank"
               rel="noopener noreferrer"
               aria-label="Instagram"
@@ -64,7 +60,7 @@ export default async function TopContactBar() {
               <InstagramIcon />
             </a>
             <a
-              href={social.youtube}
+              href={clinic.social.youtube}
               target="_blank"
               rel="noopener noreferrer"
               aria-label="YouTube"
@@ -72,7 +68,7 @@ export default async function TopContactBar() {
               <YoutubeIcon />
             </a>
             <Link
-              href={social.linkedin}
+              href={clinic.social.linkedin}
               target="_blank"
               rel="noopener noreferrer"
               aria-label="LinkedIn"

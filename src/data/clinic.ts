@@ -8,10 +8,10 @@ export const CLINIC = {
     "Hair Transplant · Plastic Surgery · Dermatology · Wellness · Aesthetics",
   phone: "+91 92052 20070",
   email: "info@renovaaura.com",
-  address: "C-3, Anand Vihar, New Delhi, 110092",
+  address: "C-3, 1st floor, Anand Vihar, New Delhi, 110092",
   // Structured pieces used for schema.org JSON-LD and Google Maps queries.
   addressParts: {
-    streetAddress: "C-3",
+    streetAddress: "C-3, 1st floor",
     locality: "Anand Vihar",
     region: "New Delhi",
     postalCode: "110092",
@@ -19,8 +19,8 @@ export const CLINIC = {
   },
   /** Free-form Google Maps query for the embed + link-out. */
   mapsQuery:
-    "RenovaAura+C-3+Anand+Vihar+New+Delhi+110092",
-  hours: "Mon to Sat 10:00 AM to 7:30 PM · Sun by appointment",
+    "RenovaAura+C-3+1st+floor+Anand+Vihar+New+Delhi+110092",
+  hours: "Mon to Sat 10:00 AM to 7:30 PM · Sun: 10:00 AM to 2:00 PM",
   cities: ["Anand Vihar", "New Delhi"],
   shopUrl: "https://renovaaura.com",
   social: {
@@ -43,7 +43,10 @@ export const WHATSAPP_GREETING =
 export const telHref = (phone: string = CLINIC.phone) =>
   "tel:" + phone.replace(/\s/g, "");
 
-export const waHref = (text: string = WHATSAPP_GREETING) => {
-  const base = "https://wa.me/91" + digits(CLINIC.phone).slice(-10);
+export const waHref = (
+  text: string = WHATSAPP_GREETING,
+  phone: string = CLINIC.phone,
+) => {
+  const base = "https://wa.me/91" + digits(phone).slice(-10);
   return `${base}?text=${encodeURIComponent(text)}`;
 };

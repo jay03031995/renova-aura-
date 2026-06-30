@@ -8,9 +8,10 @@ import { PROCEDURE_BY_SLUG, PROCEDURES } from "@/data/procedures";
 import { NCR_AREAS } from "@/data/locations";
 import {
   getDoctors,
+  getClinic,
   getLocationByCityArea,
 } from "@/sanity/lib/fetchers";
-import { CLINIC, telHref, waHref } from "@/data/clinic";
+import { telHref, waHref } from "@/data/clinic";
 import { WhatsappLogo } from "@/components/icons";
 
 type Params = Promise<{ city: string; area: string; treatment: string }>;
@@ -53,8 +54,7 @@ export default async function LocationTreatmentPage({ params }: { params: Params
 
   if (!procedure || !location) return notFound();
 
-  const doctors = await getDoctors();
-  const mapsUrl = `https://www.google.com/maps?q=${CLINIC.mapsQuery}`;
+  const [doctors, clinic] = await Promise.all([getDoctors(), getClinic()]);
 
   const headline =
     location.headline ??
@@ -70,18 +70,18 @@ export default async function LocationTreatmentPage({ params }: { params: Params
     name: `RenovaAura — ${procedure.name} near ${location.area}`,
     description: intro,
     url: `https://renovaaura.com/locations/${city}/${area}/${treatment}`,
-    telephone: CLINIC.phone,
-    email: CLINIC.email,
+    telephone: clinic.phone,
+    email: clinic.email,
     address: {
       "@type": "PostalAddress",
-      streetAddress: CLINIC.addressParts.streetAddress,
-      addressLocality: CLINIC.addressParts.locality,
-      addressRegion: CLINIC.addressParts.region,
-      postalCode: CLINIC.addressParts.postalCode,
-      addressCountry: CLINIC.addressParts.country,
+      streetAddress: clinic.addressParts.streetAddress,
+      addressLocality: clinic.addressParts.locality,
+      addressRegion: clinic.addressParts.region,
+      postalCode: clinic.addressParts.postalCode,
+      addressCountry: clinic.addressParts.country,
     },
     geo: { "@type": "GeoCoordinates", latitude: "28.6488", longitude: "77.3025" },
-    hasMap: mapsUrl,
+    hasMap: clinic.googleMapsLinkUrl,
     openingHoursSpecification: [{
       "@type": "OpeningHoursSpecification",
       dayOfWeek: ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"],
@@ -129,8 +129,8 @@ export default async function LocationTreatmentPage({ params }: { params: Params
             >
               Book Free Consultation
             </BookButton>
-            <a className="btn loc-btn-ghost" href={telHref()}>
-              <Phone size={15} /> {CLINIC.phone}
+            <a className="btn loc-btn-ghost" href={telHref(clinic.phone)}>
+              <Phone size={15} /> {clinic.phone}
             </a>
           </div>
         </div>
@@ -181,12 +181,12 @@ export default async function LocationTreatmentPage({ params }: { params: Params
                 Book Free Consultation
               </BookButton>
               <div className="loc-sidebar-meta">
-                <span><Clock size={13} /> {CLINIC.hours}</span>
-                <a href={telHref()}><Phone size={13} /> {CLINIC.phone}</a>
-                <a href={waHref()} target="_blank" rel="noopener noreferrer">
+                <span><Clock size={13} /> {clinic.hours}</span>
+                <a href={telHref(clinic.phone)}><Phone size={13} /> {clinic.phone}</a>
+                <a href={waHref(undefined, clinic.phone)} target="_blank" rel="noopener noreferrer">
                   <WhatsappLogo size={14} /> WhatsApp
                 </a>
-                <a href={mapsUrl} target="_blank" rel="noopener noreferrer">
+                <a href={clinic.googleMapsLinkUrl} target="_blank" rel="noopener noreferrer">
                   <MapPin size={13} /> Get Directions
                 </a>
               </div>
@@ -242,18 +242,18 @@ export default async function LocationTreatmentPage({ params }: { params: Params
           <div className="loc-reach-grid">
             <div>
               <p style={{ fontSize: 15, lineHeight: 1.75, color: "var(--muted)", marginBottom: 20 }}>
-                RenovaAura is at <strong>{CLINIC.address}</strong>. From {location.area} you can reach us via Metro (Blue / Pink line to Anand Vihar ISBT or Kaushambi), cab or auto — typically under 30–40 minutes from most NCR locations.
+                RenovaAura is at <strong>{clinic.address}</strong>. From {location.area} you can reach us via Metro (Blue / Pink line to Anand Vihar ISBT or Kaushambi), cab or auto — typically under 30–40 minutes from most NCR locations.
               </p>
               <p style={{ fontSize: 15, color: "var(--muted)", marginBottom: 22, lineHeight: 1.7 }}>
-                <strong>Hours:</strong> {CLINIC.hours}
+                <strong>Hours:</strong> {clinic.hours}
               </p>
-              <a href={mapsUrl} target="_blank" rel="noopener noreferrer" className="btn btn-primary">
+              <a href={clinic.googleMapsLinkUrl} target="_blank" rel="noopener noreferrer" className="btn btn-primary">
                 <MapPin size={15} /> Directions from {location.area}
               </a>
             </div>
             <div className="loc-reach-map">
               <iframe
-                src={`https://www.google.com/maps?q=${CLINIC.mapsQuery}&output=embed`}
+                src={clinic.googleMapsEmbedUrl}
                 width="100%"
                 height="280"
                 style={{ border: 0, borderRadius: 16 }}

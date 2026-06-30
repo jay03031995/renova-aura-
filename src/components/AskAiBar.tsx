@@ -90,22 +90,22 @@ const AIS = [
 
 export default async function AskAiBar() {
   // Social URLs from Sanity Studio (static config as fallback).
-  const { social } = await getClinic();
+  const clinic = await getClinic();
   return (
     <div className="footer-connect">
       <div className="fc-group">
         <span className="fc-label">Catch us on:</span>
         <div className="fc-icons">
-          <a href={social.instagram} target="_blank" rel="noopener noreferrer" aria-label="Instagram">
+          <a href={clinic.social.instagram} target="_blank" rel="noopener noreferrer" aria-label="Instagram">
             <InstagramIcon />
           </a>
-          <a href={social.linkedin} target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
+          <a href={clinic.social.linkedin} target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
             <LinkedinIcon />
           </a>
-          <a href={social.youtube} target="_blank" rel="noopener noreferrer" aria-label="YouTube">
+          <a href={clinic.social.youtube} target="_blank" rel="noopener noreferrer" aria-label="YouTube">
             <YoutubeIcon />
           </a>
-          <a href={waHref()} target="_blank" rel="noopener noreferrer" aria-label="WhatsApp">
+          <a href={waHref(undefined, clinic.phone)} target="_blank" rel="noopener noreferrer" aria-label="WhatsApp">
             <WhatsappLogo size={17} />
           </a>
         </div>

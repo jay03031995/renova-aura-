@@ -33,6 +33,7 @@ import {
   readFileAsDataUrl,
   type ImageAnalysisResult,
 } from "@/lib/imageAnalysis";
+import type { ClinicData } from "@/sanity/lib/fetchers";
 
 const FITZ_OPTIONS: { value: Fitzpatrick; label: string; desc: string }[] = [
   { value: "I", label: "Type I", desc: "Very fair — always burns" },
@@ -87,7 +88,12 @@ const CONCERN_TO_LABEL = Object.fromEntries(
 
 type Patient = { name: string; phone: string; email: string };
 
-export default function SkinAnalysis() {
+type ToolClinic = Pick<
+  ClinicData,
+  "name" | "tagline" | "address" | "phone" | "email" | "shopUrl"
+>;
+
+export default function SkinAnalysis({ clinic }: { clinic: ToolClinic }) {
   const [step, setStep] = useState(0);
 
   // Photo + image analysis
@@ -262,6 +268,14 @@ export default function SkinAnalysis() {
       await generateReport({
         title: "Personalised AI Skin Analysis",
         subtitle: `Prepared for ${patient.name}`,
+        clinic: {
+          name: clinic.name,
+          tagline: clinic.tagline,
+          address: clinic.address,
+          phone: clinic.phone,
+          email: clinic.email,
+          web: clinic.shopUrl.replace(/^https?:\/\//, ""),
+        },
         patient: {
           name: patient.name,
           phone: patient.phone,

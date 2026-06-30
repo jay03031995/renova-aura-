@@ -53,6 +53,7 @@ export type ReportSection =
 export type ReportInput = {
   title: string; // e.g. "Personal Skin Analysis Report"
   subtitle?: string; // e.g. "Prepared for Priya Sharma"
+  clinic?: Partial<typeof CLINIC>;
   patient: {
     name: string;
     email?: string;
@@ -76,7 +77,7 @@ const CLINIC = {
   name: "RenovaAura",
   tagline:
     "Dermatology · Wellness · Aesthetics · Plastic Surgery · Hair Transplant",
-  address: "C-3, Anand Vihar, New Delhi, 110092",
+  address: "C-3, 1st floor, Anand Vihar, New Delhi, 110092",
   phone: "+91 92052 20070",
   email: "info@renovaaura.com",
   web: "renovaaura.com",
@@ -95,7 +96,11 @@ function setStroke(doc: jsPDF, c: [number, number, number]) {
 }
 
 /** Draw the RenovaAura masthead — cocoa band with embedded logo + tagline. */
-function drawHeader(doc: jsPDF, logoDataUrl?: string) {
+function drawHeader(
+  doc: jsPDF,
+  logoDataUrl?: string,
+  clinic: typeof CLINIC = CLINIC,
+) {
   // Background band — taller to accommodate the logo
   setFill(doc, PALETTE.cocoa);
   doc.rect(0, 0, PAGE.w, 26, "F");
@@ -109,21 +114,21 @@ function drawHeader(doc: jsPDF, logoDataUrl?: string) {
       setColor(doc, PALETTE.cream);
       doc.setFont("helvetica", "bold");
       doc.setFontSize(18);
-      doc.text("RenovaAura", PAGE.marginX, 14);
+      doc.text(clinic.name, PAGE.marginX, 14);
     }
   } else {
     // Text wordmark fallback
     setColor(doc, PALETTE.cream);
     doc.setFont("helvetica", "bold");
     doc.setFontSize(18);
-    doc.text("RenovaAura", PAGE.marginX, 14);
+    doc.text(clinic.name, PAGE.marginX, 14);
   }
 
   // Tagline right of logo (small caps)
   setColor(doc, PALETTE.sand);
   doc.setFont("helvetica", "normal");
   doc.setFontSize(7);
-  doc.text(CLINIC.tagline.toUpperCase(), PAGE.marginX + 42, 22);
+  doc.text(clinic.tagline.toUpperCase(), PAGE.marginX + 42, 22);
 
   // Right-aligned date
   doc.setFontSize(8);
@@ -137,7 +142,7 @@ function drawHeader(doc: jsPDF, logoDataUrl?: string) {
   });
   doc.setFontSize(7);
   setColor(doc, PALETTE.tan);
-  doc.text(CLINIC.web, PAGE.w - PAGE.marginX, 22, { align: "right" });
+  doc.text(clinic.web, PAGE.w - PAGE.marginX, 22, { align: "right" });
 }
 
 /** Diagonal watermark across each page. Very low opacity. */
@@ -174,7 +179,12 @@ function drawWatermark(doc: jsPDF) {
 }
 
 /** Bottom-of-page clinic block + pagination. */
-function drawFooter(doc: jsPDF, pageNum: number, totalPages: number) {
+function drawFooter(
+  doc: jsPDF,
+  pageNum: number,
+  totalPages: number,
+  clinic: typeof CLINIC = CLINIC,
+) {
   const y = PAGE.h - PAGE.marginBottom + 8;
   setStroke(doc, PALETTE.line);
   doc.setLineWidth(0.3);
@@ -182,9 +192,9 @@ function drawFooter(doc: jsPDF, pageNum: number, totalPages: number) {
   setColor(doc, PALETTE.muted);
   doc.setFontSize(8);
   doc.setFont("helvetica", "normal");
-  doc.text(CLINIC.address, PAGE.marginX, y);
+  doc.text(clinic.address, PAGE.marginX, y);
   doc.text(
-    `${CLINIC.phone}  ·  ${CLINIC.email}  ·  ${CLINIC.web}`,
+    `${clinic.phone}  ·  ${clinic.email}  ·  ${clinic.web}`,
     PAGE.marginX,
     y + 4,
   );
@@ -226,9 +236,11 @@ class Cursor {
   doc: jsPDF;
   y = 0;
   page = 1;
+  clinic: typeof CLINIC;
 
-  constructor(doc: jsPDF) {
+  constructor(doc: jsPDF, clinic: typeof CLINIC = CLINIC) {
     this.doc = doc;
+    this.clinic = clinic;
     this.reset();
   }
 
@@ -243,7 +255,7 @@ class Cursor {
       this.doc.addPage();
       this.page += 1;
       drawWatermark(this.doc);
-      drawHeader(this.doc, this.logoDataUrl);
+      drawHeader(this.doc, this.logoDataUrl, this.clinic);
       this.reset();
     }
   }
@@ -294,11 +306,12 @@ async function loadLogoDataUrl(): Promise<string | undefined> {
  * masthead. Falls back to a text wordmark if the logo can't be loaded.
  */
 export async function generateReport(input: ReportInput): Promise<void> {
+  const clinic = { ...CLINIC, ...input.clinic };
   const logoDataUrl = await loadLogoDataUrl();
   const doc = new jsPDF({ unit: "mm", format: "a4" });
   drawWatermark(doc);
-  drawHeader(doc, logoDataUrl);
-  const cursor = new Cursor(doc);
+  drawHeader(doc, logoDataUrl, clinic);
+  const cursor = new Cursor(doc, clinic);
   cursor.logoDataUrl = logoDataUrl;
 
   // Title block
@@ -427,7 +440,7 @@ export async function generateReport(input: ReportInput): Promise<void> {
   ).internal.getNumberOfPages();
   for (let i = 1; i <= totalPages; i++) {
     doc.setPage(i);
-    drawFooter(doc, i, totalPages);
+    drawFooter(doc, i, totalPages, clinic);
   }
 
   const safeName = input.patient.name.replace(/[^a-z0-9]+/gi, "-");

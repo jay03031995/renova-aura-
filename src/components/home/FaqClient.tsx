@@ -12,7 +12,11 @@ export default function FaqClient({
   const [open, setOpen] = useState(0);
 
   return (
-    <section className="section faq" id="faq">
+   <section
+  className="section faq"
+  id="faq"
+  style={{ backgroundColor: "#f2f0e6" }}
+>
       <div className="container">
         <div className="faq-grid">
           <div className="reveal">

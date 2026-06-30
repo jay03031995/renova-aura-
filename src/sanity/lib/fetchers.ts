@@ -33,6 +33,7 @@ import {
   siteSettingsQuery,
   testimonialsQuery,
   trustItemsQuery,
+  whyUsSectionQuery,
 } from "./queries";
 
 // ----- Local fallbacks ------------------------------------------------------
@@ -208,7 +209,12 @@ export async function getResults(): Promise<ResultFetched[]> {
 
 // ----- Site singletons ------------------------------------------------------
 
-export type ClinicData = typeof LOCAL_CLINIC & { logoUrl?: string };
+export type ClinicData = typeof LOCAL_CLINIC & {
+  phone2?: string;
+  logoUrl?: string;
+  googleMapsEmbedUrl: string;
+  googleMapsLinkUrl: string;
+};
 
 export const getClinic = cache(async (): Promise<ClinicData> => {
   const doc = await safeFetch<{
@@ -217,14 +223,23 @@ export const getClinic = cache(async (): Promise<ClinicData> => {
     address?: string;
     hours?: string;
     phone?: string;
+    phone2?: string;
     email?: string;
+    googleMapsEmbedUrl?: string;
+    googleMapsLinkUrl?: string;
     shopUrl?: string;
     instagramUrl?: string;
     youtubeUrl?: string;
     linkedinUrl?: string;
     logo?: { url?: string };
   } | null>(clinicSettingsQuery);
-  if (!doc) return LOCAL_CLINIC;
+  if (!doc) {
+    return {
+      ...LOCAL_CLINIC,
+      googleMapsEmbedUrl: `https://www.google.com/maps?q=${LOCAL_CLINIC.mapsQuery}&output=embed`,
+      googleMapsLinkUrl: `https://www.google.com/maps?q=${LOCAL_CLINIC.mapsQuery}`,
+    };
+  }
   return {
     ...LOCAL_CLINIC,
     name: doc.name ?? LOCAL_CLINIC.name,
@@ -232,7 +247,14 @@ export const getClinic = cache(async (): Promise<ClinicData> => {
     address: doc.address ?? LOCAL_CLINIC.address,
     hours: doc.hours ?? LOCAL_CLINIC.hours,
     phone: doc.phone ?? LOCAL_CLINIC.phone,
+    phone2: doc.phone2,
     email: doc.email ?? LOCAL_CLINIC.email,
+    googleMapsEmbedUrl:
+      doc.googleMapsEmbedUrl ??
+      `https://www.google.com/maps?q=${LOCAL_CLINIC.mapsQuery}&output=embed`,
+    googleMapsLinkUrl:
+      doc.googleMapsLinkUrl ??
+      `https://www.google.com/maps?q=${LOCAL_CLINIC.mapsQuery}`,
     shopUrl: doc.shopUrl ?? LOCAL_CLINIC.shopUrl,
     social: {
       instagram: doc.instagramUrl ?? LOCAL_CLINIC.social.instagram,
@@ -261,31 +283,63 @@ export async function getAnnouncement(): Promise<AnnouncementData> {
   };
 }
 
+export type WhyUsSectionData = {
+  mainImageUrl?: string;
+  mainImageAlt: string;
+  supportingImageUrl?: string;
+  supportingImageAlt: string;
+};
+
+export async function getWhyUsSection(): Promise<WhyUsSectionData> {
+  const doc = await safeFetch<{
+    mainImageUrl?: string;
+    mainImageAlt?: string;
+    supportingImageUrl?: string;
+    supportingImageAlt?: string;
+  } | null>(whyUsSectionQuery);
+
+  return {
+    mainImageUrl: doc?.mainImageUrl,
+    mainImageAlt: doc?.mainImageAlt ?? "Procedure room at RenovaAura Anand Vihar Clinic",
+    supportingImageUrl: doc?.supportingImageUrl,
+    supportingImageAlt: doc?.supportingImageAlt ?? "RenovaAura clinic detail",
+  };
+}
+
 export type SiteSettingsData = {
   siteUrl?: string;
-  defaultMetaTitle?: string;
+  canonicalUrl?: string;
+  defaultSeoTitle?: string;
   titleTemplate?: string;
-  defaultMetaDescription?: string;
-  defaultOgImageUrl?: string;
+  defaultSeoDescription?: string;
+  faviconUrl?: string;
+  openGraphImageUrl?: string;
+  twitterImageUrl?: string;
   featuredSocial?: string;
 };
 
 export async function getSiteSettings(): Promise<SiteSettingsData> {
   const doc = await safeFetch<{
     siteUrl?: string;
-    defaultMetaTitle?: string;
+    canonicalUrl?: string;
+    defaultSeoTitle?: string;
     titleTemplate?: string;
-    defaultMetaDescription?: string;
-    defaultOgImage?: { url?: string };
+    defaultSeoDescription?: string;
+    favicon?: { url?: string };
+    openGraphImage?: { url?: string };
+    twitterImage?: { url?: string };
     featuredSocial?: string;
   } | null>(siteSettingsQuery);
   if (!doc) return {};
   return {
     siteUrl: doc.siteUrl,
-    defaultMetaTitle: doc.defaultMetaTitle,
+    canonicalUrl: doc.canonicalUrl,
+    defaultSeoTitle: doc.defaultSeoTitle,
     titleTemplate: doc.titleTemplate,
-    defaultMetaDescription: doc.defaultMetaDescription,
-    defaultOgImageUrl: doc.defaultOgImage?.url,
+    defaultSeoDescription: doc.defaultSeoDescription,
+    faviconUrl: doc.favicon?.url,
+    openGraphImageUrl: doc.openGraphImage?.url,
+    twitterImageUrl: doc.twitterImage?.url,
     featuredSocial: doc.featuredSocial,
   };
 }

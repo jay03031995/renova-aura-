@@ -45,15 +45,43 @@ export const siteSettingsSchema = defineType({
   ],
   fields: [
     defineField({ name: "siteUrl", title: "Site URL", type: "url", group: "seo", description: "Used as base URL for canonicals, sitemap and metadataBase." }),
-    defineField({ name: "defaultMetaTitle", title: "Default meta title", type: "string", group: "seo" }),
+    defineField({ name: "canonicalUrl", title: "Canonical URL", type: "url", group: "seo", description: "Default canonical URL for the website homepage." }),
+    defineField({ name: "defaultSeoTitle", title: "Default SEO title", type: "string", group: "seo" }),
+    defineField({ name: "defaultSeoDescription", title: "Default SEO description", type: "text", rows: 3, group: "seo" }),
+    defineField({ name: "defaultMetaTitle", title: "Default meta title (legacy)", type: "string", group: "seo", hidden: true }),
     defineField({ name: "titleTemplate", title: "Title template", type: "string", group: "seo", description: "Use %s as placeholder, e.g. '%s — RenovaAura'." }),
-    defineField({ name: "defaultMetaDescription", title: "Default meta description", type: "text", rows: 3, group: "seo" }),
+    defineField({ name: "defaultMetaDescription", title: "Default meta description (legacy)", type: "text", rows: 3, group: "seo", hidden: true }),
     defineField({
-      name: "defaultOgImage",
-      title: "Default social share image",
+      name: "favicon",
+      title: "Favicon",
       type: "image",
       options: { hotspot: true },
       group: "seo",
+      description: "Square browser icon. PNG or SVG source recommended.",
+    }),
+    defineField({
+      name: "openGraphImage",
+      title: "Open Graph image",
+      type: "image",
+      options: { hotspot: true },
+      group: "seo",
+      description: "1200x630 recommended for Facebook, LinkedIn and rich previews.",
+    }),
+    defineField({
+      name: "twitterImage",
+      title: "Twitter/X image",
+      type: "image",
+      options: { hotspot: true },
+      group: "seo",
+      description: "1200x630 recommended for X/Twitter summary cards.",
+    }),
+    defineField({
+      name: "defaultOgImage",
+      title: "Default social share image (legacy)",
+      type: "image",
+      options: { hotspot: true },
+      group: "seo",
+      hidden: true,
       description: "1200×630 recommended. Used when a page has no specific OG image.",
     }),
     defineField({
@@ -128,4 +156,39 @@ export const announcementBarSchema = defineType({
       subtitle: enabled ? "Live" : "Hidden",
     }),
   },
+});
+
+export const whyUsSectionSchema = defineType({
+  name: "whyUsSection",
+  title: "Why Us section",
+  type: "document",
+  fields: [
+    defineField({
+      name: "mainImage",
+      title: "Main image",
+      type: "image",
+      options: { hotspot: true },
+      description: "Large left-side image in the homepage Why Us section.",
+    }),
+    defineField({
+      name: "mainImageAlt",
+      title: "Main image alt text",
+      type: "string",
+      initialValue: "Procedure room at RenovaAura Anand Vihar Clinic",
+    }),
+    defineField({
+      name: "supportingImage",
+      title: "Supporting image",
+      type: "image",
+      options: { hotspot: true },
+      description: "Smaller overlapping image in the homepage Why Us section.",
+    }),
+    defineField({
+      name: "supportingImageAlt",
+      title: "Supporting image alt text",
+      type: "string",
+      initialValue: "RenovaAura clinic detail",
+    }),
+  ],
+  preview: { prepare: () => ({ title: "Why Us section" }) },
 });

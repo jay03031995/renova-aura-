@@ -3,7 +3,8 @@
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import Link from "next/link";
-import { CLINIC, telHref, waHref } from "@/data/clinic";
+import { telHref, waHref } from "@/data/clinic";
+import type { ClinicData } from "@/sanity/lib/fetchers";
 import { DOCTORS } from "@/data/doctors";
 import {
   HAIR_PROCEDURES,
@@ -32,7 +33,7 @@ const MOBILE_LINKS: { label: string; href: string }[] = [
   { label: "Contact", href: "/#contact" },
 ];
 
-export default function Navbar() {
+export default function Navbar({ clinic }: { clinic: ClinicData }) {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   // Portal the drawer to <body> only after mount (avoids SSR mismatch and
@@ -71,10 +72,10 @@ export default function Navbar() {
   return (
     <nav className={"nav" + (scrolled ? " scrolled" : "")}>
       <div className="nav-inner">
-        <Link href="/" className="logo" aria-label={CLINIC.name}>
+        <Link href="/" className="logo" aria-label={clinic.name}>
           <img
-            src="/renovaaura-logo.png"
-            alt={CLINIC.name}
+            src={clinic.logoUrl ?? "/renovaaura-logo.png"}
+            alt={clinic.name}
             className="logo-img"
             width={180}
             height={50}
@@ -207,7 +208,7 @@ export default function Navbar() {
 
         <div className="nav-cta">
           <span className="nav-phone">
-            <Phone /> {CLINIC.phone}
+            <Phone /> {clinic.phone}
           </span>
           <BookButton>Book Consultation</BookButton>
         </div>
@@ -216,7 +217,7 @@ export default function Navbar() {
         <div className="nav-mobile-controls">
           <a
             className="nav-wa"
-            href={waHref()}
+            href={waHref(undefined, clinic.phone)}
             target="_blank"
             rel="noopener noreferrer"
             aria-label="Chat on WhatsApp"
@@ -282,12 +283,12 @@ export default function Navbar() {
         </nav>
 
         <div className="nav-drawer-actions">
-          <a className="nav-drawer-action" href={telHref()} onClick={closeMenu}>
+          <a className="nav-drawer-action" href={telHref(clinic.phone)} onClick={closeMenu}>
             <Phone size={17} /> Call
           </a>
           <a
             className="nav-drawer-action"
-            href={waHref()}
+            href={waHref(undefined, clinic.phone)}
             target="_blank"
             rel="noopener noreferrer"
             onClick={closeMenu}
@@ -310,7 +311,7 @@ export default function Navbar() {
           </span>
         </button>
 
-        <div className="nav-drawer-hours">{CLINIC.hours}</div>
+        <div className="nav-drawer-hours">{clinic.hours}</div>
             </aside>
           </>,
           document.body,

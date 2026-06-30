@@ -1,17 +1,40 @@
-import { getEeatPillars } from "@/sanity/lib/fetchers";
+import { getEeatPillars, getWhyUsSection } from "@/sanity/lib/fetchers";
 
 export default async function WhyUs() {
-  const pillars = await getEeatPillars();
+  const [pillars, whyUs] = await Promise.all([
+    getEeatPillars(),
+    getWhyUsSection(),
+  ]);
 
   return (
     <section className="section why">
       <div className="container">
         <div className="why-grid">
           <div className="why-visual reveal">
-            <div className="why-img main">
+            <div
+              className="why-img main"
+              style={
+                whyUs.mainImageUrl
+                  ? { backgroundImage: `url(${whyUs.mainImageUrl})` }
+                  : undefined
+              }
+              role={whyUs.mainImageUrl ? "img" : undefined}
+              aria-label={whyUs.mainImageUrl ? whyUs.mainImageAlt : undefined}
+            >
               <div className="why-tag">Procedure Room, Anand Vihar Clinic</div>
             </div>
-            <div className="why-img sub" />
+            <div
+              className="why-img sub"
+              style={
+                whyUs.supportingImageUrl
+                  ? { backgroundImage: `url(${whyUs.supportingImageUrl})` }
+                  : undefined
+              }
+              role={whyUs.supportingImageUrl ? "img" : undefined}
+              aria-label={
+                whyUs.supportingImageUrl ? whyUs.supportingImageAlt : undefined
+              }
+            />
             <div className="why-stat">
               <div className="why-stat-num">
                 97<sup>%</sup>

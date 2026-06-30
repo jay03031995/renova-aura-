@@ -28,9 +28,6 @@ const DISABLED_SLOTS = ["12:30", "6:00"];
 // Only surface bookable slots — unavailable ones are hidden, not greyed out.
 const AVAILABLE_TIMES = TIMES.filter((t) => !DISABLED_SLOTS.includes(t));
 
-// Single physical location — preselected, not a dropdown choice.
-const CLINIC = "RenovaAura · Main Clinic";
-
 type FormData = {
   concern: string;
   city: string;
@@ -42,21 +39,22 @@ type FormData = {
   age: string;
 };
 
-const EMPTY: FormData = {
+const emptyForm = (clinicName: string): FormData => ({
   concern: "",
-  city: CLINIC,
+  city: `${clinicName} · Main Clinic`,
   date: "",
   time: "",
   name: "",
   phone: "",
   email: "",
   age: "",
-};
+});
 
-export default function BookingModal() {
+export default function BookingModal({ clinicName }: { clinicName: string }) {
   const { isOpen, close, prefill } = useBooking();
   const [step, setStep] = useState(0);
-  const [data, setData] = useState<FormData>(EMPTY);
+  const empty = useMemo(() => emptyForm(clinicName), [clinicName]);
+  const [data, setData] = useState<FormData>(empty);
   const [errors, setErrors] = useState<Partial<Record<keyof FormData, string>>>(
     {},
   );
@@ -78,7 +76,7 @@ export default function BookingModal() {
     if (!isOpen) {
       setStep(0);
       setErrors({});
-      setData(EMPTY);
+      setData(empty);
       setSubmitError(null);
       setSubmitting(false);
     } else {
@@ -86,7 +84,7 @@ export default function BookingModal() {
       // on this device, plus any package/doctor concern passed in.
       const patient = savedPatients[savedPatients.length - 1];
       setData({
-        ...EMPTY,
+        ...empty,
         concern: prefill?.concern ?? "",
         name: patient?.name ?? "",
         phone: patient?.phone ?? "",

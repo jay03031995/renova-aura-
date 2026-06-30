@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import SkinAnalysis from "@/components/tools/SkinAnalysis";
+import { getClinic } from "@/sanity/lib/fetchers";
 
 export const metadata: Metadata = {
   title: "AI Skin Analysis — Free, 2-Minute Personalised Report",
@@ -8,11 +9,13 @@ export const metadata: Metadata = {
   alternates: { canonical: "/tools/skin-analysis" },
 };
 
-export default function SkinAnalysisPage() {
+export default async function SkinAnalysisPage() {
+  const clinic = await getClinic();
+
   return (
     <section className="section-tight" style={{ paddingTop: 60 }}>
       <div className="container">
-        <SkinAnalysis />
+        <SkinAnalysis clinic={clinic} />
       </div>
     </section>
   );

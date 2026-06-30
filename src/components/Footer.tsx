@@ -1,6 +1,7 @@
 import Link from "next/link";
-import { CLINIC, telHref, waHref } from "@/data/clinic";
+import { telHref, waHref } from "@/data/clinic";
 import { FOOTER_LINKS } from "@/data/site";
+import { getClinic } from "@/sanity/lib/fetchers";
 import {
   Phone,
   MapPin,
@@ -11,24 +12,22 @@ import BookButton from "@/components/BookButton";
 import FooterAccordion from "@/components/FooterAccordion";
 import AskAiBar from "@/components/AskAiBar";
 
-// Actual embed URL resolved from https://maps.app.goo.gl/4SYd5TPEHhLbuRhR9
-const MAPS_EMBED =
-  "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3501.0!2d77.3093212!3d28.6537164!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x390cfbe2a421adb7%3A0xf631ccc92514fec0!2sRenovaAura!5e0!3m2!1sen!2sin!4v1";
-const MAPS_LINK = `https://www.google.com/maps?q=${CLINIC.mapsQuery}`;
+export default async function Footer() {
+  const clinic = await getClinic();
+  const logoSrc = clinic.logoUrl ?? "/renovaaura-logo.png";
 
-export default function Footer() {
   return (
     <footer className="footer">
       <div className="container">
         {/* Mobile quick actions (phone only) */}
         <div className="footer-actions">
-          <a className="footer-action" href={telHref()} aria-label="Call the clinic">
+          <a className="footer-action" href={telHref(clinic.phone)} aria-label="Call the clinic">
             <Phone size={18} />
             <span>Call</span>
           </a>
           <a
             className="footer-action"
-            href={waHref()}
+            href={waHref(undefined, clinic.phone)}
             target="_blank"
             rel="noopener noreferrer"
             aria-label="Chat on WhatsApp"
@@ -38,7 +37,7 @@ export default function Footer() {
           </a>
           <a
             className="footer-action"
-            href={MAPS_LINK}
+            href={clinic.googleMapsLinkUrl}
             target="_blank"
             rel="noopener noreferrer"
             aria-label="Get directions"
@@ -54,10 +53,10 @@ export default function Footer() {
 
         <div className="footer-grid">
           <div>
-            <Link href="/" className="logo" aria-label={CLINIC.name}>
+            <Link href="/" className="logo" aria-label={clinic.name}>
               <img
-                src="/renovaaura-logo.png"
-                alt={CLINIC.name}
+                src={logoSrc}
+                alt={clinic.name}
                 className="logo-img logo-img-light"
                 width={200}
                 height={56}
@@ -67,29 +66,29 @@ export default function Footer() {
             {/* Address + Google Maps embed */}
             <p className="footer-about">
               <a
-                href={MAPS_LINK}
+                href={clinic.googleMapsLinkUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="footer-address-link"
               >
-                {CLINIC.address}
+                {clinic.address}
               </a>
               <br />
               <br />
-              {CLINIC.hours}
+              {clinic.hours}
             </p>
 
             {/* Embedded map */}
             <div className="footer-map">
               <iframe
-                src={MAPS_EMBED}
+                src={clinic.googleMapsEmbedUrl}
                 width="100%"
                 height="180"
                 style={{ border: 0, borderRadius: 12, display: "block" }}
                 allowFullScreen
                 loading="lazy"
                 referrerPolicy="no-referrer-when-downgrade"
-                title="RenovaAura Clinic — Anand Vihar, New Delhi"
+                title={`${clinic.name} Clinic`}
               />
             </div>
           </div>
@@ -100,9 +99,9 @@ export default function Footer() {
         <AskAiBar />
 
         <div className="footer-bottom">
-          <span>© 2026 {CLINIC.name} · All rights reserved</span>
+          <span>© 2026 {clinic.name} · All rights reserved</span>
           <span>
-            {CLINIC.phone} · {CLINIC.email}
+            {clinic.phone} · {clinic.email}
           </span>
         </div>
       </div>

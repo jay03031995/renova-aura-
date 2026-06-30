@@ -1,10 +1,11 @@
 import type { MetadataRoute } from "next";
-import { getDoctorSlugs, getAllLocations } from "@/sanity/lib/fetchers";
+import { getDoctorSlugs, getAllLocations, getSiteSettings } from "@/sanity/lib/fetchers";
 import { PROCEDURES } from "@/data/procedures";
 import { CONCERNS } from "@/data/concerns";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = "https://renovaaura.com";
+  const settings = await getSiteSettings();
+  const baseUrl = (settings.siteUrl ?? "https://renovaaura.com").replace(/\/$/, "");
   const lastModified = new Date();
 
   const [doctorSlugs, locations] = await Promise.all([

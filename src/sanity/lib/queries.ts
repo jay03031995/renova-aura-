@@ -13,8 +13,12 @@ export const clinicSettingsQuery = /* groq */ `
 
 export const siteSettingsQuery = /* groq */ `
   *[_type == "siteSettings"][0]{
-    siteUrl, defaultMetaTitle, titleTemplate, defaultMetaDescription,
-    "defaultOgImage": defaultOgImage.asset->{_id, url},
+    siteUrl, canonicalUrl, titleTemplate,
+    "defaultSeoTitle": coalesce(defaultSeoTitle, defaultMetaTitle),
+    "defaultSeoDescription": coalesce(defaultSeoDescription, defaultMetaDescription),
+    "favicon": favicon.asset->{_id, url},
+    "openGraphImage": select(defined(openGraphImage.asset) => openGraphImage.asset->{_id, url}, defaultOgImage.asset->{_id, url}),
+    "twitterImage": twitterImage.asset->{_id, url},
     footerColumns[]{title, links[]{label, href}},
     footerBottomNote,
     featuredSocial,
@@ -24,6 +28,15 @@ export const siteSettingsQuery = /* groq */ `
 
 export const announcementQuery = /* groq */ `
   *[_type == "announcementBar"][0]{ enabled, message, linkLabel, linkUrl }
+`;
+
+export const whyUsSectionQuery = /* groq */ `
+  *[_type == "whyUsSection"][0]{
+    "mainImageUrl": mainImage.asset->url,
+    mainImageAlt,
+    "supportingImageUrl": supportingImage.asset->url,
+    supportingImageAlt
+  }
 `;
 
 export const packagesQuery = /* groq */ `

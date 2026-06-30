@@ -5,8 +5,9 @@ import {
   getDoctorBySlug,
   getDoctorSlugs,
   getDoctors,
+  getClinic,
 } from "@/sanity/lib/fetchers";
-import { CLINIC, telHref } from "@/data/clinic";
+import { telHref } from "@/data/clinic";
 import { ArrowRight } from "@/components/icons";
 import BookButton from "@/components/BookButton";
 
@@ -46,9 +47,10 @@ export default async function DoctorDetailPage(props: {
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await props.params;
-  const [d, allDoctors] = await Promise.all([
+  const [d, allDoctors, clinic] = await Promise.all([
     getDoctorBySlug(slug),
     getDoctors(),
+    getClinic(),
   ]);
   if (!d) notFound();
 
@@ -100,8 +102,8 @@ export default async function DoctorDetailPage(props: {
               <p className="dp-bio">{d.detailBio}</p>
               <div className="dp-cta">
                 <BookButton>Book a consultation</BookButton>
-                <a className="btn btn-ghost" href={telHref()}>
-                  Call {CLINIC.phone}
+                <a className="btn btn-ghost" href={telHref(clinic.phone)}>
+                  Call {clinic.phone}
                 </a>
               </div>
             </div>

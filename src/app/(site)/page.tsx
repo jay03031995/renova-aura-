@@ -13,7 +13,7 @@ import DoctorsSection from "@/components/home/DoctorsSection";
 // import Results from "@/components/home/Results";
 // import Testimonials from "@/components/home/Testimonials";
 import Faq from "@/components/home/Faq";
-import SimpleBook from "@/components/home/SimpleBook";
+// import SimpleBook from "@/components/home/SimpleBook";
 import Contact from "@/components/home/Contact";
 
 /**
@@ -37,7 +37,7 @@ export default async function Home() {
       {/* <Results /> — unpublished until RenovaAura before/after photos exist */}
       {/* <Testimonials /> — unpublished until RenovaAura testimonials exist */}
       <Faq />
-      <SimpleBook />
+      {/* <SimpleBook /> */}
       <Contact />
     </>
   );

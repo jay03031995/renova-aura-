@@ -1,4 +1,5 @@
-import { CLINIC, telHref, waHref } from "@/data/clinic";
+import { telHref, waHref } from "@/data/clinic";
+import { getClinic } from "@/sanity/lib/fetchers";
 import {
   ArrowRight,
   Clock,
@@ -8,7 +9,9 @@ import {
   WhatsappLogo,
 } from "@/components/icons";
 
-export default function Contact() {
+export default async function Contact() {
+  const clinic = await getClinic();
+
   return (
     <section className="contact-section" id="contact">
       <div className="container">
@@ -37,7 +40,7 @@ export default function Contact() {
                 </div>
                 <div>
                   <div className="contact-item-label">Clinic Address</div>
-                  <div className="contact-item-val">{CLINIC.address}</div>
+                  <div className="contact-item-val">{clinic.address}</div>
                 </div>
               </div>
               <div className="contact-item">
@@ -47,7 +50,7 @@ export default function Contact() {
                 <div>
                   <div className="contact-item-label">Call us</div>
                   <div className="contact-item-val">
-                    <a href={telHref(CLINIC.phone)}>{CLINIC.phone}</a>
+                    <a href={telHref(clinic.phone)}>{clinic.phone}</a>
                   </div>
                 </div>
               </div>
@@ -59,7 +62,7 @@ export default function Contact() {
                   <div className="contact-item-label">WhatsApp</div>
                   <div className="contact-item-val">
                     <a
-                      href={waHref()}
+                      href={waHref(undefined, clinic.phone)}
                       target="_blank"
                       rel="noopener noreferrer"
                     >
@@ -75,7 +78,7 @@ export default function Contact() {
                 <div>
                   <div className="contact-item-label">Email</div>
                   <div className="contact-item-val">
-                    <a href={`mailto:${CLINIC.email}`}>{CLINIC.email}</a>
+                    <a href={`mailto:${clinic.email}`}>{clinic.email}</a>
                   </div>
                 </div>
               </div>
@@ -85,7 +88,7 @@ export default function Contact() {
                 </div>
                 <div>
                   <div className="contact-item-label">Clinic hours</div>
-                  <div className="contact-item-val">{CLINIC.hours}</div>
+                  <div className="contact-item-val">{clinic.hours}</div>
                 </div>
               </div>
             </div>
@@ -94,15 +97,15 @@ export default function Contact() {
           <div className="contact-map reveal">
             <iframe
               className="contact-map-frame"
-              src={`https://www.google.com/maps?q=${CLINIC.mapsQuery}&output=embed`}
+              src={clinic.googleMapsEmbedUrl}
               loading="lazy"
               referrerPolicy="no-referrer-when-downgrade"
-              title="RenovaAura · Anand Vihar, New Delhi"
+              title={`${clinic.name} · Anand Vihar, New Delhi`}
             />
             <div className="contact-map-foot">
               <strong>Easy parking · Near Anand Vihar Metro</strong>
               <a
-                href={`https://www.google.com/maps?q=${CLINIC.mapsQuery}`}
+                href={clinic.googleMapsLinkUrl}
                 target="_blank"
                 rel="noopener noreferrer"
               >

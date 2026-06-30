@@ -657,17 +657,17 @@ p { margin: 0; color: var(--muted); }
   position: absolute;
   border-radius: var(--radius-lg);
   background: var(--tan);
+  background-size: cover;
+  background-position: center;
   box-shadow: var(--shadow-lg);
 }
 .why-img.main {
   top: 0; left: 0;
   width: 76%; height: 100%;
-  background: repeating-linear-gradient(135deg, #8c6e54 0 12px, #7d5f47 12px 24px);
 }
 .why-img.sub {
   bottom: 40px; right: 0;
   width: 46%; height: 50%;
-  background: repeating-linear-gradient(135deg, #d9be98 0 12px, #c9ad87 12px 24px);
   border: 8px solid var(--cream-2);
 }
 .why-tag {

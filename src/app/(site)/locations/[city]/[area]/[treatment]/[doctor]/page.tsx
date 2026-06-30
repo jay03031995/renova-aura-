@@ -8,9 +8,9 @@ import { NCR_AREAS } from "@/data/locations";
 import {
   getDoctors,
   getDoctorBySlug,
+  getClinic,
   getLocationByCityArea,
 } from "@/sanity/lib/fetchers";
-import { CLINIC } from "@/data/clinic";
 
 type Params = Promise<{
   city: string;
@@ -60,15 +60,14 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
 export default async function LocationDoctorPage({ params }: { params: Params }) {
   const { city, area, treatment, doctor } = await params;
 
-  const [procedure, location, doctorData] = await Promise.all([
+  const [procedure, location, doctorData, clinic] = await Promise.all([
     Promise.resolve(PROCEDURE_BY_SLUG[treatment]),
     getLocationByCityArea(city, area),
     getDoctorBySlug(doctor),
+    getClinic(),
   ]);
 
   if (!procedure || !location || !doctorData) return notFound();
-
-  const mapsUrl = `https://www.google.com/maps?q=${CLINIC.mapsQuery}`;
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -78,22 +77,22 @@ export default async function LocationDoctorPage({ params }: { params: Params })
     description: doctorData.listBio,
     image: doctorData.imageUrl,
     url: `https://renovaaura.com/locations/${city}/${area}/${treatment}/${doctor}`,
-    telephone: CLINIC.phone,
+    telephone: clinic.phone,
     address: {
       "@type": "PostalAddress",
-      streetAddress: CLINIC.addressParts.streetAddress,
-      addressLocality: CLINIC.addressParts.locality,
-      addressRegion: CLINIC.addressParts.region,
-      postalCode: CLINIC.addressParts.postalCode,
-      addressCountry: CLINIC.addressParts.country,
+      streetAddress: clinic.addressParts.streetAddress,
+      addressLocality: clinic.addressParts.locality,
+      addressRegion: clinic.addressParts.region,
+      postalCode: clinic.addressParts.postalCode,
+      addressCountry: clinic.addressParts.country,
     },
     worksFor: {
       "@type": "MedicalBusiness",
-      name: CLINIC.name,
-      url: "https://renovaaura.com",
+      name: clinic.name,
+      url: clinic.shopUrl,
     },
     medicalSpecialty: doctorData.specialty,
-    hasMap: mapsUrl,
+    hasMap: clinic.googleMapsLinkUrl,
     breadcrumb: {
       "@type": "BreadcrumbList",
       itemListElement: [
@@ -208,9 +207,9 @@ export default async function LocationDoctorPage({ params }: { params: Params })
           <div className="eyebrow" style={{ marginBottom: 14 }}>Getting here from {location.area}</div>
           <h2 style={{ marginBottom: 20 }}>Clinic address.</h2>
           <p style={{ fontSize: 15, lineHeight: 1.7, color: "var(--muted)", marginBottom: 22 }}>
-            {CLINIC.address} · {CLINIC.hours}
+            {clinic.address} · {clinic.hours}
           </p>
-          <a href={mapsUrl} target="_blank" rel="noopener noreferrer" className="btn btn-primary">
+          <a href={clinic.googleMapsLinkUrl} target="_blank" rel="noopener noreferrer" className="btn btn-primary">
             <MapPin size={15} /> Directions from {location.area}
           </a>
         </div>

@@ -1,6 +1,10 @@
 import type { MetadataRoute } from "next";
+import { getSiteSettings } from "@/sanity/lib/fetchers";
 
-export default function robots(): MetadataRoute.Robots {
+export default async function robots(): Promise<MetadataRoute.Robots> {
+  const settings = await getSiteSettings();
+  const baseUrl = (settings.siteUrl ?? "https://renovaaura.com").replace(/\/$/, "");
+
   return {
     rules: [
       {
@@ -9,6 +13,6 @@ export default function robots(): MetadataRoute.Robots {
         disallow: ["/api/", "/admin/"],
       },
     ],
-    sitemap: "https://renovaaura.com/sitemap.xml",
+    sitemap: `${baseUrl}/sitemap.xml`,
   };
 }
