@@ -26,6 +26,7 @@ const FALLBACK_SITE_URL = "https://renovaaura.com";
 const FALLBACK_TITLE = "RenovaAura — Hair Transplant & Plastic Surgery Specialists";
 const FALLBACK_DESCRIPTION =
   "RenovaAura — board-certified hair transplant surgeons and plastic surgery specialists. FUE, DHI, FUT, rhinoplasty, blepharoplasty, facelift and more. Natural-looking, clinically-grounded results.";
+const FALLBACK_OG_IMAGE = "/og.jpg";
 
 const absoluteUrl = (url: string | undefined, base: string) => {
   if (!url) return undefined;
@@ -38,9 +39,12 @@ export async function generateMetadata(): Promise<Metadata> {
   const canonicalUrl = settings.canonicalUrl ?? siteUrl;
   const title = settings.defaultSeoTitle ?? FALLBACK_TITLE;
   const description = settings.defaultSeoDescription ?? FALLBACK_DESCRIPTION;
-  const ogImage = absoluteUrl(settings.openGraphImageUrl, siteUrl);
+  const ogImage = absoluteUrl(
+    settings.openGraphImageUrl ?? FALLBACK_OG_IMAGE,
+    siteUrl,
+  );
   const twitterImage = absoluteUrl(
-    settings.twitterImageUrl ?? settings.openGraphImageUrl,
+    settings.twitterImageUrl ?? settings.openGraphImageUrl ?? FALLBACK_OG_IMAGE,
     siteUrl,
   );
   const favicon = absoluteUrl(settings.faviconUrl, siteUrl) ?? "/fav.png";
