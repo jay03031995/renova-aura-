@@ -52,7 +52,6 @@ export const DOCTORS: Doctor[] = [
     listBio:
       "MBBS, DVDL (Skin & VD). Dr. Bhardwaj leads RenovaAura's dermatology and hair restoration practice. Her work spans medical dermatology (acne, melasma, pigmentation) and surgical hair transplant (FUE, DHI, beard and eyebrow restoration). Her approach is evidence-first — she's known for talking patients out of treatments that aren't right for them.",
     statCreds: [
-      { n: "9", sup: "+ yrs", l: "Clinical practice" },
       { n: "MBBS", l: "Medicine" },
       { n: "DVDL", l: "Skin & VD" },
     ],
@@ -167,7 +166,6 @@ export const DOCTORS: Doctor[] = [
     listBio:
       "MBBS, MS (General Surgery), M.Ch (Plastic Surgery). Dr. Bhatia is a board-certified plastic and reconstructive microsurgeon whose practice spans both cosmetic surgery (rhinoplasty, facelift, body contouring) and complex reconstructive work (hand, microsurgery, burns, limb salvage). His M.Ch in Plastic Surgery is the highest formal qualification a plastic surgeon can hold in India — only awarded after 6 years of post-MBBS specialisation.",
     statCreds: [
-      { n: "14", sup: "+ yrs", l: "Clinical practice" },
       { n: "M.Ch", l: "Plastic Surgery" },
       { n: "MS", l: "General Surgery" },
     ],

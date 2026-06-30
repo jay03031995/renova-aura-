@@ -88,6 +88,17 @@ export default async function DoctorsPage() {
                 <div className="doc-title">{d.title}</div>
                 <p className="doc-body-bio">{d.listBio}</p>
                 <div className="doc-creds">
+                  {/* Experience badge — driven by the Sanity "Years practising"
+                      (years) field so editors have a single source of truth. */}
+                  {d.years > 0 && (
+                    <div className="doc-cred">
+                      <div className="doc-cred-num">
+                        {d.years}
+                        <sup>+ yrs</sup>
+                      </div>
+                      <div className="doc-cred-label">Experience</div>
+                    </div>
+                  )}
                   {d.statCreds.map((c, j) => (
                     <div className="doc-cred" key={j}>
                       <div className="doc-cred-num">
