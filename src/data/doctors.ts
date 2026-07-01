@@ -44,9 +44,9 @@ export const DOCTORS: Doctor[] = [
     img: "d1",
     photo: "/images/doctors/bhawna-bhardwaj.jpg",
     focus: "Dermatology · Hair Transplant",
-    years: 9,
+    years: 15,
     homeBio:
-      "MBBS, DVDL (Skin & VD). Senior consultant dermatologist and hair transplant surgeon with 9+ years of practice across acne management, pigmentation protocols, hair restoration and energy-based aesthetic devices.",
+      "MBBS, DVDL (Skin & VD). Senior consultant dermatologist and hair transplant surgeon with 15+ years of practice across acne management, pigmentation protocols, hair restoration and energy-based aesthetic devices.",
     short:
       "Dermatology · Hair restoration · Aesthetic medicine",
     listBio:
@@ -106,7 +106,7 @@ export const DOCTORS: Doctor[] = [
       },
       {
         y: "Today",
-        t: "9+ years of clinical practice",
+        t: "15+ years of clinical practice",
         d: "Combining medical dermatology, hair restoration and aesthetic medicine.",
       },
     ],
@@ -158,9 +158,9 @@ export const DOCTORS: Doctor[] = [
     img: "d2",
     photo: "/images/doctors/ankur-bhatia.jpg",
     focus: "Plastic Surgery · Microsurgery",
-    years: 14,
+    years: 15,
     homeBio:
-      "MBBS, MS (General Surgery), M.Ch (Plastic Surgery). Consultant plastic and reconstructive microsurgeon with 14+ years across hand surgery, cosmetic & body contouring, facial reconstruction and complex limb salvage.",
+      "MBBS, MS (General Surgery), M.Ch (Plastic Surgery). Consultant plastic and reconstructive microsurgeon with 15+ years across hand surgery, cosmetic & body contouring, facial reconstruction and complex limb salvage.",
     short:
       "Plastic surgery · Microsurgery · Cosmetic & reconstructive",
     listBio:
@@ -225,7 +225,7 @@ export const DOCTORS: Doctor[] = [
       },
       {
         y: "Today",
-        t: "14+ years of clinical practice",
+        t: "15+ years of clinical practice",
         d: "Combining cosmetic refinement with the precision of microsurgical reconstruction.",
       },
     ],
