@@ -17,11 +17,15 @@
  */
 
 export type ProcedurePillar = "hair-transplant" | "plastic-surgery";
+export type PlasticSurgeryCategory =
+  | "Reconstructive Surgery"
+  | "Aesthetic Surgery";
 
 export type Procedure = {
   slug: string;
   name: string;
   pillar: ProcedurePillar;
+  plasticSurgeryCategory?: PlasticSurgeryCategory;
   tag?: string; // e.g. "Most popular", "Walk-in 60 min"
   headline: string;
   overview: string;

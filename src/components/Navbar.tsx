@@ -4,10 +4,10 @@ import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import Link from "next/link";
 import { telHref, waHref } from "@/data/clinic";
-import type { ClinicData } from "@/sanity/lib/fetchers";
+import type { BodyConcern, ClinicData } from "@/sanity/lib/fetchers";
 import { DOCTORS } from "@/data/doctors";
 import type { Procedure } from "@/data/procedures";
-import { CONCERNS } from "@/data/concerns";
+import type { Concern } from "@/data/concerns";
 import { ArrowRight, Phone, WhatsappLogo } from "@/components/icons";
 import BookButton from "@/components/BookButton";
 import { useBooking } from "@/components/BookingContext";
@@ -25,6 +25,8 @@ const MOBILE_LINKS: { label: string; href: string }[] = [
   { label: "Hair Transplant", href: "/procedures/hair-transplant" },
   { label: "Plastic Surgery", href: "/procedures/plastic-surgery" },
   { label: "Skin Concerns", href: "/concerns" },
+  { label: "Body Concerns", href: "/body-concerns" },
+  { label: "Tools & Equipments", href: "/tools-equipments" },
   { label: "Packages", href: "/packages" },
   { label: "Doctors", href: "/doctors" },
   { label: "Contact", href: "/#contact" },
@@ -34,10 +36,14 @@ export default function Navbar({
   clinic,
   hairProcedures,
   plasticProcedures,
+  skinConcerns,
+  bodyConcerns,
 }: {
   clinic: ClinicData;
   hairProcedures: Procedure[];
   plasticProcedures: Procedure[];
+  skinConcerns: Concern[];
+  bodyConcerns: BodyConcern[];
 }) {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -45,7 +51,10 @@ export default function Navbar({
   // escapes the .nav backdrop-filter containing block that was shoving the
   // fixed drawer off-screen).
   const [mounted, setMounted] = useState(false);
-  useEffect(() => setMounted(true), []);
+  useEffect(() => {
+    const id = window.setTimeout(() => setMounted(true), 0);
+    return () => window.clearTimeout(id);
+  }, []);
   const { open } = useBooking();
 
   useEffect(() => {
@@ -72,7 +81,8 @@ export default function Navbar({
 
   const hairTop = hairProcedures.slice(0, 6);
   const plasticTop = plasticProcedures.slice(0, 6);
-  const concernTop = CONCERNS.slice(0, 6);
+  const concernTop = skinConcerns.slice(0, 6);
+  const bodyConcernTop = bodyConcerns.slice(0, 6);
 
   return (
     <nav className={"nav" + (scrolled ? " scrolled" : "")}>
@@ -154,7 +164,7 @@ export default function Navbar({
             </Link>
             <div className="nav-dd wide">
               <div className="nav-dd-hd">
-                Skin concerns · {CONCERNS.length} treated
+                Skin concerns · {skinConcerns.length} treated
               </div>
               {concernTop.map((c) => (
                 <Link
@@ -173,6 +183,39 @@ export default function Navbar({
                 </Link>
               </div>
             </div>
+          </div>
+
+          <div className="nav-item">
+            <Link className="nav-link has-dd" href="/body-concerns">
+              Body Concerns
+            </Link>
+            <div className="nav-dd wide">
+              <div className="nav-dd-hd">
+                Body concerns · {bodyConcerns.length} treated
+              </div>
+              {bodyConcernTop.map((c) => (
+                <Link
+                  key={c.slug}
+                  className="nav-dd-item"
+                  href={`/body-concerns/${c.slug}`}
+                >
+                  <span>{c.name}</span>
+                  <small>{c.cardTagline}</small>
+                </Link>
+              ))}
+              <div className="nav-dd-foot">
+                <span>Doctor-led body protocols</span>
+                <Link href="/body-concerns">
+                  See all <ArrowRight size={11} />
+                </Link>
+              </div>
+            </div>
+          </div>
+
+          <div className="nav-item">
+            <Link className="nav-link" href="/tools-equipments">
+              Tools & Equipments
+            </Link>
           </div>
 
           <div className="nav-item">
@@ -212,9 +255,6 @@ export default function Navbar({
         </div>
 
         <div className="nav-cta">
-          <span className="nav-phone">
-            <Phone /> {clinic.phone}
-          </span>
           <BookButton>Book Consultation</BookButton>
         </div>
 

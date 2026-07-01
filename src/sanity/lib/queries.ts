@@ -42,6 +42,7 @@ export const whyUsSectionQuery = /* groq */ `
 export const packagesQuery = /* groq */ `
   *[_type == "package" && enabled != false] | order(order asc, name asc){
     "slug": slug.current,
+    "image": image.asset->{_id, url},
     name, category, includes, price, concernSlug, order
   }
 `;
@@ -70,6 +71,7 @@ const procedureCardProjection = /* groq */ `
   name,
   "slug": slug.current,
   pillar,
+  plasticSurgeryCategory,
   tag,
   headline,
   "image": image.asset->{_id, url},
@@ -148,6 +150,79 @@ export const concernBySlugQuery = /* groq */ `
 
 export const concernSlugsQuery = /* groq */ `
   *[_type == "concern" && defined(slug.current)][].slug.current
+`;
+
+// =========================================================================
+// Body Concerns
+// =========================================================================
+
+const packageCardProjection = /* groq */ `
+  _id,
+  name,
+  "slug": slug.current,
+  category,
+  includes,
+  price,
+  concernSlug,
+  "image": image.asset->{_id, url},
+  "order": coalesce(order, 999)
+`;
+
+export const bodyConcernsQuery = /* groq */ `
+  *[_type == "bodyConcern"] | order(order asc, name asc){
+    ${concernCardProjection}
+  }
+`;
+
+export const bodyConcernBySlugQuery = /* groq */ `
+  *[_type == "bodyConcern" && slug.current == $slug][0]{
+    ${concernCardProjection},
+    headline,
+    summary,
+    symptoms,
+    causes,
+    approach,
+    "relatedPackages": relatedPackages[]->{ ${packageCardProjection} },
+    faqs[]{question, answer}
+  }
+`;
+
+export const bodyConcernSlugsQuery = /* groq */ `
+  *[_type == "bodyConcern" && defined(slug.current)][].slug.current
+`;
+
+// =========================================================================
+// Tools & Equipments
+// =========================================================================
+
+const equipmentProjection = /* groq */ `
+  _id,
+  name,
+  "slug": slug.current,
+  "image": image.asset->{_id, url},
+  shortDescription,
+  detailedDescription,
+  category,
+  "displayOrder": coalesce(displayOrder, 999),
+  "featured": coalesce(featured, false),
+  seoTitle,
+  seoDescription
+`;
+
+export const equipmentQuery = /* groq */ `
+  *[_type == "equipment"] | order(displayOrder asc, name asc){
+    ${equipmentProjection}
+  }
+`;
+
+export const equipmentBySlugQuery = /* groq */ `
+  *[_type == "equipment" && slug.current == $slug][0]{
+    ${equipmentProjection}
+  }
+`;
+
+export const equipmentSlugsQuery = /* groq */ `
+  *[_type == "equipment" && defined(slug.current)][].slug.current
 `;
 
 const doctorCardProjection = /* groq */ `

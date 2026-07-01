@@ -7,7 +7,12 @@ import FabStack from "@/components/FabStack";
 import MobileTabBar from "@/components/MobileTabBar";
 import BookingModal from "@/components/BookingModal";
 import RevealInit from "@/components/RevealInit";
-import { getClinic, getProceduresByPillar } from "@/sanity/lib/fetchers";
+import {
+  getBodyConcerns,
+  getClinic,
+  getConcerns,
+  getProceduresByPillar,
+} from "@/sanity/lib/fetchers";
 
 /**
  * No-cache / always-fresh: every page under (site)/ is rendered dynamically
@@ -210,11 +215,14 @@ export default async function SiteLayout({
   // Mirror the Sanity-managed social profiles into the structured-data sameAs,
   // so the JSON-LD stays consistent with the visible social links. Clone the
   // module const (never mutate shared state across requests).
-  const [clinic, hairProcedures, plasticProcedures] = await Promise.all([
-    getClinic(),
-    getProceduresByPillar("hair-transplant"),
-    getProceduresByPillar("plastic-surgery"),
-  ]);
+  const [clinic, hairProcedures, plasticProcedures, skinConcerns, bodyConcerns] =
+    await Promise.all([
+      getClinic(),
+      getProceduresByPillar("hair-transplant"),
+      getProceduresByPillar("plastic-surgery"),
+      getConcerns(),
+      getBodyConcerns(),
+    ]);
   const logoUrl = clinic.logoUrl ?? `${BASE}/renovaaura-logo.png`;
   const address = {
     "@type": "PostalAddress",
@@ -297,6 +305,8 @@ export default async function SiteLayout({
             clinic={clinic}
             hairProcedures={hairProcedures}
             plasticProcedures={plasticProcedures}
+            skinConcerns={skinConcerns}
+            bodyConcerns={bodyConcerns}
           />
         </header>
         <main>{children}</main>

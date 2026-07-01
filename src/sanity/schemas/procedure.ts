@@ -49,6 +49,28 @@ export const procedureSchema = defineType({
       validation: (r) => r.required(),
     }),
     defineField({
+      name: "plasticSurgeryCategory",
+      title: "Plastic Surgery Category",
+      type: "string",
+      group: "summary",
+      hidden: ({ document }) => document?.pillar !== "plastic-surgery",
+      options: {
+        list: [
+          { title: "Reconstructive Surgery", value: "Reconstructive Surgery" },
+          { title: "Aesthetic Surgery", value: "Aesthetic Surgery" },
+        ],
+        layout: "radio",
+      },
+      validation: (rule) =>
+        rule.custom((value, context) => {
+          const pillar = context.document?.pillar;
+          if (pillar === "plastic-surgery" && !value) {
+            return "Choose a plastic surgery category.";
+          }
+          return true;
+        }),
+    }),
+    defineField({
       name: "tag",
       title: "Tag (e.g. Most popular, Premium)",
       type: "string",
@@ -165,15 +187,18 @@ export const procedureSchema = defineType({
     select: {
       name: "name",
       pillar: "pillar",
+      plasticSurgeryCategory: "plasticSurgeryCategory",
       tag: "tag",
       media: "image",
     },
-    prepare({ name, pillar, tag, media }) {
+    prepare({ name, pillar, plasticSurgeryCategory, tag, media }) {
       const pillarLabel =
         pillar === "hair-transplant" ? "Hair Transplant" : "Plastic Surgery";
       return {
         title: name ?? "Untitled procedure",
-        subtitle: [pillarLabel, tag].filter(Boolean).join(" · "),
+        subtitle: [pillarLabel, plasticSurgeryCategory, tag]
+          .filter(Boolean)
+          .join(" · "),
         media,
       };
     },

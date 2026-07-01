@@ -216,7 +216,7 @@ export default async function DoctorDetailPage(props: {
         <div className="container">
           <div className="dp-head">
             <div className="eyebrow">Meet the team</div>
-            <h2>Other dermatologists at RenovaAura.</h2>
+            <h2>Other specialists at RenovaAura.</h2>
           </div>
           <div className="dp-others">
             {others.map((o) => (

@@ -39,6 +39,14 @@ export const packageSchema = defineType({
       validation: (r) => r.required(),
     }),
     defineField({
+      name: "image",
+      title: "Package Image",
+      type: "image",
+      options: { hotspot: true },
+      description:
+        "Optional image shown on package cards. Existing packages keep the current placeholder if this is empty.",
+    }),
+    defineField({
       name: "includes",
       title: "What's included",
       type: "text",

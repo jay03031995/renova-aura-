@@ -14,6 +14,9 @@ import { cache } from "react";
 import { client, sanityEnabled } from "./client";
 import {
   announcementQuery,
+  bodyConcernBySlugQuery,
+  bodyConcernSlugsQuery,
+  bodyConcernsQuery,
   clinicSettingsQuery,
   concernBySlugQuery,
   concernSlugsQuery,
@@ -22,6 +25,9 @@ import {
   doctorSlugsQuery,
   doctorsQuery,
   eeatPillarsQuery,
+  equipmentBySlugQuery,
+  equipmentQuery,
+  equipmentSlugsQuery,
   heroSlidesQuery,
   homepageFaqsQuery,
   packagesQuery,
@@ -58,6 +64,7 @@ import {
   HAIR_PROCEDURES as LOCAL_HAIR_PROCEDURES,
   PLASTIC_PROCEDURES as LOCAL_PLASTIC_PROCEDURES,
   type Procedure,
+  type PlasticSurgeryCategory,
   type ProcedurePillar,
 } from "@/data/procedures";
 import {
@@ -369,6 +376,7 @@ export async function getPackages(): Promise<TreatmentPackage[]> {
       slug: string;
       name: string;
       category: string;
+      image?: { url?: string };
       includes?: string;
       price?: string;
       concernSlug?: string;
@@ -380,6 +388,7 @@ export async function getPackages(): Promise<TreatmentPackage[]> {
     slug: d.slug,
     name: d.name,
     category: d.category as TreatmentPackage["category"],
+    image: d.image?.url,
     includes: d.includes ?? "",
     price: d.price,
     concernSlug: d.concernSlug || undefined,
@@ -484,6 +493,7 @@ type SanityProcedure = {
   name: string;
   slug: string;
   pillar: ProcedurePillar;
+  plasticSurgeryCategory?: PlasticSurgeryCategory;
   tag?: string;
   headline: string;
   overview?: string;
@@ -506,6 +516,7 @@ function mapProcedure(d: SanityProcedure): Procedure {
     slug: d.slug,
     name: d.name,
     pillar: d.pillar,
+    plasticSurgeryCategory: d.plasticSurgeryCategory,
     tag: d.tag,
     image: d.image?.url,
     headline: d.headline,
@@ -630,6 +641,149 @@ export async function getConcernSlugs(): Promise<string[]> {
   const slugs = await safeFetch<string[]>(concernSlugsQuery);
   if (isFilled(slugs)) return slugs;
   return LOCAL_CONCERN_SLUGS;
+}
+
+// ----- Body Concerns --------------------------------------------------------
+
+export type BodyConcern = Omit<Concern, "relatedProcedureSlugs"> & {
+  relatedPackages: TreatmentPackage[];
+};
+
+type SanityBodyConcern = Omit<SanityConcern, "relatedProcedures"> & {
+  relatedPackages?: {
+    slug: string;
+    name: string;
+    category: string;
+    image?: { url?: string };
+    includes?: string;
+    price?: string;
+    concernSlug?: string;
+    order?: number;
+  }[];
+};
+
+function mapPackage(d: {
+  slug: string;
+  name: string;
+  category: string;
+  image?: { url?: string };
+  includes?: string;
+  price?: string;
+  concernSlug?: string;
+  order?: number;
+}): TreatmentPackage {
+  return {
+    slug: d.slug,
+    name: d.name,
+    category: d.category as TreatmentPackage["category"],
+    image: d.image?.url,
+    includes: d.includes ?? "",
+    price: d.price,
+    concernSlug: d.concernSlug || undefined,
+    order: d.order ?? 0,
+  };
+}
+
+function mapBodyConcern(d: SanityBodyConcern): BodyConcern {
+  return {
+    slug: d.slug,
+    name: d.name,
+    icon: d.icon ?? "◍",
+    image: d.image?.url,
+    cardTagline: d.cardTagline ?? "",
+    headline: d.headline ?? "",
+    summary: d.summary ?? "",
+    symptoms: d.symptoms ?? [],
+    causes: d.causes ?? [],
+    approach: d.approach ?? [],
+    relatedPackages: (d.relatedPackages ?? []).map(mapPackage),
+    faqs: (d.faqs ?? []).map((f) => ({ q: f.question, a: f.answer })),
+  };
+}
+
+export async function getBodyConcerns(): Promise<BodyConcern[]> {
+  const docs = await safeFetch<SanityBodyConcern[]>(bodyConcernsQuery);
+  if (!isFilled(docs)) return [];
+  return docs.map(mapBodyConcern);
+}
+
+export async function getBodyConcernBySlug(
+  slug: string,
+): Promise<BodyConcern | undefined> {
+  const doc = await safeFetch<SanityBodyConcern | null>(
+    bodyConcernBySlugQuery,
+    { slug },
+  );
+  return doc ? mapBodyConcern(doc) : undefined;
+}
+
+export async function getBodyConcernSlugs(): Promise<string[]> {
+  const slugs = await safeFetch<string[]>(bodyConcernSlugsQuery);
+  return isFilled(slugs) ? slugs : [];
+}
+
+// ----- Tools & Equipments ---------------------------------------------------
+
+export type Equipment = {
+  slug: string;
+  name: string;
+  image?: string;
+  shortDescription: string;
+  detailedDescription: string;
+  category: string;
+  displayOrder: number;
+  featured: boolean;
+  seoTitle?: string;
+  seoDescription?: string;
+};
+
+type SanityEquipment = {
+  _id: string;
+  slug: string;
+  name: string;
+  image?: { url?: string };
+  shortDescription?: string;
+  detailedDescription?: string;
+  category?: string;
+  displayOrder?: number;
+  featured?: boolean;
+  seoTitle?: string;
+  seoDescription?: string;
+};
+
+function mapEquipment(d: SanityEquipment): Equipment {
+  return {
+    slug: d.slug,
+    name: d.name,
+    image: d.image?.url,
+    shortDescription: d.shortDescription ?? "",
+    detailedDescription: d.detailedDescription ?? "",
+    category: d.category ?? "Other",
+    displayOrder: d.displayOrder ?? 0,
+    featured: d.featured ?? false,
+    seoTitle: d.seoTitle,
+    seoDescription: d.seoDescription,
+  };
+}
+
+export async function getEquipments(): Promise<Equipment[]> {
+  const docs = await safeFetch<SanityEquipment[]>(equipmentQuery);
+  if (!isFilled(docs)) return [];
+  return docs.map(mapEquipment);
+}
+
+export async function getEquipmentBySlug(
+  slug: string,
+): Promise<Equipment | undefined> {
+  const doc = await safeFetch<SanityEquipment | null>(equipmentBySlugQuery, {
+    slug,
+  });
+  return doc ? mapEquipment(doc) : undefined;
+}
+
+export async function getEquipmentSlugs(): Promise<string[]> {
+  const slugs = await safeFetch<string[]>(equipmentSlugsQuery);
+  return isFilled(slugs) ? slugs : [];
 }
 
 // ── Location fetchers ────────────────────────────────────────────────────────

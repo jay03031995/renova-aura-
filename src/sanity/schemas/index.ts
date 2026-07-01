@@ -23,6 +23,8 @@ import { packageSchema } from "./package";
 import { resultSchema } from "./result";
 import { procedureSchema } from "./procedure";
 import { concernSchema } from "./concern";
+import { bodyConcernSchema } from "./bodyConcern";
+import { equipmentSchema } from "./equipment";
 import {
   eeatPillarSchema,
   homepageFaqSchema,
@@ -57,6 +59,8 @@ export const schemaTypes = [
   packageSchema,
   procedureSchema,
   concernSchema,
+  bodyConcernSchema,
+  equipmentSchema,
   doctorSchema,
   resultSchema,
   testimonialSchema,

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import type { CSSProperties } from "react";
 import Link from "next/link";
 import { ArrowRight } from "@/components/icons";
 import BookButton from "@/components/BookButton";
@@ -43,7 +44,15 @@ export default async function PackagesPage() {
                 {packages
                   .filter((p) => p.category === cat.slug)
                   .map((p) => (
-                    <div key={p.slug} className="pkg-card">
+                    <div
+                      key={p.slug}
+                      className="pkg-card"
+                      style={
+                        p.image
+                          ? ({ "--pkg-image": `url(${p.image})` } as CSSProperties)
+                          : undefined
+                      }
+                    >
                       <div className="pkg-card-top">
                         <h3 className="pkg-card-name">{p.name}</h3>
                         {p.includes && (

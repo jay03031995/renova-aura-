@@ -1,21 +1,33 @@
 import type { MetadataRoute } from "next";
 import {
+  getBodyConcernSlugs,
+  getConcernSlugs,
   getDoctorSlugs,
+  getEquipmentSlugs,
   getAllLocations,
   getProcedures,
   getSiteSettings,
 } from "@/sanity/lib/fetchers";
-import { CONCERNS } from "@/data/concerns";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const settings = await getSiteSettings();
   const baseUrl = (settings.siteUrl ?? "https://renovaaura.com").replace(/\/$/, "");
   const lastModified = new Date();
 
-  const [doctorSlugs, locations, allProcedures] = await Promise.all([
+  const [
+    doctorSlugs,
+    locations,
+    allProcedures,
+    concernSlugs,
+    bodyConcernSlugs,
+    equipmentSlugs,
+  ] = await Promise.all([
     getDoctorSlugs(),
     getAllLocations(),
     getProcedures(),
+    getConcernSlugs(),
+    getBodyConcernSlugs(),
+    getEquipmentSlugs(),
   ]);
 
   const top = [
@@ -24,6 +36,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { path: "/procedures/hair-transplant", priority: 0.95 },
     { path: "/procedures/plastic-surgery", priority: 0.9 },
     { path: "/concerns", priority: 0.9 },
+    { path: "/body-concerns", priority: 0.85 },
+    { path: "/tools-equipments", priority: 0.85 },
+    { path: "/packages", priority: 0.85 },
     { path: "/tools", priority: 0.9 },
     { path: "/tools/skin-analysis", priority: 0.85 },
     { path: "/tools/graft-calculator", priority: 0.85 },
@@ -37,9 +52,19 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: p.pillar === "hair-transplant" ? 0.85 : 0.8,
   }));
 
-  const concerns = CONCERNS.map((c) => ({
-    path: `/concerns/${c.slug}`,
+  const concerns = concernSlugs.map((slug) => ({
+    path: `/concerns/${slug}`,
     priority: 0.8,
+  }));
+
+  const bodyConcerns = bodyConcernSlugs.map((slug) => ({
+    path: `/body-concerns/${slug}`,
+    priority: 0.8,
+  }));
+
+  const equipments = equipmentSlugs.map((slug) => ({
+    path: `/tools-equipments/${slug}`,
+    priority: 0.75,
   }));
 
   const doctors = doctorSlugs.map((slug) => ({
@@ -72,6 +97,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...top,
     ...procedures,
     ...concerns,
+    ...bodyConcerns,
+    ...equipments,
     ...doctors,
     ...locationPages,
     ...locationDoctorPages,

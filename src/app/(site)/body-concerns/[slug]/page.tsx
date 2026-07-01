@@ -2,19 +2,16 @@ import type { Metadata } from "next";
 import type { CSSProperties } from "react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowRight, Check } from "@/components/icons";
 import BookButton from "@/components/BookButton";
 import FaqItem from "@/components/FaqItem";
-import { type Concern } from "@/data/concerns";
-import { type TreatmentPackage } from "@/data/packages";
+import { ArrowRight, Check } from "@/components/icons";
 import {
-  getConcernBySlug,
-  getConcernSlugs,
-  getPackagesByConcern,
+  getBodyConcernBySlug,
+  getBodyConcernSlugs,
 } from "@/sanity/lib/fetchers";
 
 export async function generateStaticParams() {
-  const slugs = await getConcernSlugs();
+  const slugs = await getBodyConcernSlugs();
   return slugs.map((slug) => ({ slug }));
 }
 
@@ -24,37 +21,24 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const c = await getConcernBySlug(slug);
+  const c = await getBodyConcernBySlug(slug);
   if (!c) return {};
   return {
     title: c.name,
     description: c.summary.slice(0, 160),
-    alternates: { canonical: `/concerns/${c.slug}` },
+    alternates: { canonical: `/body-concerns/${c.slug}` },
   };
 }
 
-export default async function ConcernPage({
+export default async function BodyConcernPage({
   params,
 }: {
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const c = await getConcernBySlug(slug);
+  const c = await getBodyConcernBySlug(slug);
   if (!c) return notFound();
 
-  const packages = await getPackagesByConcern(slug);
-
-  return <ConcernDetail c={c} packages={packages} />;
-}
-
-function ConcernDetail({
-  c,
-  packages,
-}: {
-  c: Concern;
-  packages: TreatmentPackage[];
-}) {
-  // FAQPage JSON-LD for Google rich snippets (EEAT).
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "FAQPage",
@@ -75,7 +59,7 @@ function ConcernDetail({
       <section className="pillar-hero">
         <div className="container">
           <Link
-            href="/concerns"
+            href="/body-concerns"
             style={{
               fontSize: 13,
               color: "var(--tan)",
@@ -83,7 +67,7 @@ function ConcernDetail({
               display: "inline-block",
             }}
           >
-            ← Back to Skin Concerns
+            ← Back to Body Concerns
           </Link>
           <div className="pillar-hero-grid">
             <div className="pillar-hero-text">
@@ -99,10 +83,7 @@ function ConcernDetail({
               </div>
               <div className="pillar-hero-eyebrow">{c.name}</div>
               <h1 className="pillar-hero-headline">{c.headline}</h1>
-              <p
-                className="pillar-hero-subtitle"
-                style={{ marginTop: 22 }}
-              >
+              <p className="pillar-hero-subtitle" style={{ marginTop: 22 }}>
                 {c.summary}
               </p>
               <div style={{ marginTop: 28 }}>
@@ -121,16 +102,8 @@ function ConcernDetail({
         </div>
       </section>
 
-      {/* Symptoms + Causes */}
       <section className="section">
-        <div
-          className="container"
-          style={{
-            display: "grid",
-            gridTemplateColumns: "1fr 1fr",
-            gap: 60,
-          }}
-        >
+        <div className="concern-two-col container">
           <div>
             <div className="eyebrow" style={{ marginBottom: 18 }}>
               What you might notice
@@ -138,17 +111,7 @@ function ConcernDetail({
             <h2 style={{ fontSize: 28, marginBottom: 24 }}>Symptoms</h2>
             <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
               {c.symptoms.map((s, i) => (
-                <li
-                  key={i}
-                  style={{
-                    display: "flex",
-                    gap: 12,
-                    marginBottom: 16,
-                    fontSize: 15,
-                    color: "var(--ink)",
-                    lineHeight: 1.55,
-                  }}
-                >
+                <li key={i} className="concern-list-item">
                   <span style={{ color: "var(--sage)", marginTop: 4 }}>◍</span>
                   {s}
                 </li>
@@ -162,17 +125,7 @@ function ConcernDetail({
             <h2 style={{ fontSize: 28, marginBottom: 24 }}>Common causes</h2>
             <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
               {c.causes.map((cause, i) => (
-                <li
-                  key={i}
-                  style={{
-                    display: "flex",
-                    gap: 12,
-                    marginBottom: 16,
-                    fontSize: 15,
-                    color: "var(--ink)",
-                    lineHeight: 1.55,
-                  }}
-                >
+                <li key={i} className="concern-list-item">
                   <span style={{ color: "var(--sage)", marginTop: 4 }}>
                     <Check size={16} />
                   </span>
@@ -184,57 +137,16 @@ function ConcernDetail({
         </div>
       </section>
 
-      {/* RenovaAura Approach */}
-      <section
-        className="section"
-        style={{ background: "var(--cream-2)" }}
-      >
+      <section className="section" style={{ background: "var(--cream-2)" }}>
         <div className="container">
           <div className="eyebrow" style={{ marginBottom: 18 }}>
             How RenovaAura treats this
           </div>
           <h2 style={{ marginBottom: 40 }}>Our approach.</h2>
-          <ol
-            style={{
-              listStyle: "none",
-              padding: 0,
-              margin: 0,
-              counterReset: "approach",
-              display: "grid",
-              gap: 18,
-              maxWidth: 880,
-            }}
-          >
+          <ol className="approach-list">
             {c.approach.map((step, i) => (
-              <li
-                key={i}
-                style={{
-                  background: "var(--paper)",
-                  padding: "22px 26px",
-                  borderRadius: "var(--radius-lg)",
-                  border: "1px solid var(--line)",
-                  display: "flex",
-                  gap: 18,
-                  alignItems: "flex-start",
-                }}
-              >
-                <span
-                  style={{
-                    background: "var(--sage)",
-                    color: "var(--cream)",
-                    width: 32,
-                    height: 32,
-                    borderRadius: "50%",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    fontSize: 14,
-                    fontWeight: 600,
-                    flexShrink: 0,
-                  }}
-                >
-                  {i + 1}
-                </span>
+              <li key={i} className="approach-list-item">
+                <span className="approach-list-number">{i + 1}</span>
                 <span style={{ fontSize: 15, lineHeight: 1.6 }}>{step}</span>
               </li>
             ))}
@@ -242,22 +154,23 @@ function ConcernDetail({
         </div>
       </section>
 
-      {/* Packages recommended for this concern */}
-      {packages.length > 0 && (
-        <section className="section" style={{ background: "var(--cream-2)" }}>
+      {c.relatedPackages.length > 0 && (
+        <section className="section">
           <div className="container">
             <div className="eyebrow" style={{ marginBottom: 18 }}>
               Procedures used for this concern
             </div>
             <h2 style={{ marginBottom: 40 }}>What we may recommend.</h2>
             <div className="pkg-grid">
-              {packages.map((p) => (
+              {c.relatedPackages.map((p) => (
                 <div
                   key={p.slug}
                   className="pkg-card"
                   style={
                     p.image
-                      ? ({ "--pkg-image": `url(${p.image})` } as CSSProperties)
+                      ? ({
+                          "--pkg-image": `url(${p.image})`,
+                        } as CSSProperties)
                       : undefined
                   }
                 >
@@ -298,15 +211,8 @@ function ConcernDetail({
         </section>
       )}
 
-      {/* FAQs */}
-      <section
-        className="section"
-        style={{ background: "var(--cream-2)" }}
-      >
-        <div
-          className="container"
-          style={{ maxWidth: 820, margin: "0 auto" }}
-        >
+      <section className="section" style={{ background: "var(--cream-2)" }}>
+        <div className="container" style={{ maxWidth: 820, margin: "0 auto" }}>
           <div className="eyebrow" style={{ marginBottom: 18 }}>
             Patient questions
           </div>
@@ -314,37 +220,6 @@ function ConcernDetail({
           {c.faqs.map((f, i) => (
             <FaqItem key={i} q={f.q} a={f.a} />
           ))}
-        </div>
-      </section>
-
-      {/* CTA */}
-      <section
-        className="section"
-        style={{ background: "var(--cocoa)", color: "var(--cream)" }}
-      >
-        <div
-          className="container"
-          style={{
-            textAlign: "center",
-            maxWidth: 700,
-            margin: "0 auto",
-          }}
-        >
-          <h2 style={{ color: "var(--cream)", marginBottom: 18 }}>
-            Not sure where to start?
-          </h2>
-          <p
-            style={{
-              color: "rgba(255,255,255,.85)",
-              marginBottom: 30,
-              fontSize: 16,
-            }}
-          >
-            Book a private consultation. We&apos;ll examine your skin, identify
-            the cause, and give you a written plan with realistic timelines
-            and costs — no obligation.
-          </p>
-          <BookButton>Book your consultation</BookButton>
         </div>
       </section>
     </>

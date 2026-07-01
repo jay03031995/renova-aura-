@@ -22,6 +22,7 @@ export type TreatmentPackage = {
   slug: string;
   name: string;
   category: PackageCategory;
+  image?: string;
   /** Short description of what's included (sessions / component treatments). */
   includes: string;
   /** Optional concern slug (src/data/concerns.ts) for the per-concern section. */

@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowRight } from "@/components/icons";
 import { type ProcedurePillar } from "@/data/procedures";
 import { getProceduresByPillar } from "@/sanity/lib/fetchers";
+import ProcedureCategoryTabs, {
+  ProcedureGrid,
+} from "@/components/ProcedureCategoryTabs";
 
 type PillarMeta = {
   eyebrow: string;
@@ -70,36 +71,11 @@ export default async function PillarPage({
 
       <section className="section">
         <div className="container">
-          {/* proc-grid-static overrides the homepage swipe-shelf on mobile
-              to give a proper 2×2 grid on the "view all treatments" page */}
-          <div className="proc-grid proc-grid-static">
-            {procedures.map((p) => (
-              <Link
-                key={p.slug}
-                href={`/procedures/${pillar}/${p.slug}`}
-                className="proc-card"
-              >
-                <div
-                  className="proc-card-img"
-                  style={{ backgroundImage: `url(${p.image})` }}
-                >
-                  <div className="proc-card-img-overlay" />
-                </div>
-                <div className="proc-card-inner">
-                  {p.tag && <span className="proc-card-tag">{p.tag}</span>}
-                  <h3 className="proc-card-title">{p.name}</h3>
-                  <p className="proc-card-headline">{p.headline}</p>
-                  <div className="proc-card-meta">
-                    <span>⏱ {p.quick.duration}</span>
-                    <span>↻ {p.quick.sessions}</span>
-                  </div>
-                  <span className="proc-card-link">
-                    Learn more <ArrowRight size={14} />
-                  </span>
-                </div>
-              </Link>
-            ))}
-          </div>
+          {pillar === "plastic-surgery" ? (
+            <ProcedureCategoryTabs procedures={procedures} pillar={pillar} />
+          ) : (
+            <ProcedureGrid procedures={procedures} pillar={pillar} />
+          )}
         </div>
       </section>
     </>
