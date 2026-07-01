@@ -64,7 +64,7 @@ export const DOCTORS: Doctor[] = [
     tagline:
       "The right protocol for the right patient — not the most-marketed treatment of the month.",
     detailBio:
-      "MBBS, DVDL (Skin & VD). Dr. Bhardwaj is a senior consultant dermatologist and hair transplant surgeon whose practice combines medical dermatology with surgical hair restoration. She trained in skin & VD at a leading Indian medical institution and has spent the last 9+ years building expertise across acne and scar management, melasma protocols calibrated for Indian skin, surgical hair transplant techniques (FUE, DHI, beard, eyebrow), and energy-based aesthetic devices (RF microneedling, HIFU, lasers). Patients consistently describe her consultations as unhurried, honest, and detail-oriented.",
+      "MBBS, DVDL (Skin & VD). Dr. Bhardwaj is a senior consultant dermatologist and hair transplant surgeon whose practice combines medical dermatology with surgical hair restoration. She trained in skin & VD at a leading Indian medical institution and has spent the last 15+ years building expertise across acne and scar management, melasma protocols calibrated for Indian skin, surgical hair transplant techniques (FUE, DHI, beard, eyebrow), and energy-based aesthetic devices (RF microneedling, HIFU, lasers). Patients consistently describe her consultations as unhurried, honest, and detail-oriented.",
     credentials: [
       {
         i: "MBBS",
