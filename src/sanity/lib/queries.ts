@@ -80,6 +80,64 @@ const procedureCardProjection = /* groq */ `
   "order": coalesce(order, 999)
 `;
 
+const packageCardProjection = /* groq */ `
+  _id,
+  name,
+  "slug": slug.current,
+  category,
+  includes,
+  price,
+  concernSlug,
+  "image": image.asset->{_id, url},
+  "order": coalesce(order, 999)
+`;
+
+const equipmentCardProjection = /* groq */ `
+  _id,
+  name,
+  "slug": slug.current,
+  "image": image.asset->{_id, url},
+  shortDescription,
+  detailedDescription,
+  category,
+  "displayOrder": coalesce(displayOrder, 999),
+  "featured": coalesce(featured, false),
+  seoTitle,
+  seoDescription
+`;
+
+const relatedTreatmentProjection = /* groq */ `
+  _id,
+  _type,
+  name,
+  "slug": slug.current,
+  "image": image.asset->{_id, url},
+  _type == "procedure" => {
+    pillar,
+    plasticSurgeryCategory,
+    tag,
+    headline,
+    overview,
+    quickDuration,
+    quickSessions,
+    "order": coalesce(order, 999)
+  },
+  _type == "concern" => {
+    icon,
+    cardTagline,
+    headline,
+    summary,
+    "order": coalesce(order, 999)
+  },
+  _type == "bodyConcern" => {
+    icon,
+    cardTagline,
+    headline,
+    summary,
+    "order": coalesce(order, 999)
+  }
+`;
+
 export const proceduresQuery = /* groq */ `
   *[_type == "procedure"] | order(pillar asc, order asc, name asc){
     ${procedureCardProjection}
@@ -103,6 +161,9 @@ export const procedureBySlugQuery = /* groq */ `
     process[]{title, description},
     benefits[]{icon, title, description},
     faqs[]{question, answer},
+    "relatedPackages": relatedPackages[]->{ ${packageCardProjection} },
+    "relatedProcedures": relatedProcedures[]->{ ${relatedTreatmentProjection} },
+    "technologiesUsed": technologiesUsed[]->{ ${equipmentCardProjection} },
     medicallyReviewedBy,
     lastReviewed
   }
@@ -143,7 +204,9 @@ export const concernBySlugQuery = /* groq */ `
     symptoms,
     causes,
     approach,
-    "relatedProcedures": relatedProcedures[]->{ ${procedureCardProjection}, overview },
+    "relatedPackages": relatedPackages[]->{ ${packageCardProjection} },
+    "relatedProcedures": relatedProcedures[]->{ ${relatedTreatmentProjection} },
+    "technologiesUsed": technologiesUsed[]->{ ${equipmentCardProjection} },
     faqs[]{question, answer}
   }
 `;
@@ -155,18 +218,6 @@ export const concernSlugsQuery = /* groq */ `
 // =========================================================================
 // Body Concerns
 // =========================================================================
-
-const packageCardProjection = /* groq */ `
-  _id,
-  name,
-  "slug": slug.current,
-  category,
-  includes,
-  price,
-  concernSlug,
-  "image": image.asset->{_id, url},
-  "order": coalesce(order, 999)
-`;
 
 export const bodyConcernsQuery = /* groq */ `
   *[_type == "bodyConcern"] | order(order asc, name asc){
@@ -183,6 +234,8 @@ export const bodyConcernBySlugQuery = /* groq */ `
     causes,
     approach,
     "relatedPackages": relatedPackages[]->{ ${packageCardProjection} },
+    "relatedProcedures": relatedProcedures[]->{ ${relatedTreatmentProjection} },
+    "technologiesUsed": technologiesUsed[]->{ ${equipmentCardProjection} },
     faqs[]{question, answer}
   }
 `;
@@ -192,21 +245,11 @@ export const bodyConcernSlugsQuery = /* groq */ `
 `;
 
 // =========================================================================
-// Tools & Equipments
+// Lasers / Technologies
 // =========================================================================
 
 const equipmentProjection = /* groq */ `
-  _id,
-  name,
-  "slug": slug.current,
-  "image": image.asset->{_id, url},
-  shortDescription,
-  detailedDescription,
-  category,
-  "displayOrder": coalesce(displayOrder, 999),
-  "featured": coalesce(featured, false),
-  seoTitle,
-  seoDescription
+  ${equipmentCardProjection}
 `;
 
 export const equipmentQuery = /* groq */ `

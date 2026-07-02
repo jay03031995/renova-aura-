@@ -15,6 +15,7 @@ export const procedureSchema = defineType({
     { name: "summary", title: "Summary" },
     { name: "quick", title: "Quick facts" },
     { name: "content", title: "Detail content" },
+    { name: "linking", title: "Related content" },
     { name: "faqs", title: "FAQs" },
     { name: "eeat", title: "EEAT signals" },
   ],
@@ -159,6 +160,49 @@ export const procedureSchema = defineType({
       type: "array",
       of: [{ type: "benefit" }],
       group: "content",
+    }),
+    // ---- Related content ----
+    defineField({
+      name: "relatedPackages",
+      title: "Related Packages",
+      type: "array",
+      group: "linking",
+      of: [
+        {
+          type: "reference",
+          to: [{ type: "package" }],
+          options: { filter: "enabled != false" },
+        },
+      ],
+      description:
+        "Package cards shown in the We May Recommend section.",
+    }),
+    defineField({
+      name: "relatedProcedures",
+      title: "Related Procedures",
+      type: "array",
+      group: "linking",
+      of: [
+        {
+          type: "reference",
+          to: [
+            { type: "concern" },
+            { type: "procedure" },
+            { type: "bodyConcern" },
+          ],
+        },
+      ],
+      description:
+        "Treatment cards from Skin Concerns, Hair Transplant, Plastic Surgery, and Body Concerns.",
+    }),
+    defineField({
+      name: "technologiesUsed",
+      title: "Technologies Used",
+      type: "array",
+      group: "linking",
+      of: [{ type: "reference", to: [{ type: "equipment" }] }],
+      description:
+        "Technology cards shown below the related procedures section.",
     }),
     // ---- FAQs ----
     defineField({

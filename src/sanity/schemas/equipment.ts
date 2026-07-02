@@ -2,7 +2,7 @@ import { defineField, defineType } from "sanity";
 
 export const equipmentSchema = defineType({
   name: "equipment",
-  title: "Tool & Equipment",
+  title: "Laser / Technology",
   type: "document",
   groups: [
     { name: "summary", title: "Summary" },

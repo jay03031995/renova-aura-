@@ -48,6 +48,9 @@ export type Procedure = {
   faqs: { q: string; a: string }[];
   medicallyReviewedBy?: string; // e.g. "Dr. A. Sharma, MS Plastic Surgery"
   lastReviewed?: string; // ISO date for EEAT trust signal
+  relatedPackages?: import("./packages").TreatmentPackage[];
+  relatedProcedures?: import("@/sanity/lib/fetchers").RelatedTreatmentCard[];
+  technologiesUsed?: import("@/sanity/lib/fetchers").Equipment[];
 };
 
 /** Curated placeholder images by procedure category (Unsplash, no auth). */

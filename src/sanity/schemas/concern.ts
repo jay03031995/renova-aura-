@@ -4,9 +4,8 @@ import { defineType, defineField } from "sanity";
  * Concern document — RenovaAura's skin/dermatology landing pages
  * (Acne, Pigmentation, Anti-Ageing, etc.). One document per concern.
  *
- * Mirrors the shape of src/data/concerns.ts. The relatedProcedures
- * field is a reference to procedure documents so editors can curate
- * which procedures appear at the bottom of each concern page.
+ * Mirrors the shape of src/data/concerns.ts. Related packages, treatments,
+ * and technologies let editors curate the recommendation sections.
  */
 export const concernSchema = defineType({
   name: "concern",
@@ -15,7 +14,7 @@ export const concernSchema = defineType({
   groups: [
     { name: "summary", title: "Summary" },
     { name: "detail", title: "Detail content" },
-    { name: "linking", title: "Related procedures" },
+    { name: "linking", title: "Related content" },
     { name: "faqs", title: "FAQs" },
   ],
   fields: [
@@ -102,13 +101,46 @@ export const concernSchema = defineType({
     }),
     // ---- Linking ----
     defineField({
-      name: "relatedProcedures",
-      title: "Related procedures",
+      name: "relatedPackages",
+      title: "Related Packages",
       type: "array",
       group: "linking",
-      of: [{ type: "reference", to: [{ type: "procedure" }] }],
+      of: [
+        {
+          type: "reference",
+          to: [{ type: "package" }],
+          options: { filter: "enabled != false" },
+        },
+      ],
       description:
-        "Procedure cards rendered at the bottom of the concern page.",
+        "Package cards shown in the We May Recommend section.",
+    }),
+    defineField({
+      name: "relatedProcedures",
+      title: "Related Procedures",
+      type: "array",
+      group: "linking",
+      of: [
+        {
+          type: "reference",
+          to: [
+            { type: "concern" },
+            { type: "procedure" },
+            { type: "bodyConcern" },
+          ],
+        },
+      ],
+      description:
+        "Treatment cards from Skin Concerns, Hair Transplant, Plastic Surgery, and Body Concerns.",
+    }),
+    defineField({
+      name: "technologiesUsed",
+      title: "Technologies Used",
+      type: "array",
+      group: "linking",
+      of: [{ type: "reference", to: [{ type: "equipment" }] }],
+      description:
+        "Technology cards shown below the related procedures section.",
     }),
     // ---- FAQs ----
     defineField({

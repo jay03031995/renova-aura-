@@ -4,7 +4,7 @@ import { ArrowRight } from "@/components/icons";
 import { getEquipments } from "@/sanity/lib/fetchers";
 
 export const metadata: Metadata = {
-  title: "Tools & Equipments — RenovaAura Clinic Technology",
+  title: "Lasers / Technologies — RenovaAura Clinic Technology",
   description:
     "Explore the machines, devices, technologies and equipment used at RenovaAura for hair, skin, body and plastic surgery care.",
   alternates: { canonical: "/tools-equipments" },
@@ -19,7 +19,7 @@ export default async function ToolsEquipmentsPage() {
     <>
       <section className="pillar-hero equipment-hero">
         <div className="container">
-          <div className="pillar-hero-eyebrow">Tools & Equipments</div>
+          <div className="pillar-hero-eyebrow">Lasers / Technologies</div>
           <h1 className="pillar-hero-headline">
             Technology chosen for precision, comfort and safety.
           </h1>

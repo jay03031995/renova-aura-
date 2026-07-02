@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
-import type { CSSProperties } from "react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import BookButton from "@/components/BookButton";
 import FaqItem from "@/components/FaqItem";
-import { ArrowRight, Check } from "@/components/icons";
+import RelatedContentSections from "@/components/RelatedContentSections";
+import { Check } from "@/components/icons";
 import {
   getBodyConcernBySlug,
   getBodyConcernSlugs,
@@ -154,62 +154,11 @@ export default async function BodyConcernPage({
         </div>
       </section>
 
-      {c.relatedPackages.length > 0 && (
-        <section className="section">
-          <div className="container">
-            <div className="eyebrow" style={{ marginBottom: 18 }}>
-              Procedures used for this concern
-            </div>
-            <h2 style={{ marginBottom: 40 }}>What we may recommend.</h2>
-            <div className="pkg-grid">
-              {c.relatedPackages.map((p) => (
-                <div
-                  key={p.slug}
-                  className="pkg-card"
-                  style={
-                    p.image
-                      ? ({
-                          "--pkg-image": `url(${p.image})`,
-                        } as CSSProperties)
-                      : undefined
-                  }
-                >
-                  <div className="pkg-card-top">
-                    <h3 className="pkg-card-name">{p.name}</h3>
-                    {p.includes && (
-                      <p className="pkg-card-includes">{p.includes}</p>
-                    )}
-                  </div>
-                  <div className="pkg-card-foot">
-                    {p.price ? (
-                      <span className="pkg-card-price">{p.price}</span>
-                    ) : (
-                      <span className="pkg-card-price pkg-card-price-muted">
-                        Price on consult
-                      </span>
-                    )}
-                    <BookButton
-                      className="btn btn-primary btn-sm"
-                      withArrow={false}
-                      prefill={{
-                        concern: `Package: ${p.name}`,
-                        source: "website-package",
-                      }}
-                    >
-                      Book this package
-                    </BookButton>
-                  </div>
-                </div>
-              ))}
-            </div>
-            <div style={{ marginTop: 28 }}>
-              <Link className="proc-card-link" href="/packages">
-                See all packages <ArrowRight size={14} />
-              </Link>
-            </div>
-          </div>
-        </section>
-      )}
+      <RelatedContentSections
+        packages={c.relatedPackages}
+        procedures={c.relatedProcedures}
+        technologies={c.technologiesUsed}
+      />
 
       <section className="section" style={{ background: "var(--cream-2)" }}>
         <div className="container" style={{ maxWidth: 820, margin: "0 auto" }}>

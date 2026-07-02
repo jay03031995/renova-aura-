@@ -1,8 +1,5 @@
 import type { Metadata } from "next";
-import type { CSSProperties } from "react";
-import Link from "next/link";
-import { ArrowRight } from "@/components/icons";
-import BookButton from "@/components/BookButton";
+import { PackageCard } from "@/components/RelatedContentSections";
 import { getPackages } from "@/sanity/lib/fetchers";
 import { PACKAGE_CATEGORIES } from "@/data/packages";
 
@@ -44,49 +41,7 @@ export default async function PackagesPage() {
                 {packages
                   .filter((p) => p.category === cat.slug)
                   .map((p) => (
-                    <div
-                      key={p.slug}
-                      className="pkg-card"
-                      style={
-                        p.image
-                          ? ({ "--pkg-image": `url(${p.image})` } as CSSProperties)
-                          : undefined
-                      }
-                    >
-                      <div className="pkg-card-top">
-                        <h3 className="pkg-card-name">{p.name}</h3>
-                        {p.includes && (
-                          <p className="pkg-card-includes">{p.includes}</p>
-                        )}
-                      </div>
-                      <div className="pkg-card-foot">
-                        {p.price ? (
-                          <span className="pkg-card-price">{p.price}</span>
-                        ) : (
-                          <span className="pkg-card-price pkg-card-price-muted">
-                            Price on consult
-                          </span>
-                        )}
-                        <BookButton
-                          className="btn btn-primary btn-sm"
-                          withArrow={false}
-                          prefill={{
-                            concern: `Package: ${p.name}`,
-                            source: "website-package",
-                          }}
-                        >
-                          Book this package
-                        </BookButton>
-                      </div>
-                      {p.concernSlug && (
-                        <Link
-                          className="pkg-card-link"
-                          href={`/concerns/${p.concernSlug}`}
-                        >
-                          About this concern <ArrowRight size={13} />
-                        </Link>
-                      )}
-                    </div>
+                    <PackageCard key={p.slug} p={p} />
                   ))}
               </div>
             </div>

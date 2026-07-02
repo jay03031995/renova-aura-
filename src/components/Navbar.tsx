@@ -26,7 +26,7 @@ const MOBILE_LINKS: { label: string; href: string }[] = [
   { label: "Plastic Surgery", href: "/procedures/plastic-surgery" },
   { label: "Skin Concerns", href: "/concerns" },
   { label: "Body Concerns", href: "/body-concerns" },
-  { label: "Tools & Equipments", href: "/tools-equipments" },
+  { label: "Lasers / Technologies", href: "/tools-equipments" },
   { label: "Packages", href: "/packages" },
   { label: "Doctors", href: "/doctors" },
   { label: "Contact", href: "/#contact" },
@@ -214,7 +214,7 @@ export default function Navbar({
 
           <div className="nav-item">
             <Link className="nav-link" href="/tools-equipments">
-              Tools & Equipments
+              Lasers / Technologies
             </Link>
           </div>
 

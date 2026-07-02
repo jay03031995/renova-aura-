@@ -7,7 +7,7 @@ export const bodyConcernSchema = defineType({
   groups: [
     { name: "summary", title: "Summary" },
     { name: "detail", title: "Detail content" },
-    { name: "linking", title: "Related packages" },
+    { name: "linking", title: "Related content" },
     { name: "faqs", title: "FAQs" },
   ],
   fields: [
@@ -92,12 +92,45 @@ export const bodyConcernSchema = defineType({
     }),
     defineField({
       name: "relatedPackages",
-      title: "Related packages",
+      title: "Related Packages",
       type: "array",
       group: "linking",
-      of: [{ type: "reference", to: [{ type: "package" }] }],
+      of: [
+        {
+          type: "reference",
+          to: [{ type: "package" }],
+          options: { filter: "enabled != false" },
+        },
+      ],
       description:
-        "Package cards rendered in the Procedures used for this concern section.",
+        "Package cards shown in the We May Recommend section.",
+    }),
+    defineField({
+      name: "relatedProcedures",
+      title: "Related Procedures",
+      type: "array",
+      group: "linking",
+      of: [
+        {
+          type: "reference",
+          to: [
+            { type: "concern" },
+            { type: "procedure" },
+            { type: "bodyConcern" },
+          ],
+        },
+      ],
+      description:
+        "Treatment cards from Skin Concerns, Hair Transplant, Plastic Surgery, and Body Concerns.",
+    }),
+    defineField({
+      name: "technologiesUsed",
+      title: "Technologies Used",
+      type: "array",
+      group: "linking",
+      of: [{ type: "reference", to: [{ type: "equipment" }] }],
+      description:
+        "Technology cards shown below the related procedures section.",
     }),
     defineField({
       name: "faqs",

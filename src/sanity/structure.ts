@@ -194,7 +194,7 @@ export const structure = (S: StructureBuilder) =>
         ),
       S.documentTypeListItem("concern").title("🩹 Skin Concerns"),
       S.documentTypeListItem("bodyConcern").title("Body Concerns"),
-      S.documentTypeListItem("equipment").title("Tools & Equipments"),
+      S.documentTypeListItem("equipment").title("Lasers / Technologies"),
       S.documentTypeListItem("package").title("📦 Treatment Packages"),
       S.documentTypeListItem("doctor").title("Doctors"),
       S.documentTypeListItem("result").title("Patient results"),

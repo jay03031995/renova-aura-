@@ -56,7 +56,7 @@ export default async function EquipmentDetailPage({
               display: "inline-block",
             }}
           >
-            ← Back to Tools & Equipments
+            ← Back to Lasers / Technologies
           </Link>
           <div className="pillar-hero-grid">
             <div className="pillar-hero-text">

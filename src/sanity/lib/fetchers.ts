@@ -77,6 +77,24 @@ import {
   type TreatmentPackage,
 } from "@/data/packages";
 
+export type RelatedTreatmentCard = {
+  slug: string;
+  name: string;
+  href: string;
+  category: string;
+  description: string;
+  image?: string;
+  tag?: string;
+  quickDuration?: string;
+  quickSessions?: string;
+};
+
+export type TreatmentRelatedContent = {
+  relatedPackages: TreatmentPackage[];
+  relatedProcedures: RelatedTreatmentCard[];
+  technologiesUsed: Equipment[];
+};
+
 // ----- Shared helpers -------------------------------------------------------
 
 function isFilled<T>(v: T | null | undefined): v is T {
@@ -369,22 +387,19 @@ export async function getSiteSettings(): Promise<SiteSettingsData> {
 
 // ----- Treatment packages ---------------------------------------------------
 
-/** All enabled packages, ordered. Falls back to local data when Sanity empty. */
-export async function getPackages(): Promise<TreatmentPackage[]> {
-  const docs = await safeFetch<
-    {
-      slug: string;
-      name: string;
-      category: string;
-      image?: { url?: string };
-      includes?: string;
-      price?: string;
-      concernSlug?: string;
-      order?: number;
-    }[]
-  >(packagesQuery);
-  if (!isFilled(docs)) return LOCAL_PACKAGES;
-  return docs.map((d) => ({
+type SanityPackageCard = {
+  slug: string;
+  name: string;
+  category: string;
+  image?: { url?: string };
+  includes?: string;
+  price?: string;
+  concernSlug?: string;
+  order?: number;
+};
+
+function mapPackage(d: SanityPackageCard): TreatmentPackage {
+  return {
     slug: d.slug,
     name: d.name,
     category: d.category as TreatmentPackage["category"],
@@ -393,7 +408,14 @@ export async function getPackages(): Promise<TreatmentPackage[]> {
     price: d.price,
     concernSlug: d.concernSlug || undefined,
     order: d.order ?? 0,
-  }));
+  };
+}
+
+/** All enabled packages, ordered. Falls back to local data when Sanity empty. */
+export async function getPackages(): Promise<TreatmentPackage[]> {
+  const docs = await safeFetch<SanityPackageCard[]>(packagesQuery);
+  if (!isFilled(docs)) return LOCAL_PACKAGES;
+  return docs.map(mapPackage);
 }
 
 /** Packages tied to a given concern slug (for the per-concern section). */
@@ -509,7 +531,67 @@ type SanityProcedure = {
   faqs?: { question: string; answer: string }[];
   medicallyReviewedBy?: string;
   lastReviewed?: string;
+  relatedPackages?: SanityPackageCard[];
+  relatedProcedures?: SanityRelatedTreatment[];
+  technologiesUsed?: SanityEquipment[];
 };
+
+type SanityRelatedTreatment = {
+  _id: string;
+  _type: "procedure" | "concern" | "bodyConcern";
+  name: string;
+  slug: string;
+  image?: { url?: string };
+  pillar?: ProcedurePillar;
+  tag?: string;
+  headline?: string;
+  overview?: string;
+  quickDuration?: string;
+  quickSessions?: string;
+  icon?: string;
+  cardTagline?: string;
+  summary?: string;
+};
+
+function mapRelatedTreatment(d: SanityRelatedTreatment): RelatedTreatmentCard {
+  if (d._type === "procedure") {
+    const pillarLabel =
+      d.pillar === "hair-transplant" ? "Hair Transplant" : "Plastic Surgery";
+    return {
+      slug: d.slug,
+      name: d.name,
+      href: `/procedures/${d.pillar}/${d.slug}`,
+      category: pillarLabel,
+      description: d.headline ?? d.overview ?? "",
+      image: d.image?.url,
+      tag: d.tag,
+      quickDuration: d.quickDuration,
+      quickSessions: d.quickSessions,
+    };
+  }
+
+  if (d._type === "bodyConcern") {
+    return {
+      slug: d.slug,
+      name: d.name,
+      href: `/body-concerns/${d.slug}`,
+      category: "Body Concern",
+      description: d.headline ?? d.summary ?? d.cardTagline ?? "",
+      image: d.image?.url,
+      tag: d.cardTagline,
+    };
+  }
+
+  return {
+    slug: d.slug,
+    name: d.name,
+    href: `/concerns/${d.slug}`,
+    category: "Skin Concern",
+    description: d.headline ?? d.summary ?? d.cardTagline ?? "",
+    image: d.image?.url,
+    tag: d.cardTagline,
+  };
+}
 
 function mapProcedure(d: SanityProcedure): Procedure {
   return {
@@ -538,6 +620,9 @@ function mapProcedure(d: SanityProcedure): Procedure {
     faqs: (d.faqs ?? []).map((f) => ({ q: f.question, a: f.answer })),
     medicallyReviewedBy: d.medicallyReviewedBy,
     lastReviewed: d.lastReviewed,
+    relatedPackages: (d.relatedPackages ?? []).map(mapPackage),
+    relatedProcedures: (d.relatedProcedures ?? []).map(mapRelatedTreatment),
+    technologiesUsed: (d.technologiesUsed ?? []).map(mapEquipment),
   };
 }
 
@@ -600,7 +685,9 @@ type SanityConcern = {
   symptoms?: string[];
   causes?: string[];
   approach?: string[];
-  relatedProcedures?: SanityProcedure[];
+  relatedPackages?: SanityPackageCard[];
+  relatedProcedures?: SanityRelatedTreatment[];
+  technologiesUsed?: SanityEquipment[];
   faqs?: { question: string; answer: string }[];
 };
 
@@ -616,9 +703,10 @@ function mapConcern(d: SanityConcern): Concern {
     symptoms: d.symptoms ?? [],
     causes: d.causes ?? [],
     approach: d.approach ?? [],
-    // Sanity gives full procedure refs; for the page we just need the slugs
-    // — the existing UI looks them up in PROCEDURE_BY_SLUG anyway.
     relatedProcedureSlugs: (d.relatedProcedures ?? []).map((p) => p.slug),
+    relatedPackages: (d.relatedPackages ?? []).map(mapPackage),
+    relatedProcedures: (d.relatedProcedures ?? []).map(mapRelatedTreatment),
+    technologiesUsed: (d.technologiesUsed ?? []).map(mapEquipment),
     faqs: (d.faqs ?? []).map((f) => ({ q: f.question, a: f.answer })),
   };
 }
@@ -647,42 +735,11 @@ export async function getConcernSlugs(): Promise<string[]> {
 
 export type BodyConcern = Omit<Concern, "relatedProcedureSlugs"> & {
   relatedPackages: TreatmentPackage[];
+  relatedProcedures: RelatedTreatmentCard[];
+  technologiesUsed: Equipment[];
 };
 
-type SanityBodyConcern = Omit<SanityConcern, "relatedProcedures"> & {
-  relatedPackages?: {
-    slug: string;
-    name: string;
-    category: string;
-    image?: { url?: string };
-    includes?: string;
-    price?: string;
-    concernSlug?: string;
-    order?: number;
-  }[];
-};
-
-function mapPackage(d: {
-  slug: string;
-  name: string;
-  category: string;
-  image?: { url?: string };
-  includes?: string;
-  price?: string;
-  concernSlug?: string;
-  order?: number;
-}): TreatmentPackage {
-  return {
-    slug: d.slug,
-    name: d.name,
-    category: d.category as TreatmentPackage["category"],
-    image: d.image?.url,
-    includes: d.includes ?? "",
-    price: d.price,
-    concernSlug: d.concernSlug || undefined,
-    order: d.order ?? 0,
-  };
-}
+type SanityBodyConcern = SanityConcern;
 
 function mapBodyConcern(d: SanityBodyConcern): BodyConcern {
   return {
@@ -697,6 +754,8 @@ function mapBodyConcern(d: SanityBodyConcern): BodyConcern {
     causes: d.causes ?? [],
     approach: d.approach ?? [],
     relatedPackages: (d.relatedPackages ?? []).map(mapPackage),
+    relatedProcedures: (d.relatedProcedures ?? []).map(mapRelatedTreatment),
+    technologiesUsed: (d.technologiesUsed ?? []).map(mapEquipment),
     faqs: (d.faqs ?? []).map((f) => ({ q: f.question, a: f.answer })),
   };
 }
@@ -722,7 +781,7 @@ export async function getBodyConcernSlugs(): Promise<string[]> {
   return isFilled(slugs) ? slugs : [];
 }
 
-// ----- Tools & Equipments ---------------------------------------------------
+// ----- Lasers / Technologies -----------------------------------------------
 
 export type Equipment = {
   slug: string;

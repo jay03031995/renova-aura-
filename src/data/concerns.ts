@@ -31,6 +31,9 @@ export type Concern = {
    * for this concern. The detail page renders cards linking out.
    */
   relatedProcedureSlugs: string[];
+  relatedPackages?: import("./packages").TreatmentPackage[];
+  relatedProcedures?: import("@/sanity/lib/fetchers").RelatedTreatmentCard[];
+  technologiesUsed?: import("@/sanity/lib/fetchers").Equipment[];
   faqs: { q: string; a: string }[];
 };
 

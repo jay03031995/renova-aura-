@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowRight, Check, Clock } from "@/components/icons";
+import { Check, Clock } from "@/components/icons";
 import BookButton from "@/components/BookButton";
 import FaqItem from "@/components/FaqItem";
+import RelatedContentSections from "@/components/RelatedContentSections";
 import { type Procedure } from "@/data/procedures";
 import {
   getProcedureBySlug,
@@ -263,6 +264,12 @@ function ProcedureDetail({ p }: { p: Procedure }) {
           </div>
         </div>
       </section>
+
+      <RelatedContentSections
+        packages={p.relatedPackages}
+        procedures={p.relatedProcedures}
+        technologies={p.technologiesUsed}
+      />
 
       {/* FAQs */}
       <section

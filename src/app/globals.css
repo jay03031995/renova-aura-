@@ -3731,28 +3731,40 @@ button.sbv-card-clickable:focus-visible {
 .pkg-card {
   display: flex;
   flex-direction: column;
-  gap: 16px;
-  background: var(--cream);
+  background: #f8faf5;
   border: 1px solid var(--line);
-  border-radius: var(--radius);
-  padding: 24px;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
   transition: all .25s var(--ease);
+  box-shadow: 0 12px 32px -22px rgba(30, 40, 25, 0.45);
 }
 .pkg-card:hover {
-  border-color: var(--tan);
-  box-shadow: 0 14px 36px -18px rgba(40, 40, 20, .35);
-  transform: translateY(-2px);
+  border-color: rgba(147, 159, 135, .48);
+  box-shadow: 0 22px 48px -24px rgba(30, 40, 25, 0.52);
+  transform: translateY(-4px);
 }
-.pkg-card-top { flex: 1; }
+.pkg-card-media {
+  aspect-ratio: 16 / 10;
+  background:
+    linear-gradient(135deg, rgba(147, 159, 135, .42), rgba(232, 212, 179, .7)),
+    linear-gradient(45deg, rgba(255,255,255,.24) 25%, transparent 25% 50%, rgba(255,255,255,.2) 50% 75%, transparent 75%);
+  background-size: cover;
+  background-position: center;
+  background-color: var(--cream-2);
+}
+.pkg-card-top {
+  flex: 1;
+  padding: 24px 26px 0;
+}
 .pkg-card-name {
-  font-size: 18px;
+  font-size: 20px;
   line-height: 1.3;
-  margin: 0 0 8px;
+  margin: 0 0 10px;
   color: var(--ink);
 }
 .pkg-card-includes {
   font-size: 14px;
-  line-height: 1.5;
+  line-height: 1.6;
   color: var(--muted);
   margin: 0;
 }
@@ -3761,10 +3773,11 @@ button.sbv-card-clickable:focus-visible {
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  padding-top: 16px;
-  border-top: 1px solid var(--line);
+  margin: 22px 26px 0;
+  padding: 18px 0 24px;
+  border-top: 1px solid rgba(147, 159, 135, .22);
 }
-.pkg-card-price { font-size: 16px; font-weight: 600; color: var(--sage); }
+.pkg-card-price { font-size: 17px; font-weight: 600; color: var(--sage); }
 .pkg-card-price-muted { font-size: 13px; font-weight: 500; color: var(--muted); }
 .pkg-card-link {
   display: inline-flex;
@@ -3772,6 +3785,8 @@ button.sbv-card-clickable:focus-visible {
   gap: 6px;
   font-size: 13px;
   color: var(--tan);
+  justify-content: center;
+  padding: 0 26px 24px;
 }
 .pkg-card-link:hover { color: var(--sage); }
 .btn-sm { padding: 9px 18px; font-size: 13px; }
@@ -3814,22 +3829,8 @@ button.sbv-card-clickable:focus-visible {
   box-shadow: 0 20px 44px -20px rgba(30, 40, 25, 0.5);
 }
 
-/* Packages have no photos yet → a sage gradient header stands in as the image */
 .pkg-card {
-  overflow: hidden;
   text-align: center;
-  border-color: transparent;
-  background: #edf2ec;
-  box-shadow: 0 12px 32px -20px rgba(30, 40, 25, 0.4);
-}
-.pkg-card::before {
-  content: "";
-  display: block;
-  height: 92px;
-  margin: -24px -24px 6px;
-  background-image: var(--pkg-image, linear-gradient(135deg, var(--sage), var(--sand)));
-  background-size: cover;
-  background-position: center;
 }
 .pkg-card-name { text-align: center; }
 .pkg-card-includes {
@@ -3841,10 +3842,87 @@ button.sbv-card-clickable:focus-visible {
 }
 .pkg-card-price { text-align: center; }
 .pkg-card-foot { flex-direction: column; align-items: stretch; gap: 10px; }
-.pkg-card-link { justify-content: center; }
-.pkg-card:hover {
+
+.related-section { background: var(--paper); }
+.related-section + .related-section { padding-top: 0; }
+.related-section-packages,
+.related-section-tech { background: var(--cream-2); }
+.related-treatment-grid,
+.technology-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 22px;
+}
+.related-treatment-card,
+.technology-card {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  min-height: 100%;
+  border: 1px solid transparent;
+  border-radius: var(--radius-lg);
+  background: #edf2ec;
+  box-shadow: 0 12px 32px -20px rgba(30, 40, 25, 0.4);
+  transition: all .25s var(--ease);
+}
+.related-treatment-card:hover,
+.technology-card:hover {
+  border-color: rgba(147, 159, 135, .55);
   transform: translateY(-4px);
   box-shadow: 0 20px 44px -20px rgba(30, 40, 25, 0.5);
+}
+.related-treatment-media,
+.technology-card-media {
+  aspect-ratio: 16 / 10;
+  background-size: cover;
+  background-position: center;
+  background-color: var(--cream-2);
+}
+.related-treatment-body,
+.technology-card-body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  padding: 24px 26px 26px;
+  text-align: center;
+}
+.related-treatment-meta,
+.technology-card-category {
+  color: var(--sage);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+.related-treatment-title,
+.technology-card-title {
+  color: var(--cocoa);
+  font-size: 20px;
+  line-height: 1.25;
+  margin: 0 0 10px;
+}
+.related-treatment-copy,
+.technology-card-copy {
+  color: var(--muted);
+  flex: 1;
+  font-size: 14px;
+  line-height: 1.58;
+  margin: 0 0 18px;
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.related-treatment-link,
+.technology-card-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  color: var(--tan);
+  font-size: 13px;
+  font-weight: 600;
 }
 
 .concern-two-col {
@@ -4140,8 +4218,9 @@ button.sbv-card-clickable:focus-visible {
   .proc-card-link { font-size: 12.5px; }
 
   /* Slimmed package card for 2-up */
-  .pkg-card { padding: 15px; gap: 11px; }
-  .pkg-card::before { height: 72px; margin: -15px -15px 4px; }
+  .pkg-card { gap: 0; }
+  .pkg-card-media { aspect-ratio: 4 / 3; }
+  .pkg-card-top { padding: 14px 14px 0; }
   .pkg-card-name {
     font-size: 14.5px;
     line-height: 1.2;
@@ -4158,8 +4237,15 @@ button.sbv-card-clickable:focus-visible {
     -webkit-box-orient: vertical;
     overflow: hidden;
   }
-  .pkg-card-foot { flex-direction: column; align-items: stretch; gap: 9px; }
+  .pkg-card-foot {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 9px;
+    margin: 14px 14px 0;
+    padding: 12px 0 14px;
+  }
   .pkg-card-foot .btn-sm { width: 100%; padding: 10px 12px; font-size: 12.5px; }
+  .pkg-card-link { padding: 0 14px 14px; font-size: 12px; }
 
   /* EEAT / "Why Us" pillar cards as a swipe shelf (1 card + peek) */
   /* EEAT swipe shelf — 1 card + peek, vertical layout on mobile */
