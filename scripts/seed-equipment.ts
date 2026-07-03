@@ -185,10 +185,84 @@ const EQUIPMENT = [
     seoDescription:
       "Pigmentation, melasma and laser toning at RenovaAura on the QLARA Q-switched laser by Reveal Lasers — multi-wavelength, safe for Indian skin. Anand Vihar, New Delhi.",
   },
+  {
+    _id: "equipment.hydroderma-2-0-hydrafacial",
+    slug: "hydroderma-2-0-hydrafacial",
+    name: "Hydroderma 2.0 — HydraFacial & Medi-Facial",
+    treatmentName: "HydraFacial",
+    category: "Skin",
+    technologyPartner: "Derma Laser Tech",
+    displayOrder: 3,
+    featured: true,
+    imageUrl:
+      "https://images.unsplash.com/photo-1487412947147-5cebf100ffc2?w=1600&q=80",
+    shortDescription:
+      "RenovaAura's signature HydraFacial is performed on the Hydroderma 2.0 — a premium medi-facial device combining HydraFacial, OxyGeneo, Jet Peel and Plasma Pen in one machine for instant cleanse, hydration and glow with no downtime.",
+    detailedDescription:
+      "The HydraFacial at RenovaAura is delivered on the Hydroderma 2.0, a premium medi-facial platform that brings four advanced skin technologies together in a single device — so one relaxing session can cleanse, resurface, hydrate, tighten and brighten your skin.\nIts HydraFacial handpiece deep-cleanses, gently exfoliates and floods the skin with hydrating antioxidant serums, while the OxyGeneo mode triggers natural oxygenation and infuses active nutrients. The Jet Peel uses pressurised oxygen and saline for non-invasive resurfacing, and the Plasma Pen adds targeted skin tightening and rejuvenation.\nBecause every step is non-invasive and customisable, the Hydroderma 2.0 suits all skin types and needs no downtime — you leave with visibly clearer, plumper, glowing skin, making it ideal both as a regular skin-health ritual and as a pre-event treatment.",
+    specifications: [
+      { label: "Modalities", value: "4-in-1 — HydraFacial, OxyGeneo, Jet Peel, Plasma Pen" },
+      { label: "HydraFacial", value: "Deep cleanse, exfoliation, hydration & antioxidant infusion" },
+      { label: "OxyGeneo", value: "Natural oxygenation, exfoliation & active serum infusion" },
+      { label: "Jet Peel", value: "Non-invasive resurfacing with pressurised oxygen + saline" },
+      { label: "Plasma Pen", value: "Plasma-energy skin tightening & rejuvenation" },
+      { label: "Downtime", value: "None — multiple treatments in one sitting" },
+    ],
+    keyBenefits: [
+      "Cleanses, hydrates, tightens and brightens in one session",
+      "Instant glow with visibly plumper, clearer skin",
+      "Non-invasive and comfortable with zero downtime",
+      "Customisable for every skin type and concern",
+      "Antioxidant and serum infusion for lasting skin health",
+      "Perfect as a monthly ritual or a pre-event treatment",
+    ],
+    treatmentAreas: [
+      "Dull, tired skin",
+      "Dehydration & rough texture",
+      "Congested pores & blackheads",
+      "Uneven tone & early pigmentation",
+      "Fine lines & loss of firmness",
+      "Pre-event / bridal glow",
+      "Face, neck & décolletage",
+    ],
+    idealFor:
+      "Anyone wanting an instant, no-downtime skin refresh — from first-time facial patients to those prepping for an event or wedding, and people looking for a regular medical-grade skin-health ritual.",
+    faqs: [
+      {
+        question: "What is the Hydroderma 2.0 HydraFacial?",
+        answer:
+          "It is a premium medi-facial performed on the Hydroderma 2.0 device, which combines HydraFacial, OxyGeneo, Jet Peel and Plasma Pen technologies to cleanse, exfoliate, hydrate, tighten and brighten the skin in a single non-invasive session.",
+      },
+      {
+        question: "Is there any downtime after a HydraFacial?",
+        answer:
+          "No. The treatment is non-invasive and gentle, so you can return to your day immediately with an instant glow — which is why it is popular before events and weddings.",
+      },
+      {
+        question: "How often should I get a HydraFacial?",
+        answer:
+          "For ongoing skin health, most patients have a session every 3–4 weeks. Your dermatologist will tailor the frequency and serums to your skin type and concerns.",
+      },
+      {
+        question: "Is the HydraFacial suitable for all skin types?",
+        answer:
+          "Yes. Every step of the Hydroderma 2.0 is customisable and non-invasive, making it safe and effective for all skin types, including sensitive skin.",
+      },
+    ],
+    seoTitle: "HydraFacial on Hydroderma 2.0 — Premium Medi-Facial at RenovaAura, New Delhi",
+    seoDescription:
+      "Signature HydraFacial at RenovaAura on the Hydroderma 2.0 medi-facial device — HydraFacial, OxyGeneo, Jet Peel & Plasma Pen in one session, no downtime. Anand Vihar, New Delhi.",
+  },
 ];
 
 async function run() {
-  for (const e of EQUIPMENT) {
+  // Optional slug args: seed only those (avoids overwriting Studio edits to
+  // the others). No args → seed everything.
+  const only = process.argv.slice(2);
+  const list = only.length
+    ? EQUIPMENT.filter((e) => only.includes(e.slug))
+    : EQUIPMENT;
+  for (const e of list) {
     process.stdout.write(`• ${e.name} … `);
     const { imageUrl, faqs, specifications, ...rest } = e;
     const image = await uploadImage(imageUrl);
@@ -202,7 +276,7 @@ async function run() {
     });
     console.log("done");
   }
-  console.log(`\n✓ Seeded ${EQUIPMENT.length} technologies.`);
+  console.log(`\n✓ Seeded ${list.length} technolog${list.length === 1 ? "y" : "ies"}.`);
 }
 
 run().catch((err) => {
