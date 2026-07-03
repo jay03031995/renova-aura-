@@ -4054,6 +4054,97 @@ button.sbv-card-clickable:focus-visible {
   line-height: 1.75;
   white-space: pre-line;
 }
+.equipment-detail-copy p + p { margin-top: 16px; }
+
+/* ---- Equipment detail: switcher + rich sections ---- */
+.equipment-back {
+  font-size: 13px;
+  color: var(--tan);
+  margin-bottom: 16px;
+  display: inline-block;
+}
+.equipment-switcher { margin-bottom: 26px; }
+
+.equipment-spec-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  gap: 16px;
+}
+.equipment-spec {
+  background: var(--cream);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 20px 22px;
+}
+.equipment-spec-label {
+  font-size: 11px;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: var(--tan);
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+.equipment-spec-value {
+  color: var(--cocoa);
+  font-size: 16px;
+  line-height: 1.55;
+}
+
+.equipment-benefits {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 14px 30px;
+}
+.equipment-benefits li {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  color: var(--ink);
+  font-size: 16.5px;
+  line-height: 1.6;
+}
+.equipment-benefits li svg { color: var(--sage); flex: 0 0 auto; margin-top: 3px; }
+
+.equipment-areas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.equipment-area-chip {
+  background: var(--cream);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 9px 18px;
+  font-size: 14px;
+  color: var(--cocoa);
+}
+.equipment-ideal {
+  margin-top: 22px;
+  max-width: 780px;
+  color: var(--ink);
+  font-size: 17px;
+  line-height: 1.7;
+}
+
+.equipment-faqs {
+  display: grid;
+  gap: 22px;
+  max-width: 860px;
+}
+.equipment-faq-q {
+  font-size: 18px;
+  color: var(--cocoa);
+  margin: 0 0 8px;
+}
+.equipment-faq-a {
+  color: var(--ink);
+  font-size: 16px;
+  line-height: 1.7;
+  margin: 0;
+}
 
 /* =========================================================
    App-like mobile experience (phone only)

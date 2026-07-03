@@ -249,7 +249,19 @@ export const bodyConcernSlugsQuery = /* groq */ `
 // =========================================================================
 
 const equipmentProjection = /* groq */ `
-  ${equipmentCardProjection}
+  ${equipmentCardProjection},
+  treatmentName
+`;
+
+// Detail projection adds the rich, sectioned content used on the machine page.
+const equipmentDetailProjection = /* groq */ `
+  ${equipmentProjection},
+  technologyPartner,
+  specifications[]{ label, value },
+  keyBenefits,
+  treatmentAreas,
+  idealFor,
+  faqs[]{ question, answer }
 `;
 
 export const equipmentQuery = /* groq */ `
@@ -260,7 +272,7 @@ export const equipmentQuery = /* groq */ `
 
 export const equipmentBySlugQuery = /* groq */ `
   *[_type == "equipment" && slug.current == $slug][0]{
-    ${equipmentProjection}
+    ${equipmentDetailProjection}
   }
 `;
 

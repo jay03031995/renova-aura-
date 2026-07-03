@@ -74,12 +74,80 @@ export const equipmentSchema = defineType({
       initialValue: false,
     }),
     defineField({
+      name: "treatmentName",
+      title: "Treatment name",
+      description:
+        "Short label used on the switcher pill, e.g. \"Laser Hair Reduction\".",
+      type: "string",
+      group: "summary",
+    }),
+    defineField({
+      name: "technologyPartner",
+      title: "Technology partner / manufacturer",
+      description: "e.g. \"Reveal Lasers\" — surfaced for E-E-A-T and SEO.",
+      type: "string",
+      group: "content",
+    }),
+    defineField({
       name: "detailedDescription",
-      title: "Detailed Description",
+      title: "Overview",
       type: "text",
       rows: 8,
       group: "content",
       validation: (r) => r.required(),
+    }),
+    defineField({
+      name: "specifications",
+      title: "Technology / specifications",
+      type: "array",
+      group: "content",
+      of: [
+        {
+          type: "object",
+          fields: [
+            { name: "label", title: "Label", type: "string" },
+            { name: "value", title: "Value", type: "string" },
+          ],
+          preview: { select: { title: "label", subtitle: "value" } },
+        },
+      ],
+    }),
+    defineField({
+      name: "keyBenefits",
+      title: "Key benefits",
+      type: "array",
+      group: "content",
+      of: [{ type: "string" }],
+    }),
+    defineField({
+      name: "treatmentAreas",
+      title: "Treatment areas / indications",
+      type: "array",
+      group: "content",
+      of: [{ type: "string" }],
+    }),
+    defineField({
+      name: "idealFor",
+      title: "Ideal for",
+      type: "text",
+      rows: 3,
+      group: "content",
+    }),
+    defineField({
+      name: "faqs",
+      title: "FAQs",
+      type: "array",
+      group: "content",
+      of: [
+        {
+          type: "object",
+          fields: [
+            { name: "question", title: "Question", type: "string" },
+            { name: "answer", title: "Answer", type: "text", rows: 3 },
+          ],
+          preview: { select: { title: "question" } },
+        },
+      ],
     }),
     defineField({
       name: "seoTitle",

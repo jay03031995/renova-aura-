@@ -783,15 +783,25 @@ export async function getBodyConcernSlugs(): Promise<string[]> {
 
 // ----- Lasers / Technologies -----------------------------------------------
 
+export type EquipmentSpec = { label: string; value: string };
+export type EquipmentFaq = { question: string; answer: string };
+
 export type Equipment = {
   slug: string;
   name: string;
+  treatmentName?: string;
   image?: string;
   shortDescription: string;
   detailedDescription: string;
   category: string;
   displayOrder: number;
   featured: boolean;
+  technologyPartner?: string;
+  specifications: EquipmentSpec[];
+  keyBenefits: string[];
+  treatmentAreas: string[];
+  idealFor?: string;
+  faqs: EquipmentFaq[];
   seoTitle?: string;
   seoDescription?: string;
 };
@@ -800,12 +810,19 @@ type SanityEquipment = {
   _id: string;
   slug: string;
   name: string;
+  treatmentName?: string;
   image?: { url?: string };
   shortDescription?: string;
   detailedDescription?: string;
   category?: string;
   displayOrder?: number;
   featured?: boolean;
+  technologyPartner?: string;
+  specifications?: EquipmentSpec[];
+  keyBenefits?: string[];
+  treatmentAreas?: string[];
+  idealFor?: string;
+  faqs?: EquipmentFaq[];
   seoTitle?: string;
   seoDescription?: string;
 };
@@ -814,12 +831,19 @@ function mapEquipment(d: SanityEquipment): Equipment {
   return {
     slug: d.slug,
     name: d.name,
+    treatmentName: d.treatmentName,
     image: d.image?.url,
     shortDescription: d.shortDescription ?? "",
     detailedDescription: d.detailedDescription ?? "",
     category: d.category ?? "Other",
     displayOrder: d.displayOrder ?? 0,
     featured: d.featured ?? false,
+    technologyPartner: d.technologyPartner,
+    specifications: (d.specifications ?? []).filter((s) => s?.label || s?.value),
+    keyBenefits: d.keyBenefits ?? [],
+    treatmentAreas: d.treatmentAreas ?? [],
+    idealFor: d.idealFor,
+    faqs: (d.faqs ?? []).filter((f) => f?.question),
     seoTitle: d.seoTitle,
     seoDescription: d.seoDescription,
   };
