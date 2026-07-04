@@ -80,7 +80,8 @@ export const FOOTER_LINKS: Record<string, { label: string; href: string }[]> = {
     // { label: "Patient Results", href: "/results" },
     // { label: "Patient Stories", href: "/#testimonials" },
     { label: "FAQs", href: "/#faq" },
-    { label: "Contact", href: "/#contact" },
+    { label: "Gallery", href: "/gallery" },
+    { label: "Contact", href: "/contact" },
   ],
   Resources: [
     { label: "Book a Consultation", href: "/#book" },

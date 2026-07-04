@@ -34,6 +34,8 @@ export type Concern = {
   relatedPackages?: import("./packages").TreatmentPackage[];
   relatedProcedures?: import("@/sanity/lib/fetchers").RelatedTreatmentCard[];
   technologiesUsed?: import("@/sanity/lib/fetchers").Equipment[];
+  realResults?: import("@/sanity/lib/fetchers").RealResult[];
+  videos?: import("@/sanity/lib/fetchers").Video[];
   faqs: { q: string; a: string }[];
 };
 

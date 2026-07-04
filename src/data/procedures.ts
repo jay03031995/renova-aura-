@@ -51,6 +51,8 @@ export type Procedure = {
   relatedPackages?: import("./packages").TreatmentPackage[];
   relatedProcedures?: import("@/sanity/lib/fetchers").RelatedTreatmentCard[];
   technologiesUsed?: import("@/sanity/lib/fetchers").Equipment[];
+  realResults?: import("@/sanity/lib/fetchers").RealResult[];
+  videos?: import("@/sanity/lib/fetchers").Video[];
 };
 
 /** Curated placeholder images by procedure category (Unsplash, no auth). */

@@ -240,6 +240,8 @@ function ConcernDetail({
         packages={c.relatedPackages}
         procedures={c.relatedProcedures}
         technologies={c.technologiesUsed}
+        realResults={c.realResults}
+        videos={c.videos}
       />
 
       {/* FAQs */}

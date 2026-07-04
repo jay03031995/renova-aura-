@@ -138,6 +138,55 @@ const relatedTreatmentProjection = /* groq */ `
   }
 `;
 
+// =========================================================================
+// Media projections — Real Results, Videos, Gallery Images
+// (defined here so the treatment-detail queries below can reuse them)
+// =========================================================================
+
+const realResultProjection = /* groq */ `
+  "id": _id,
+  title,
+  caption,
+  category,
+  "before": beforeImage.asset->url,
+  "after": afterImage.asset->url,
+  "displayOrder": coalesce(displayOrder, 999),
+  featured
+`;
+
+const videoProjection = /* groq */ `
+  "id": _id,
+  title,
+  sourceType,
+  youtubeUrl,
+  vimeoUrl,
+  "fileUrl": videoFile.asset->url,
+  "thumbnail": thumbnail.asset->url,
+  category,
+  "displayOrder": coalesce(displayOrder, 999),
+  featured
+`;
+
+const galleryImageProjection = /* groq */ `
+  "id": _id,
+  title,
+  "image": image.asset->url,
+  category,
+  description,
+  "displayOrder": coalesce(displayOrder, 999),
+  featured
+`;
+
+export const galleryImagesQuery = /* groq */ `
+  *[_type == "galleryImage"] | order(displayOrder asc, _createdAt desc){ ${galleryImageProjection} }
+`;
+export const galleryRealResultsQuery = /* groq */ `
+  *[_type == "realResult"] | order(displayOrder asc){ ${realResultProjection} }
+`;
+export const galleryVideosQuery = /* groq */ `
+  *[_type == "video"] | order(displayOrder asc){ ${videoProjection} }
+`;
+
 export const proceduresQuery = /* groq */ `
   *[_type == "procedure"] | order(pillar asc, order asc, name asc){
     ${procedureCardProjection}
@@ -164,6 +213,8 @@ export const procedureBySlugQuery = /* groq */ `
     "relatedPackages": relatedPackages[]->{ ${packageCardProjection} },
     "relatedProcedures": relatedProcedures[]->{ ${relatedTreatmentProjection} },
     "technologiesUsed": technologiesUsed[]->{ ${equipmentCardProjection} },
+    "realResults": *[_type == "realResult" && references(^._id)] | order(displayOrder asc){ ${realResultProjection} },
+    "videos": *[_type == "video" && references(^._id)] | order(displayOrder asc){ ${videoProjection} },
     medicallyReviewedBy,
     lastReviewed
   }
@@ -207,6 +258,8 @@ export const concernBySlugQuery = /* groq */ `
     "relatedPackages": relatedPackages[]->{ ${packageCardProjection} },
     "relatedProcedures": relatedProcedures[]->{ ${relatedTreatmentProjection} },
     "technologiesUsed": technologiesUsed[]->{ ${equipmentCardProjection} },
+    "realResults": *[_type == "realResult" && references(^._id)] | order(displayOrder asc){ ${realResultProjection} },
+    "videos": *[_type == "video" && references(^._id)] | order(displayOrder asc){ ${videoProjection} },
     faqs[]{question, answer}
   }
 `;
@@ -236,6 +289,8 @@ export const bodyConcernBySlugQuery = /* groq */ `
     "relatedPackages": relatedPackages[]->{ ${packageCardProjection} },
     "relatedProcedures": relatedProcedures[]->{ ${relatedTreatmentProjection} },
     "technologiesUsed": technologiesUsed[]->{ ${equipmentCardProjection} },
+    "realResults": *[_type == "realResult" && references(^._id)] | order(displayOrder asc){ ${realResultProjection} },
+    "videos": *[_type == "video" && references(^._id)] | order(displayOrder asc){ ${videoProjection} },
     faqs[]{question, answer}
   }
 `;

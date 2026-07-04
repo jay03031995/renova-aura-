@@ -1,9 +1,13 @@
 import Link from "next/link";
 import BookButton from "@/components/BookButton";
 import { ArrowRight } from "@/components/icons";
+import RealResultsSection from "@/components/RealResultsSection";
+import VideosSection from "@/components/VideosSection";
 import type {
   Equipment,
+  RealResult,
   RelatedTreatmentCard,
+  Video,
 } from "@/sanity/lib/fetchers";
 import type { TreatmentPackage } from "@/data/packages";
 
@@ -11,14 +15,24 @@ type RelatedContentSectionsProps = {
   packages?: TreatmentPackage[];
   procedures?: RelatedTreatmentCard[];
   technologies?: Equipment[];
+  realResults?: RealResult[];
+  videos?: Video[];
 };
 
 export default function RelatedContentSections({
   packages = [],
   procedures = [],
   technologies = [],
+  realResults = [],
+  videos = [],
 }: RelatedContentSectionsProps) {
-  if (!packages.length && !procedures.length && !technologies.length) {
+  if (
+    !packages.length &&
+    !procedures.length &&
+    !technologies.length &&
+    !realResults.length &&
+    !videos.length
+  ) {
     return null;
   }
 
@@ -113,6 +127,9 @@ export default function RelatedContentSections({
           </div>
         </section>
       )}
+
+      <RealResultsSection results={realResults} />
+      <VideosSection videos={videos} />
     </>
   );
 }

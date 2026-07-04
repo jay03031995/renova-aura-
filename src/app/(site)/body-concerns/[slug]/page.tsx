@@ -158,6 +158,8 @@ export default async function BodyConcernPage({
         packages={c.relatedPackages}
         procedures={c.relatedProcedures}
         technologies={c.technologiesUsed}
+        realResults={c.realResults}
+        videos={c.videos}
       />
 
       <section className="section" style={{ background: "var(--cream-2)" }}>

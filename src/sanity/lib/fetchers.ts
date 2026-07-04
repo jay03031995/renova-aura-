@@ -28,6 +28,9 @@ import {
   equipmentBySlugQuery,
   equipmentQuery,
   equipmentSlugsQuery,
+  galleryImagesQuery,
+  galleryRealResultsQuery,
+  galleryVideosQuery,
   heroSlidesQuery,
   homepageFaqsQuery,
   packagesQuery,
@@ -89,10 +92,46 @@ export type RelatedTreatmentCard = {
   quickSessions?: string;
 };
 
+export type RealResult = {
+  id: string;
+  title: string;
+  caption?: string;
+  category: string;
+  before?: string;
+  after?: string;
+  displayOrder: number;
+  featured: boolean;
+};
+
+export type Video = {
+  id: string;
+  title: string;
+  sourceType: string; // "youtube" | "vimeo" | "upload"
+  youtubeUrl?: string;
+  vimeoUrl?: string;
+  fileUrl?: string;
+  thumbnail?: string;
+  category: string;
+  displayOrder: number;
+  featured: boolean;
+};
+
+export type GalleryImage = {
+  id: string;
+  title: string;
+  image?: string;
+  category: string;
+  description?: string;
+  displayOrder: number;
+  featured: boolean;
+};
+
 export type TreatmentRelatedContent = {
   relatedPackages: TreatmentPackage[];
   relatedProcedures: RelatedTreatmentCard[];
   technologiesUsed: Equipment[];
+  realResults: RealResult[];
+  videos: Video[];
 };
 
 // ----- Shared helpers -------------------------------------------------------
@@ -534,6 +573,8 @@ type SanityProcedure = {
   relatedPackages?: SanityPackageCard[];
   relatedProcedures?: SanityRelatedTreatment[];
   technologiesUsed?: SanityEquipment[];
+  realResults?: RealResult[];
+  videos?: Video[];
 };
 
 type SanityRelatedTreatment = {
@@ -623,6 +664,8 @@ function mapProcedure(d: SanityProcedure): Procedure {
     relatedPackages: (d.relatedPackages ?? []).map(mapPackage),
     relatedProcedures: (d.relatedProcedures ?? []).map(mapRelatedTreatment),
     technologiesUsed: (d.technologiesUsed ?? []).map(mapEquipment),
+    realResults: d.realResults ?? [],
+    videos: d.videos ?? [],
   };
 }
 
@@ -926,4 +969,21 @@ export async function getLocationByCityArea(
     citySlug: area.citySlug,
     pincode: area.pincode,
   };
+}
+
+// ----- Media gallery --------------------------------------------------------
+
+export async function getGalleryImages(): Promise<GalleryImage[]> {
+  const docs = await safeFetch<GalleryImage[]>(galleryImagesQuery);
+  return isFilled(docs) ? docs : [];
+}
+
+export async function getGalleryRealResults(): Promise<RealResult[]> {
+  const docs = await safeFetch<RealResult[]>(galleryRealResultsQuery);
+  return isFilled(docs) ? docs : [];
+}
+
+export async function getGalleryVideos(): Promise<Video[]> {
+  const docs = await safeFetch<Video[]>(galleryVideosQuery);
+  return isFilled(docs) ? docs : [];
 }

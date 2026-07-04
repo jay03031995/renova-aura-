@@ -269,6 +269,8 @@ function ProcedureDetail({ p }: { p: Procedure }) {
         packages={p.relatedPackages}
         procedures={p.relatedProcedures}
         technologies={p.technologiesUsed}
+        realResults={p.realResults}
+        videos={p.videos}
       />
 
       {/* FAQs */}
