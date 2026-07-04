@@ -6,6 +6,7 @@ export const metadata: Metadata = {
   title: "Patient Tools · AI Skin Analysis · Hair Graft Calculator",
   description:
     "Two free, instant tools from RenovaAura: AI Skin Analysis maps your skin type + concerns to a personalised plan, and the Hair Graft Calculator estimates the grafts you'll need using Norwood-based science. Each generates a downloadable PDF report.",
+  alternates: { canonical: "/tools" },
 };
 
 export default function ToolsIndexPage() {

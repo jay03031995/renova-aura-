@@ -7,6 +7,7 @@ export const metadata: Metadata = {
   title: "Skin Concerns — Personalised Dermatology Care",
   description:
     "Acne, pigmentation, anti-ageing, sensitive skin, dark circles and more. RenovaAura's dermatology team treats skin concerns with calibrated protocols — never generic.",
+  alternates: { canonical: "/concerns" },
 };
 
 export default async function ConcernsIndexPage() {

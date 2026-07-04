@@ -163,6 +163,7 @@ const videoProjection = /* groq */ `
   "fileUrl": videoFile.asset->url,
   "thumbnail": thumbnail.asset->url,
   category,
+  "uploadDate": _createdAt,
   "displayOrder": coalesce(displayOrder, 999),
   featured
 `;

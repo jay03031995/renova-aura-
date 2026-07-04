@@ -112,6 +112,7 @@ export type Video = {
   fileUrl?: string;
   thumbnail?: string;
   category: string;
+  uploadDate?: string;
   displayOrder: number;
   featured: boolean;
 };

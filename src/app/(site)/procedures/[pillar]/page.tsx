@@ -45,6 +45,7 @@ export async function generateMetadata({
   return {
     title: meta.title,
     description: meta.subtitle,
+    alternates: { canonical: `/procedures/${pillar}` },
   };
 }
 

@@ -58,8 +58,38 @@ export default async function DoctorDetailPage(props: {
   const firstName = d.name.split(" ")[0];
   const middle = d.name.split(" ")[1]?.replace(".", "") ?? "";
 
+  // Physician structured data — strong E-E-A-T + AI-discovery signal linking
+  // the doctor to the RenovaAura medical business.
+  const physicianJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Physician",
+    "@id": `https://renovaaura.com/doctors/${slug}#physician`,
+    name: d.name,
+    url: `https://renovaaura.com/doctors/${slug}`,
+    jobTitle: d.title,
+    ...(d.imageUrl ? { image: d.imageUrl } : {}),
+    ...(d.specialty ? { medicalSpecialty: d.specialty } : {}),
+    worksFor: {
+      "@type": "MedicalBusiness",
+      "@id": "https://renovaaura.com/#organization",
+      name: "RenovaAura",
+    },
+    address: {
+      "@type": "PostalAddress",
+      streetAddress: "C-3",
+      addressLocality: "Anand Vihar",
+      addressRegion: "New Delhi",
+      postalCode: "110092",
+      addressCountry: "IN",
+    },
+  };
+
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(physicianJsonLd) }}
+      />
       {/* Hero */}
       <section className="dp-hero">
         <div className="container">

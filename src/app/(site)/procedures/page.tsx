@@ -7,6 +7,7 @@ export const metadata: Metadata = {
   title: "Our Procedures — Hair Transplant & Plastic Surgery",
   description:
     "RenovaAura offers hair restoration and plastic surgery procedures. FUE, DHI, rhinoplasty, facelift and more — all delivered by board-certified surgeons.",
+  alternates: { canonical: "/procedures" },
 };
 
 export default async function ProceduresIndexPage() {

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Lightbox, {
   type LightboxItem,
+  videoEmbedUrl,
   videoPoster,
 } from "@/components/Lightbox";
 import type { Video } from "@/sanity/lib/fetchers";
@@ -39,8 +40,32 @@ export default function VideosSection({
     title: v.title,
   }));
 
+  // VideoObject structured data — helps videos surface in Google video
+  // results and be cited by AI answer engines (GEO).
+  const videoJsonLd = {
+    "@context": "https://schema.org",
+    "@graph": playable.map((v) => {
+      const url = sourceUrl(v);
+      const embed = videoEmbedUrl(v.sourceType, url);
+      return {
+        "@type": "VideoObject",
+        name: v.title,
+        description: v.title,
+        thumbnailUrl: posterFor(v) || undefined,
+        uploadDate: v.uploadDate,
+        ...(v.sourceType === "upload"
+          ? { contentUrl: url }
+          : { embedUrl: embed || url }),
+      };
+    }),
+  };
+
   return (
     <section className="section related-section vid-section">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(videoJsonLd) }}
+      />
       <div className="container">
         <div className="eyebrow" style={{ marginBottom: 18 }}>
           {heading}
