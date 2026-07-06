@@ -105,11 +105,10 @@ export default function RelatedContentSections({
                   className="technology-card"
                 >
                   {t.image && (
-                    <div
-                      className="technology-card-media"
-                      style={{ backgroundImage: `url(${t.image})` }}
-                      aria-hidden="true"
-                    />
+                    <div className="technology-card-media">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={t.image} alt={t.name} loading="lazy" />
+                    </div>
                   )}
                   <div className="technology-card-body">
                     <div className="technology-card-category">{t.category}</div>

@@ -1048,14 +1048,8 @@ p { margin: 0; color: var(--muted); }
   color: rgba(217, 190, 152, .7);
   margin-bottom: 4px;
 }
-.contact-item-val {
-  font-size: 15px;
-  color: var(--cream);
-  font-weight: 500;
-  line-height: 1.5;
-}
-.contact-item-val a { color: var(--cream); }
-.contact-item-val a:hover { color: var(--sand); }
+.contact-item-val { font-size: 15px; color: var(--cream); font-weight: 500; line-height: 1.5; }
+.contact-item-val a { color: var(--cream); } .contact-item-val a:hover { color: var(--sand); }
 
 .contact-map {
   background: var(--cream-2);
@@ -3871,13 +3865,27 @@ button.sbv-card-clickable:focus-visible {
   transform: translateY(-4px);
   box-shadow: 0 20px 44px -20px rgba(30, 40, 25, 0.5);
 }
-.related-treatment-media,
-.technology-card-media {
+.related-treatment-media {
   aspect-ratio: 16 / 10;
   background-size: cover;
   background-position: center;
   background-color: var(--cream-2);
 }
+.technology-card-media {
+  aspect-ratio: 16 / 10;
+  background: linear-gradient(180deg, rgba(255, 255, 255, .66), rgba(231, 236, 229, .82));
+  display: grid;
+  place-items: center;
+  padding: 18px;
+}
+.technology-card-media img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+  transition: transform .35s var(--ease);
+}
+.technology-card:hover .technology-card-media img { transform: scale(1.035); }
 .related-treatment-body,
 .technology-card-body {
   display: flex;
@@ -5135,15 +5143,52 @@ button.sbv-card-clickable:focus-visible {
   gap: 26px;
   align-items: stretch;
 }
-.technology-card { background: var(--cream); }
+.technology-card {
+  background: var(--cream);
+  height: 100%;
+}
 .technology-card-media {
-  aspect-ratio: 4 / 3;
+  aspect-ratio: 5 / 4;
   background-color: #e7ece5;
-  background-position: center;
+  border-bottom: 1px solid rgba(147, 159, 135, .22);
 }
 .technology-card-body { padding: 22px 24px 24px; gap: 2px; }
 .technology-card-title { font-size: 19px; }
 .technology-card-copy { -webkit-line-clamp: 3; font-size: 14.5px; }
+
+/* ---- Privacy Policy ---- */
+.policy-shell {
+  max-width: 920px;
+  margin: 0 auto;
+}
+.policy-intro {
+  color: var(--muted);
+  font-size: 16px;
+  line-height: 1.75;
+  margin: 0 0 34px;
+}
+.policy-list {
+  display: grid;
+  gap: 18px;
+}
+.policy-block {
+  border-top: 1px solid var(--line);
+  padding-top: 28px;
+}
+.policy-block h2 {
+  font-size: clamp(24px, 3vw, 34px);
+  margin-bottom: 14px;
+}
+.policy-block p,
+.policy-block li {
+  color: var(--muted);
+  font-size: 15px;
+  line-height: 1.75;
+}
+.policy-block ul {
+  margin: 0;
+  padding-left: 20px;
+}
 
 /* ---- Shared card media helper ---- */
 .rr-card-media img,

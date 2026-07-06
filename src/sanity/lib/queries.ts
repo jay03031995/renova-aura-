@@ -154,6 +154,14 @@ const realResultProjection = /* groq */ `
   featured
 `;
 
+const linkedRealResultsProjection = /* groq */ `
+  *[
+    _type == "realResult" &&
+    consentOnFile == true &&
+    ^._id in treatments[]._ref
+  ] | order(displayOrder asc, _createdAt desc){ ${realResultProjection} }
+`;
+
 const videoProjection = /* groq */ `
   "id": _id,
   title,
@@ -214,7 +222,7 @@ export const procedureBySlugQuery = /* groq */ `
     "relatedPackages": relatedPackages[]->{ ${packageCardProjection} },
     "relatedProcedures": relatedProcedures[]->{ ${relatedTreatmentProjection} },
     "technologiesUsed": technologiesUsed[]->{ ${equipmentCardProjection} },
-    "realResults": *[_type == "realResult" && references(^._id)] | order(displayOrder asc){ ${realResultProjection} },
+    "realResults": ${linkedRealResultsProjection},
     "videos": *[_type == "video" && references(^._id)] | order(displayOrder asc){ ${videoProjection} },
     medicallyReviewedBy,
     lastReviewed
@@ -259,7 +267,7 @@ export const concernBySlugQuery = /* groq */ `
     "relatedPackages": relatedPackages[]->{ ${packageCardProjection} },
     "relatedProcedures": relatedProcedures[]->{ ${relatedTreatmentProjection} },
     "technologiesUsed": technologiesUsed[]->{ ${equipmentCardProjection} },
-    "realResults": *[_type == "realResult" && references(^._id)] | order(displayOrder asc){ ${realResultProjection} },
+    "realResults": ${linkedRealResultsProjection},
     "videos": *[_type == "video" && references(^._id)] | order(displayOrder asc){ ${videoProjection} },
     faqs[]{question, answer}
   }
@@ -290,7 +298,7 @@ export const bodyConcernBySlugQuery = /* groq */ `
     "relatedPackages": relatedPackages[]->{ ${packageCardProjection} },
     "relatedProcedures": relatedProcedures[]->{ ${relatedTreatmentProjection} },
     "technologiesUsed": technologiesUsed[]->{ ${equipmentCardProjection} },
-    "realResults": *[_type == "realResult" && references(^._id)] | order(displayOrder asc){ ${realResultProjection} },
+    "realResults": ${linkedRealResultsProjection},
     "videos": *[_type == "video" && references(^._id)] | order(displayOrder asc){ ${videoProjection} },
     faqs[]{question, answer}
   }

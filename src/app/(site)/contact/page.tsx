@@ -58,14 +58,14 @@ export default async function ContactPage() {
                 <div className="contact-item-icon"><MapPin /></div>
                 <div>
                   <div className="contact-item-label">Clinic address</div>
-                  <div className="contact-item-val">{clinic.address}</div>
+                  <div className=" text-black">{clinic.address}</div>
                 </div>
               </div>
               <div className="contact-item">
                 <div className="contact-item-icon"><Phone size={16} /></div>
                 <div>
                   <div className="contact-item-label">Call us</div>
-                  <div className="contact-item-val">
+                  <div className="text-black">
                     <a href={telHref(clinic.phone)}>{clinic.phone}</a>
                   </div>
                 </div>
@@ -74,7 +74,7 @@ export default async function ContactPage() {
                 <div className="contact-item-icon"><WhatsappLogo size={18} /></div>
                 <div>
                   <div className="contact-item-label">WhatsApp</div>
-                  <div className="contact-item-val">
+                  <div className="text-black">
                     <a href={waHref()} target="_blank" rel="noopener noreferrer">
                       Chat with our care team
                     </a>
@@ -85,7 +85,7 @@ export default async function ContactPage() {
                 <div className="contact-item-icon"><Mail /></div>
                 <div>
                   <div className="contact-item-label">Email</div>
-                  <div className="contact-item-val">
+                  <div className="text-black">
                     <a href={`mailto:${clinic.email}`}>{clinic.email}</a>
                   </div>
                 </div>
@@ -94,7 +94,7 @@ export default async function ContactPage() {
                 <div className="contact-item-icon"><Clock /></div>
                 <div>
                   <div className="contact-item-label">Clinic hours</div>
-                  <div className="contact-item-val">{clinic.hours}</div>
+                  <div className="text-black">{clinic.hours}</div>
                 </div>
               </div>
             </div>
@@ -123,7 +123,7 @@ export default async function ContactPage() {
           <div className="contact-map">
             <iframe
               className="contact-map-frame"
-              src={`https://www.google.com/maps?q=${mapsQuery}&output=embed`}
+              src={`https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d14005.867073023084!2d77.29643845669221!3d28.645739460517085!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x390cfbe2a421adb7%3A0xf631ccc92514fec0!2sDr.%20Bhawna%20Bhardwaj%20-%20Dermatologist%20%7C%20Renovaaura!5e0!3m2!1sen!2sin!4v1783320030336!5m2!1sen!2sin`}
               loading="lazy"
               referrerPolicy="no-referrer-when-downgrade"
               title="RenovaAura · Anand Vihar, New Delhi"

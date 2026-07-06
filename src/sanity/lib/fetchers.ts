@@ -732,6 +732,8 @@ type SanityConcern = {
   relatedPackages?: SanityPackageCard[];
   relatedProcedures?: SanityRelatedTreatment[];
   technologiesUsed?: SanityEquipment[];
+  realResults?: RealResult[];
+  videos?: Video[];
   faqs?: { question: string; answer: string }[];
 };
 
@@ -751,6 +753,8 @@ function mapConcern(d: SanityConcern): Concern {
     relatedPackages: (d.relatedPackages ?? []).map(mapPackage),
     relatedProcedures: (d.relatedProcedures ?? []).map(mapRelatedTreatment),
     technologiesUsed: (d.technologiesUsed ?? []).map(mapEquipment),
+    realResults: d.realResults ?? [],
+    videos: d.videos ?? [],
     faqs: (d.faqs ?? []).map((f) => ({ q: f.question, a: f.answer })),
   };
 }
@@ -800,6 +804,8 @@ function mapBodyConcern(d: SanityBodyConcern): BodyConcern {
     relatedPackages: (d.relatedPackages ?? []).map(mapPackage),
     relatedProcedures: (d.relatedProcedures ?? []).map(mapRelatedTreatment),
     technologiesUsed: (d.technologiesUsed ?? []).map(mapEquipment),
+    realResults: d.realResults ?? [],
+    videos: d.videos ?? [],
     faqs: (d.faqs ?? []).map((f) => ({ q: f.question, a: f.answer })),
   };
 }

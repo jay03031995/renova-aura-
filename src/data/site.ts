@@ -88,5 +88,6 @@ export const FOOTER_LINKS: Record<string, { label: string; href: string }[]> = {
     { label: "All Procedures", href: "/procedures" },
     { label: "AI Skin Analysis", href: "/tools/skin-analysis" },
     { label: "Hair Graft Calculator", href: "/tools/graft-calculator" },
+    { label: "Privacy Policy", href: "/privacy-policy" },
   ],
 };
