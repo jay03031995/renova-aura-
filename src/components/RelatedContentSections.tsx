@@ -44,7 +44,7 @@ export default function RelatedContentSections({
             <div className="eyebrow" style={{ marginBottom: 18 }}>
               Related Packages
             </div>
-            <h2 style={{ marginBottom: 40 }}>We may recommend.</h2>
+            <h2 style={{ marginBottom: 40 }}>Personalized treatment packages for comprehensive care.</h2>
             <div className="pkg-grid">
               {packages.map((p) => (
                 <PackageCard key={p.slug} p={p} />
@@ -60,7 +60,7 @@ export default function RelatedContentSections({
             <div className="eyebrow" style={{ marginBottom: 18 }}>
               Related Procedures
             </div>
-            <h2 style={{ marginBottom: 40 }}>We may recommend.</h2>
+            <h2 style={{ marginBottom: 40 }}>Additional procedures that can support your treatment goals.</h2>
             <div className="related-treatment-grid">
               {procedures.map((p) => (
                 <Link key={`${p.href}-${p.slug}`} href={p.href} className="related-treatment-card">

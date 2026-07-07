@@ -5340,12 +5340,15 @@ button.sbv-card-clickable:focus-visible {
 @keyframes lb-fade { from { opacity: 0; } to { opacity: 1; } }
 .lb-content {
   position: relative;
-  max-width: min(1100px, 94vw);
+  width: min(1200px, 94vw);
   max-height: 88vh;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 14px;
+  overflow: auto;
+  padding: 4px 4px 10px;
+  overscroll-behavior: contain;
 }
 .lb-image {
   max-width: 100%;
@@ -5354,18 +5357,31 @@ button.sbv-card-clickable:focus-visible {
   border-radius: 8px;
 }
 .lb-ba {
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 14px;
-  max-height: 82vh;
-  flex-wrap: wrap;
-  justify-content: center;
+  width: 100%;
+  max-height: min(78vh, 100%);
+  align-items: start;
+  overflow: auto;
+  padding: 2px;
 }
-.lb-ba figure { margin: 0; position: relative; }
+.lb-ba-figure {
+  margin: 0;
+  position: relative;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
 .lb-ba img {
-  max-height: 78vh;
-  max-width: 46vw;
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+  max-height: 74vh;
   object-fit: contain;
   border-radius: 8px;
+  display: block;
 }
 .lb-ba figcaption {
   position: absolute;
@@ -5426,6 +5442,33 @@ button.sbv-card-clickable:focus-visible {
 .lb-nav:hover { background: rgba(255,255,255,.22); }
 .lb-prev { left: 20px; }
 .lb-next { right: 20px; }
+
+@media (max-width: 768px) {
+  .lb-overlay {
+    padding: 90px 14px 24px;
+    align-items: start;
+  }
+  .lb-content {
+    width: 100%;
+    max-height: 100%;
+    padding-bottom: 20px;
+  }
+  .lb-ba {
+    grid-template-columns: 1fr;
+    max-height: none;
+    overflow: visible;
+  }
+  .lb-ba img {
+    max-height: 70vh;
+  }
+  .lb-nav {
+    bottom: 16px;
+    top: auto;
+    transform: none;
+  }
+  .lb-prev { left: 14px; }
+  .lb-next { right: 14px; }
+}
 
 /* ---- Contact page ---- */
 .contact-page-grid {

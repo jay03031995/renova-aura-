@@ -127,13 +127,13 @@ export default function Lightbox({
 
         {item.kind === "beforeafter" && (
           <div className="lb-ba">
-            <figure>
+            <figure className="lb-ba-figure">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={item.before} alt={`${item.title || "Result"} — before`} />
               {item.after && <figcaption>Before</figcaption>}
             </figure>
             {item.after && (
-              <figure>
+              <figure className="lb-ba-figure">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src={item.after} alt={`${item.title || "Result"} — after`} />
                 <figcaption>After</figcaption>

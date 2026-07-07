@@ -7,7 +7,7 @@ import type { RealResult } from "@/sanity/lib/fetchers";
 export default function RealResultsSection({
   results,
   heading = "Real Results",
-  subheading = "Actual patient outcomes.",
+  subheading = "See authentic before-and-after results from our patients.",
 }: {
   results: RealResult[];
   heading?: string;
