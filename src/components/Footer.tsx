@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { telHref, waHref } from "@/data/clinic";
 import { FOOTER_LINKS } from "@/data/site";
-import { getClinic } from "@/sanity/lib/fetchers";
+import { getClinic, getProceduresByPillar } from "@/sanity/lib/fetchers";
 import {
   Phone,
   MapPin,
@@ -14,6 +14,18 @@ import AskAiBar from "@/components/AskAiBar";
 
 export default async function Footer() {
   const clinic = await getClinic();
+  const plasticProcedures = await getProceduresByPillar("plastic-surgery");
+  const plasticLinks = plasticProcedures.map((p) => ({
+    label: p.name,
+    href: `/procedures/plastic-surgery/${p.slug}`,
+  }));
+  const footerGroups = {
+    ...FOOTER_LINKS,
+    "Plastic Surgery": [
+      ...plasticLinks,
+      { label: "All Procedures", href: "/procedures/plastic-surgery" },
+    ],
+  };
   const logoSrc = clinic.logoUrl ?? "/renovaaura-logo.png";
 
   return (
@@ -93,7 +105,7 @@ export default async function Footer() {
             </div>
           </div>
 
-          <FooterAccordion groups={FOOTER_LINKS} />
+          <FooterAccordion groups={footerGroups} />
         </div>
 
         <AskAiBar />
