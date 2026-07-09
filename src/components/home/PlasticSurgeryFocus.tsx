@@ -6,22 +6,11 @@ import { getProceduresByPillar } from "@/sanity/lib/fetchers";
  * Secondary pillar on the homepage — plastic surgery & aesthetics.
  * Sanity-first via getProceduresByPillar with static fallback.
  */
-const FEATURED_SLUGS = [
-  "rhinoplasty",
-  "blepharoplasty",
-  "facelift",
-  "liposuction",
-  "lip-fillers",
-  "botox",
-];
 
 export default async function PlasticSurgeryFocus() {
   const all = await getProceduresByPillar("plastic-surgery");
-  const bySlug = new Map(all.map((p) => [p.slug, p]));
-  const featured = FEATURED_SLUGS.map((s) => bySlug.get(s))
-    .filter((p): p is NonNullable<typeof p> => Boolean(p))
-    .concat(all.filter((p) => !FEATURED_SLUGS.includes(p.slug)))
-    .slice(0, 6);
+  const featured = all.slice(0, 6);
+  const procedureCount = all.length;
 
   return (
     <section
@@ -77,7 +66,7 @@ export default async function PlasticSurgeryFocus() {
             href="/procedures/plastic-surgery"
             className="btn btn-primary"
           >
-            View all 10 plastic surgery procedures <ArrowRight size={16} />
+            View all {procedureCount} plastic surgery procedures <ArrowRight size={16} />
           </Link>
         </div>
       </div>
