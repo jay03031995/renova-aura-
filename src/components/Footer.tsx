@@ -15,10 +15,12 @@ import AskAiBar from "@/components/AskAiBar";
 export default async function Footer() {
   const clinic = await getClinic();
   const plasticProcedures = await getProceduresByPillar("plastic-surgery");
-  const plasticLinks = plasticProcedures.map((p) => ({
-    label: p.name,
-    href: `/procedures/plastic-surgery/${p.slug}`,
-  }));
+  const plasticLinks = plasticProcedures
+    .slice(0, 5)
+    .map((p) => ({
+      label: p.name,
+      href: `/procedures/plastic-surgery/${p.slug}`,
+    }));
   const footerGroups = {
     ...FOOTER_LINKS,
     "Plastic Surgery": [
