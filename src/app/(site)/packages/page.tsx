@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { PackageCard } from "@/components/RelatedContentSections";
 import { getPackages } from "@/sanity/lib/fetchers";
-import { PACKAGE_CATEGORIES } from "@/data/packages";
+import { formatPackageCategoryLabel } from "@/data/packages";
 
 export const metadata: Metadata = {
   title: "Treatment Packages — Acne, Pigmentation, Hair & Anti-Ageing",
@@ -12,9 +12,17 @@ export const metadata: Metadata = {
 
 export default async function PackagesPage() {
   const packages = await getPackages();
-  const categories = PACKAGE_CATEGORIES.filter((cat) =>
-    packages.some((p) => p.category === cat.slug),
-  );
+  const categories = Array.from(
+    packages.reduce((map, p) => {
+      if (p.category && !map.has(p.category)) {
+        map.set(p.category, {
+          slug: p.category,
+          label: formatPackageCategoryLabel(p.category),
+        });
+      }
+      return map;
+    }, new Map<string, { slug: string; label: string }>()),
+  ).map(([, category]) => category);
 
   return (
     <>

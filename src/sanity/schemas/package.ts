@@ -26,16 +26,8 @@ export const packageSchema = defineType({
       name: "category",
       title: "Category",
       type: "string",
-      options: {
-        list: [
-          { title: "Acne", value: "acne" },
-          { title: "Acne Scars", value: "acne-scars" },
-          { title: "Pigmentation", value: "pigmentation" },
-          { title: "Hair Loss", value: "hair-loss" },
-          { title: "Anti-Ageing", value: "anti-ageing" },
-        ],
-        layout: "radio",
-      },
+      description:
+        'Enter a category slug, for example "acne", "hair-loss", or "body". Packages with the same category are grouped together on the Packages page.',
       validation: (r) => r.required(),
     }),
     defineField({

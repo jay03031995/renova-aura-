@@ -11,12 +11,7 @@
  * A few `includes` lines are blank where the source doc didn't specify the
  * session count yet (flagged to the clinic).
  */
-export type PackageCategory =
-  | "acne"
-  | "acne-scars"
-  | "pigmentation"
-  | "hair-loss"
-  | "anti-ageing";
+export type PackageCategory = string;
 
 export type TreatmentPackage = {
   slug: string;
@@ -40,6 +35,17 @@ export const PACKAGE_CATEGORIES: { slug: PackageCategory; label: string }[] = [
   { slug: "hair-loss", label: "Hair Loss" },
   { slug: "anti-ageing", label: "Anti-Ageing" },
 ];
+
+export function formatPackageCategoryLabel(category: string) {
+  const configured = PACKAGE_CATEGORIES.find((cat) => cat.slug === category);
+  if (configured) return configured.label;
+
+  return category
+    .split(/[-_\s]+/)
+    .filter(Boolean)
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
+}
 
 export const PACKAGES: TreatmentPackage[] = [
   // ---- Acne ----------------------------------------------------------------
