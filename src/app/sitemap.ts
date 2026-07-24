@@ -11,7 +11,7 @@ import {
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const settings = await getSiteSettings();
-  const baseUrl = (settings.siteUrl ?? "https://renovaaura.com").replace(/\/$/, "");
+  const baseUrl = (settings.siteUrl ?? "https://www.renovaaura.com").replace(/\/$/, "");
   const lastModified = new Date();
 
   const [
