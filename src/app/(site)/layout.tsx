@@ -40,6 +40,7 @@ export const dynamic = "force-dynamic";
  *   Treatments → Doctors → Book Appointment → Locations → Take Hair Test → Skin Analysis
  */
 const BASE = "https://renovaaura.com";
+const MAINTENANCE_MODE = true;
 const GEO = { "@type": "GeoCoordinates", latitude: "28.6488", longitude: "77.3025" };
 const HOURS = [
   {
@@ -209,9 +210,43 @@ const jsonLd = {
   ],
 };
 
+function MaintenancePage() {
+  return (
+    <main className="maintenance-page" aria-labelledby="maintenance-title">
+      <section className="maintenance-panel">
+        <img
+          className="maintenance-logo"
+          src="/renovaaura-logo.png"
+          alt="RenovaAura"
+        />
+        <p className="eyebrow">Scheduled maintenance</p>
+        <h1 id="maintenance-title">We are refreshing RenovaAura.</h1>
+        <p className="maintenance-copy">
+          Our website is temporarily under maintenance. We will be back online
+          shortly with the same care, services, and support.
+        </p>
+        <div className="maintenance-actions" aria-label="Contact options">
+          <a className="btn btn-primary" href="tel:+919205220070">
+            Call clinic
+          </a>
+          <a className="btn btn-ghost" href="https://wa.me/919205220070">
+            WhatsApp
+          </a>
+        </div>
+      </section>
+    </main>
+  );
+}
+
 export default async function SiteLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
+  if (MAINTENANCE_MODE) {
+    return <MaintenancePage />;
+  }
+
+  // Original public site shell is kept intact below. To restore the live site,
+  // set MAINTENANCE_MODE to false and this code path will render again.
   // Mirror the Sanity-managed social profiles into the structured-data sameAs,
   // so the JSON-LD stays consistent with the visible social links. Clone the
   // module const (never mutate shared state across requests).
