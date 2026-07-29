@@ -6,7 +6,6 @@ const baseConfig: ClientConfig = {
   dataset,
   apiVersion,
   // useCdn must be false so the server always receives fresh content when
-  //change true to false
   // Next.js does revalidate. Next.js handles caching above this layer via
   // page-level `revalidate` and on-demand `revalidateTag('sanity')`.
   useCdn: true,
