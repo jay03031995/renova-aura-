@@ -26,6 +26,7 @@ import {
  * refresh button are kept as harmless no-ops / safety nets.
  */
 //export const dynamic = "force-dynamic";
+//cache changes
 export const revalidate = 3600;
 
 
