@@ -40,7 +40,7 @@ export const dynamic = "force-dynamic";
  *   Treatments → Doctors → Book Appointment → Locations → Take Hair Test → Skin Analysis
  */
 const BASE = "https://renovaaura.com";
-const MAINTENANCE_MODE = true;
+const MAINTENANCE_MODE = false;
 const GEO = { "@type": "GeoCoordinates", latitude: "28.6488", longitude: "77.3025" };
 const HOURS = [
   {
