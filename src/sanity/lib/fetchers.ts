@@ -150,10 +150,12 @@ async function safeFetch<T>(query: string, params?: Record<string, unknown>) {
     // No caching — every fetch goes straight to Sanity so published edits
     // are live immediately. The (site) layout is also force-dynamic; this
     // also covers fetches outside it (metadata, sitemap, redirects).
-    return await client.fetch<T>(query, params ?? {}, {
-      cache: "no-store",
-    });
-   
+   return await client.fetch<T>(query, params ?? {}, {
+  next: {
+    revalidate: 3600,
+    tags: ["sanity"],
+  },
+});
   } catch (e) {
     console.warn("[sanity] fetch failed, falling back to local data:", e);
     return null;
@@ -168,8 +170,12 @@ async function safeFetchWithAvailability<T>(
   try {
     return {
       available: true,
-      data: await client.fetch<T>(query, params ?? {}, { cache: "no-store" }),
-    };
+data: await client.fetch<T>(query, params ?? {}, {
+  next: {
+    revalidate: 3600,
+    tags: ["sanity"],
+  },
+}),    };
   } catch (e) {
     console.warn("[sanity] fetch failed, falling back to local data:", e);
     return { available: false, data: null };
@@ -664,8 +670,12 @@ function mapProcedure(d: SanityProcedure): Procedure {
     medicallyReviewedBy: d.medicallyReviewedBy,
     lastReviewed: d.lastReviewed,
     relatedPackages: (d.relatedPackages ?? []).map(mapPackage),
-    relatedProcedures: (d.relatedProcedures ?? []).map(mapRelatedTreatment),
-    technologiesUsed: (d.technologiesUsed ?? []).map(mapEquipment),
+relatedProcedures: (d.relatedProcedures ?? [])
+  .filter(
+    (item): item is SanityRelatedTreatment =>
+      item !== null && item !== undefined,
+  )
+  .map(mapRelatedTreatment),    technologiesUsed: (d.technologiesUsed ?? []).map(mapEquipment),
     realResults: d.realResults ?? [],
     videos: d.videos ?? [],
   };
@@ -751,9 +761,26 @@ function mapConcern(d: SanityConcern): Concern {
     causes: d.causes ?? [],
     approach: d.approach ?? [],
     relatedProcedureSlugs: (d.relatedProcedures ?? []).map((p) => p.slug),
-    relatedPackages: (d.relatedPackages ?? []).map(mapPackage),
-    relatedProcedures: (d.relatedProcedures ?? []).map(mapRelatedTreatment),
-    technologiesUsed: (d.technologiesUsed ?? []).map(mapEquipment),
+   relatedPackages: (d.relatedPackages ?? [])
+  .filter(
+    (item): item is SanityPackageCard =>
+      item !== null && item !== undefined,
+  )
+  .map(mapPackage),
+
+relatedProcedures: (d.relatedProcedures ?? [])
+  .filter(
+    (item): item is SanityRelatedTreatment =>
+      item !== null && item !== undefined,
+  )
+  .map(mapRelatedTreatment),
+
+technologiesUsed: (d.technologiesUsed ?? [])
+  .filter(
+    (item): item is SanityEquipment =>
+      item !== null && item !== undefined,
+  )
+  .map(mapEquipment),
     realResults: d.realResults ?? [],
     videos: d.videos ?? [],
     faqs: (d.faqs ?? []).map((f) => ({ q: f.question, a: f.answer })),
