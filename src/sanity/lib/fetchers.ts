@@ -150,12 +150,9 @@ async function safeFetch<T>(query: string, params?: Record<string, unknown>) {
     // No caching — every fetch goes straight to Sanity so published edits
     // are live immediately. The (site) layout is also force-dynamic; this
     // also covers fetches outside it (metadata, sitemap, redirects).
-  return await client.fetch<T>(query, params ?? {}, {
-  next: {
-    revalidate: 3600,
-    tags: ["sanity"],
-  },
-});
+    return await client.fetch<T>(query, params ?? {}, {
+      cache: "no-store",
+    });
    
   } catch (e) {
     console.warn("[sanity] fetch failed, falling back to local data:", e);
@@ -171,12 +168,8 @@ async function safeFetchWithAvailability<T>(
   try {
     return {
       available: true,
-data: await client.fetch<T>(query, params ?? {}, {
-  next: {
-    revalidate: 3600,
-    tags: ["sanity"],
-  },
-}),     };
+      data: await client.fetch<T>(query, params ?? {}, { cache: "no-store" }),
+    };
   } catch (e) {
     console.warn("[sanity] fetch failed, falling back to local data:", e);
     return { available: false, data: null };
