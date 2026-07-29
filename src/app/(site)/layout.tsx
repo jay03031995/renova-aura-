@@ -25,7 +25,9 @@ import {
  * each request hits the Sanity API. The /api/revalidate webhook + manual
  * refresh button are kept as harmless no-ops / safety nets.
  */
-export const dynamic = "force-dynamic";
+//export const dynamic = "force-dynamic";
+export const revalidate = 3600;
+
 
 /**
  * Full schema.org @graph — drives Google sitelinks, rich results and brand
