@@ -8,7 +8,7 @@ const baseConfig: ClientConfig = {
   // useCdn must be false so the server always receives fresh content when
   // Next.js does revalidate. Next.js handles caching above this layer via
   // page-level `revalidate` and on-demand `revalidateTag('sanity')`.
-  useCdn: false,
+  useCdn: true,
   perspective: "published",
   stega: false,
   // The dataset is private (it also holds appointment/lead PII), so public
