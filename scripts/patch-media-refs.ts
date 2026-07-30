@@ -1,7 +1,7 @@
 import { createClient } from "@sanity/client";
 const token = process.env.SANITY_API_TOKEN;
 if (!token) { console.error("no token"); process.exit(1); }
-const client = createClient({ projectId: "eqn3mfxm", dataset: "production", token, apiVersion: "2024-11-01", useCdn: false });
+const client = createClient({ projectId: "q7pg9y33", dataset: "production", token, apiVersion: "2024-11-01", useCdn: false });
 const key = () => Math.random().toString(36).slice(2, 8);
 
 async function run() {
