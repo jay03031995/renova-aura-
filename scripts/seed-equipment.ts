@@ -13,7 +13,7 @@
  */
 import { createClient } from "@sanity/client";
 
-const projectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID || "q7pg9y33";
+const projectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID || "eqn3mfxm";
 const dataset = process.env.NEXT_PUBLIC_SANITY_DATASET || "production";
 const token = process.env.SANITY_API_TOKEN;
 

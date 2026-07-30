@@ -31,7 +31,7 @@ import { NCR_AREAS } from "../src/data/locations";
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const PUBLIC_DIR = join(__dirname, "..", "public");
 
-const projectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID || "q7pg9y33";
+const projectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID || "eqn3mfxm";
 const dataset = process.env.NEXT_PUBLIC_SANITY_DATASET || "production";
 const token = process.env.SANITY_API_TOKEN;
 
