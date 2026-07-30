@@ -17,7 +17,7 @@
 // take precedence when present. The empty `production` dataset is fine — the
 // page fetchers fall back to local TS data until content is published.
 export const projectId =
-  process.env.NEXT_PUBLIC_SANITY_PROJECT_ID ?? "eqn3mfxm";
+  process.env.NEXT_PUBLIC_SANITY_PROJECT_ID ?? "q7pg9y33";
 export const dataset = process.env.NEXT_PUBLIC_SANITY_DATASET ?? "production";
 export const apiVersion =
   process.env.NEXT_PUBLIC_SANITY_API_VERSION ?? "2024-11-01";
