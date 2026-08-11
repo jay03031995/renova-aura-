@@ -578,9 +578,9 @@ type SanityProcedure = {
   faqs?: { question: string; answer: string }[];
   medicallyReviewedBy?: string;
   lastReviewed?: string;
-  relatedPackages?: SanityPackageCard[];
-  relatedProcedures?: SanityRelatedTreatment[];
-  technologiesUsed?: SanityEquipment[];
+  relatedPackages?: (SanityPackageCard | null)[];
+  relatedProcedures?: (SanityRelatedTreatment | null)[];
+  technologiesUsed?: (SanityEquipment | null)[];
   realResults?: RealResult[];
   videos?: Video[];
 };
@@ -601,6 +601,10 @@ type SanityRelatedTreatment = {
   cardTagline?: string;
   summary?: string;
 };
+
+function isPresent<T>(item: T | null | undefined): item is T {
+  return item != null;
+}
 
 function mapRelatedTreatment(d: SanityRelatedTreatment): RelatedTreatmentCard {
   if (d._type === "procedure") {
@@ -669,13 +673,11 @@ function mapProcedure(d: SanityProcedure): Procedure {
     faqs: (d.faqs ?? []).map((f) => ({ q: f.question, a: f.answer })),
     medicallyReviewedBy: d.medicallyReviewedBy,
     lastReviewed: d.lastReviewed,
-    relatedPackages: (d.relatedPackages ?? []).map(mapPackage),
-relatedProcedures: (d.relatedProcedures ?? [])
-  .filter(
-    (item): item is SanityRelatedTreatment =>
-      item !== null && item !== undefined,
-  )
-  .map(mapRelatedTreatment),    technologiesUsed: (d.technologiesUsed ?? []).map(mapEquipment),
+    relatedPackages: (d.relatedPackages ?? []).filter(isPresent).map(mapPackage),
+    relatedProcedures: (d.relatedProcedures ?? [])
+      .filter(isPresent)
+      .map(mapRelatedTreatment),
+    technologiesUsed: (d.technologiesUsed ?? []).filter(isPresent).map(mapEquipment),
     realResults: d.realResults ?? [],
     videos: d.videos ?? [],
   };
@@ -740,9 +742,9 @@ type SanityConcern = {
   symptoms?: string[];
   causes?: string[];
   approach?: string[];
-  relatedPackages?: SanityPackageCard[];
-  relatedProcedures?: SanityRelatedTreatment[];
-  technologiesUsed?: SanityEquipment[];
+  relatedPackages?: (SanityPackageCard | null)[];
+  relatedProcedures?: (SanityRelatedTreatment | null)[];
+  technologiesUsed?: (SanityEquipment | null)[];
   realResults?: RealResult[];
   videos?: Video[];
   faqs?: { question: string; answer: string }[];
@@ -760,27 +762,14 @@ function mapConcern(d: SanityConcern): Concern {
     symptoms: d.symptoms ?? [],
     causes: d.causes ?? [],
     approach: d.approach ?? [],
-    relatedProcedureSlugs: (d.relatedProcedures ?? []).map((p) => p.slug),
-   relatedPackages: (d.relatedPackages ?? [])
-  .filter(
-    (item): item is SanityPackageCard =>
-      item !== null && item !== undefined,
-  )
-  .map(mapPackage),
-
-relatedProcedures: (d.relatedProcedures ?? [])
-  .filter(
-    (item): item is SanityRelatedTreatment =>
-      item !== null && item !== undefined,
-  )
-  .map(mapRelatedTreatment),
-
-technologiesUsed: (d.technologiesUsed ?? [])
-  .filter(
-    (item): item is SanityEquipment =>
-      item !== null && item !== undefined,
-  )
-  .map(mapEquipment),
+    relatedProcedureSlugs: (d.relatedProcedures ?? [])
+      .filter(isPresent)
+      .map((p) => p.slug),
+    relatedPackages: (d.relatedPackages ?? []).filter(isPresent).map(mapPackage),
+    relatedProcedures: (d.relatedProcedures ?? [])
+      .filter(isPresent)
+      .map(mapRelatedTreatment),
+    technologiesUsed: (d.technologiesUsed ?? []).filter(isPresent).map(mapEquipment),
     realResults: d.realResults ?? [],
     videos: d.videos ?? [],
     faqs: (d.faqs ?? []).map((f) => ({ q: f.question, a: f.answer })),
@@ -829,9 +818,11 @@ function mapBodyConcern(d: SanityBodyConcern): BodyConcern {
     symptoms: d.symptoms ?? [],
     causes: d.causes ?? [],
     approach: d.approach ?? [],
-    relatedPackages: (d.relatedPackages ?? []).map(mapPackage),
-    relatedProcedures: (d.relatedProcedures ?? []).map(mapRelatedTreatment),
-    technologiesUsed: (d.technologiesUsed ?? []).map(mapEquipment),
+    relatedPackages: (d.relatedPackages ?? []).filter(isPresent).map(mapPackage),
+    relatedProcedures: (d.relatedProcedures ?? [])
+      .filter(isPresent)
+      .map(mapRelatedTreatment),
+    technologiesUsed: (d.technologiesUsed ?? []).filter(isPresent).map(mapEquipment),
     realResults: d.realResults ?? [],
     videos: d.videos ?? [],
     faqs: (d.faqs ?? []).map((f) => ({ q: f.question, a: f.answer })),
