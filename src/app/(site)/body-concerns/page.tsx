@@ -39,7 +39,11 @@ export default async function BodyConcernsIndexPage() {
               >
                 <div
                   className="proc-card-img"
-                  style={{ backgroundImage: `url(${c.image})` }}
+                  style={
+                    c.image
+                      ? { backgroundImage: `url(${c.image})` }
+                      : undefined
+                  }
                 >
                   <div className="proc-card-img-overlay" />
                 </div>

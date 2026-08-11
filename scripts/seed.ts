@@ -23,6 +23,7 @@ import { createClient } from "@sanity/client";
 import { DOCTORS } from "../src/data/doctors";
 import { PROCEDURES } from "../src/data/procedures";
 import { CONCERNS } from "../src/data/concerns";
+import { BODY_CONCERNS } from "../src/data/bodyConcerns";
 import { PACKAGES } from "../src/data/packages";
 import { EEAT, FAQS, TESTIMONIALS, TRUST_ITEMS } from "../src/data/site";
 import { CLINIC } from "../src/data/clinic";
@@ -185,6 +186,29 @@ async function buildConcerns() {
     );
   }
   return docs;
+}
+
+function buildBodyConcerns() {
+  return BODY_CONCERNS.map((c, index) =>
+    omitEmpty({
+      _id: `bodyConcern.${c.slug}`,
+      _type: "bodyConcern",
+      name: c.name,
+      slug: { _type: "slug", current: c.slug },
+      icon: c.icon,
+      order: index + 1,
+      cardTagline: c.cardTagline,
+      headline: c.headline,
+      summary: c.summary,
+      symptoms: c.symptoms ?? [],
+      causes: c.causes ?? [],
+      approach: c.approach ?? [],
+      faqs: withKeys(
+        (c.faqs ?? []).map((f) => ({ question: f.q, answer: f.a })),
+        "faqItem",
+      ),
+    }),
+  );
 }
 
 async function buildDoctors() {
@@ -514,6 +538,8 @@ async function main() {
   console.log("Concerns (uploading images + linking procedures)…");
   const concerns = await buildConcerns();
   await commit("concerns", concerns);
+
+  await commit("body concerns", buildBodyConcerns());
 
   console.log("Doctors (uploading portraits)…");
   const doctors = await buildDoctors();
