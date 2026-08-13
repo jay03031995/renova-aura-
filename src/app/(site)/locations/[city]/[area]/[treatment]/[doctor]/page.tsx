@@ -12,6 +12,7 @@ import {
   getProcedureBySlug,
   getProcedures,
 } from "@/sanity/lib/fetchers";
+import { SITE_URL } from "@/lib/siteUrl";
 
 type Params = Promise<{
   city: string;
@@ -82,7 +83,7 @@ export default async function LocationDoctorPage({ params }: { params: Params })
     jobTitle: doctorData.title,
     description: doctorData.listBio,
     image: doctorData.imageUrl,
-    url: `https://renovaaura.com/locations/${city}/${area}/${treatment}/${doctor}`,
+    url: `${SITE_URL}/locations/${city}/${area}/${treatment}/${doctor}`,
     telephone: clinic.phone,
     address: {
       "@type": "PostalAddress",
@@ -102,11 +103,11 @@ export default async function LocationDoctorPage({ params }: { params: Params })
     breadcrumb: {
       "@type": "BreadcrumbList",
       itemListElement: [
-        { "@type": "ListItem", position: 1, name: "Home", item: "https://renovaaura.com" },
-        { "@type": "ListItem", position: 2, name: "Locations", item: "https://renovaaura.com/locations" },
-        { "@type": "ListItem", position: 3, name: location.city, item: `https://renovaaura.com/locations/${city}` },
-        { "@type": "ListItem", position: 4, name: location.area, item: `https://renovaaura.com/locations/${city}/${area}` },
-        { "@type": "ListItem", position: 5, name: procedure.name, item: `https://renovaaura.com/locations/${city}/${area}/${treatment}` },
+        { "@type": "ListItem", position: 1, name: "Home", item: SITE_URL },
+        { "@type": "ListItem", position: 2, name: "Locations", item: `${SITE_URL}/locations` },
+        { "@type": "ListItem", position: 3, name: location.city, item: `${SITE_URL}/locations/${city}` },
+        { "@type": "ListItem", position: 4, name: location.area, item: `${SITE_URL}/locations/${city}/${area}` },
+        { "@type": "ListItem", position: 5, name: procedure.name, item: `${SITE_URL}/locations/${city}/${area}/${treatment}` },
         { "@type": "ListItem", position: 6, name: doctorData.name },
       ],
     },

@@ -42,7 +42,7 @@ export const revalidate = 3600;
  * Priority order for sitelinks:
  *   Treatments → Doctors → Book Appointment → Locations → Take Hair Test → Skin Analysis
  */
-const BASE = "https://renovaaura.com";
+const BASE = "https://www.renovaaura.com";
 const MAINTENANCE_MODE = false;
 const GEO = { "@type": "GeoCoordinates", latitude: "28.6488", longitude: "77.3025" };
 const HOURS = [

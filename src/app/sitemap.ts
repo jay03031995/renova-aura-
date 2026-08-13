@@ -8,14 +8,11 @@ import {
   getProcedures,
   getSiteSettings,
 } from "@/sanity/lib/fetchers";
+import { normalizeSiteUrl } from "@/lib/siteUrl";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const settings = await getSiteSettings();
-  const baseUrl = (
-  settings.siteUrl ?? "https://www.renovaaura.com"
-)
-  .replace(/^https:\/\/(?!www\.)/, "https://www.")
-  .replace(/\/$/, "");
+  const baseUrl = normalizeSiteUrl(settings.siteUrl);
   const lastModified = new Date();
 
   const [

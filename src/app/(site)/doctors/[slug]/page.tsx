@@ -10,6 +10,7 @@ import {
 import { telHref } from "@/data/clinic";
 import { ArrowRight } from "@/components/icons";
 import BookButton from "@/components/BookButton";
+import { SITE_URL } from "@/lib/siteUrl";
 
 export async function generateStaticParams() {
   const slugs = await getDoctorSlugs();
@@ -63,15 +64,15 @@ export default async function DoctorDetailPage(props: {
   const physicianJsonLd = {
     "@context": "https://schema.org",
     "@type": "Physician",
-    "@id": `https://renovaaura.com/doctors/${slug}#physician`,
+    "@id": `${SITE_URL}/doctors/${slug}#physician`,
     name: d.name,
-    url: `https://renovaaura.com/doctors/${slug}`,
+    url: `${SITE_URL}/doctors/${slug}`,
     jobTitle: d.title,
     ...(d.imageUrl ? { image: d.imageUrl } : {}),
     ...(d.specialty ? { medicalSpecialty: d.specialty } : {}),
     worksFor: {
       "@type": "MedicalBusiness",
-      "@id": "https://renovaaura.com/#organization",
+      "@id": `${SITE_URL}/#organization`,
       name: "RenovaAura",
     },
     address: {

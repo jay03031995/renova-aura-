@@ -22,7 +22,7 @@ export const CLINIC = {
     "RenovaAura+C-3+1st+floor+Anand+Vihar+New+Delhi+110092",
   hours: "Mon to Sat 10:00 AM to 7:30 PM · Sun: 10:00 AM to 2:00 PM",
   cities: ["Anand Vihar", "New Delhi"],
-  shopUrl: "https://renovaaura.com",
+  shopUrl: "https://www.renovaaura.com",
   social: {
     instagram: "https://instagram.com/renovaaura",
     youtube: "https://youtube.com/@renovaaura",

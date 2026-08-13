@@ -9,8 +9,6 @@ import {
   getEquipments,
 } from "@/sanity/lib/fetchers";
 
-const BASE = "https://renovaaura.com";
-
 export async function generateStaticParams() {
   const slugs = await getEquipmentSlugs();
   return slugs.map((slug) => ({ slug }));

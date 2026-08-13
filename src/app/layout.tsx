@@ -3,6 +3,7 @@ import { Inter, JetBrains_Mono } from "next/font/google";
 import Script from "next/script";
 import "./globals.css";
 import { getClinic, getSiteSettings } from "@/sanity/lib/fetchers";
+import { normalizeCanonicalUrl, normalizeSiteUrl, SITE_URL } from "@/lib/siteUrl";
 
 /**
  * Inter is the Google Fonts equivalent of Apple's SF Pro family.
@@ -23,7 +24,6 @@ const mono = JetBrains_Mono({
   display: "swap",
 });
 
-const FALLBACK_SITE_URL = "https://renovaaura.com";
 const FALLBACK_TITLE = "RenovaAura — Hair Transplant & Plastic Surgery Specialists";
 const FALLBACK_DESCRIPTION =
   "RenovaAura — board-certified hair transplant surgeons and plastic surgery specialists. FUE, DHI, FUT, rhinoplasty, blepharoplasty, facelift and more. Natural-looking, clinically-grounded results.";
@@ -36,8 +36,8 @@ const absoluteUrl = (url: string | undefined, base: string) => {
 
 export async function generateMetadata(): Promise<Metadata> {
   const [clinic, settings] = await Promise.all([getClinic(), getSiteSettings()]);
-  const siteUrl = settings.siteUrl ?? FALLBACK_SITE_URL;
-  const canonicalUrl = settings.canonicalUrl ?? siteUrl;
+  const siteUrl = normalizeSiteUrl(settings.siteUrl);
+  const canonicalUrl = normalizeCanonicalUrl(settings.canonicalUrl ?? siteUrl);
   const title = settings.defaultSeoTitle ?? FALLBACK_TITLE;
   const description = settings.defaultSeoDescription ?? FALLBACK_DESCRIPTION;
   const ogImage = absoluteUrl(
@@ -117,20 +117,20 @@ export async function generateMetadata(): Promise<Metadata> {
 const rootJsonLd = {
   "@context": "https://schema.org",
   "@type": "WebSite",
-  "@id": "https://renovaaura.com/#website",
-  url: "https://renovaaura.com",
+  "@id": `${SITE_URL}/#website`,
+  url: SITE_URL,
   name: "RenovaAura",
   alternateName: "RenovaAura Clinic",
   description: FALLBACK_DESCRIPTION,
   inLanguage: "en-IN",
   publisher: {
     "@type": "Organization",
-    "@id": "https://renovaaura.com/#organization",
+    "@id": `${SITE_URL}/#organization`,
     name: "RenovaAura",
-    url: "https://renovaaura.com",
+    url: SITE_URL,
     logo: {
       "@type": "ImageObject",
-      url: "https://renovaaura.com/renovaaura-logo.png",
+      url: `${SITE_URL}/renovaaura-logo.png`,
       width: 360,
       height: 100,
     },
@@ -144,7 +144,7 @@ const rootJsonLd = {
     "@type": "SearchAction",
     target: {
       "@type": "EntryPoint",
-      urlTemplate: "https://renovaaura.com/procedures?q={search_term_string}",
+      urlTemplate: `${SITE_URL}/procedures?q={search_term_string}`,
     },
     "query-input": "required name=search_term_string",
   },
@@ -156,7 +156,7 @@ export default async function RootLayout({
   // Keep the WebSite publisher.sameAs in sync with the Sanity-managed social
   // profiles (clone the const — never mutate shared state across requests).
   const [clinic, settings] = await Promise.all([getClinic(), getSiteSettings()]);
-  const siteUrl = settings.siteUrl ?? FALLBACK_SITE_URL;
+  const siteUrl = normalizeSiteUrl(settings.siteUrl);
   const ld = structuredClone(rootJsonLd) as typeof rootJsonLd & {
     url: string;
     name: string;

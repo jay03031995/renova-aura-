@@ -1,9 +1,10 @@
 import type { MetadataRoute } from "next";
 import { getSiteSettings } from "@/sanity/lib/fetchers";
+import { normalizeSiteUrl } from "@/lib/siteUrl";
 
 export default async function robots(): Promise<MetadataRoute.Robots> {
   const settings = await getSiteSettings();
-  const baseUrl = (settings.siteUrl ?? "https://renovaaura.com").replace(/\/$/, "");
+  const baseUrl = normalizeSiteUrl(settings.siteUrl);
 
   const blocked = ["/api/", "/admin/", "/studio"];
 

@@ -10,25 +10,25 @@
 
 ## Procedures
 
-- [Hair Transplant](https://renovaaura.com/procedures/hair-transplant): Hair restoration procedures including beard transplant.
-- [Plastic Surgery](https://renovaaura.com/procedures/plastic-surgery): Cosmetic and reconstructive procedures including blepharoplasty, botox, and more.
-- [All Procedures](https://renovaaura.com/procedures): Full directory of treatments organized by pillar.
+- [Hair Transplant](https://www.renovaaura.com/procedures/hair-transplant): Hair restoration procedures including beard transplant.
+- [Plastic Surgery](https://www.renovaaura.com/procedures/plastic-surgery): Cosmetic and reconstructive procedures including blepharoplasty, botox, and more.
+- [All Procedures](https://www.renovaaura.com/procedures): Full directory of treatments organized by pillar.
 
 ## Doctors
 
-- [Dr. Ankur Bhatia](https://renovaaura.com/doctors/ankur-bhatia)
-- [Dr. Bhawna Bhardwaj](https://renovaaura.com/doctors/bhawna-bhardwaj)
-- [All Doctors](https://renovaaura.com/doctors): Profiles of the clinical team.
+- [Dr. Ankur Bhatia](https://www.renovaaura.com/doctors/ankur-bhatia)
+- [Dr. Bhawna Bhardwaj](https://www.renovaaura.com/doctors/bhawna-bhardwaj)
+- [All Doctors](https://www.renovaaura.com/doctors): Profiles of the clinical team.
 
 ## Tools
 
-- [Graft Calculator](https://renovaaura.com/tools/graft-calculator): Estimate the number of grafts needed for a hair transplant.
-- [Skin Analysis](https://renovaaura.com/tools/skin-analysis): Guided skin assessment tool.
+- [Graft Calculator](https://www.renovaaura.com/tools/graft-calculator): Estimate the number of grafts needed for a hair transplant.
+- [Skin Analysis](https://www.renovaaura.com/tools/skin-analysis): Guided skin assessment tool.
 
 ## Resources
 
-- [Results](https://renovaaura.com/results): Before-and-after outcomes and case studies.
-- [Sitemap](https://renovaaura.com/sitemap.xml)
+- [Results](https://www.renovaaura.com/results): Before-and-after outcomes and case studies.
+- [Sitemap](https://www.renovaaura.com/sitemap.xml)
 
 ## Notes
 

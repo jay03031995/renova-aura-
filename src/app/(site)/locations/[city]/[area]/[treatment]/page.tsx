@@ -14,6 +14,7 @@ import {
 } from "@/sanity/lib/fetchers";
 import { telHref, waHref } from "@/data/clinic";
 import { WhatsappLogo } from "@/components/icons";
+import { SITE_URL } from "@/lib/siteUrl";
 
 type Params = Promise<{ city: string; area: string; treatment: string }>;
 
@@ -47,7 +48,7 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
     title,
     description,
     alternates: { canonical: `/locations/${city}/${area}/${treatment}` },
-    openGraph: { title, description, url: `https://renovaaura.com/locations/${city}/${area}/${treatment}` },
+    openGraph: { title, description, url: `${SITE_URL}/locations/${city}/${area}/${treatment}` },
   };
 }
 
@@ -75,7 +76,7 @@ export default async function LocationTreatmentPage({ params }: { params: Params
     "@type": ["MedicalBusiness", "LocalBusiness"],
     name: `RenovaAura — ${procedure.name} near ${location.area}`,
     description: intro,
-    url: `https://renovaaura.com/locations/${city}/${area}/${treatment}`,
+    url: `${SITE_URL}/locations/${city}/${area}/${treatment}`,
     telephone: clinic.phone,
     email: clinic.email,
     address: {
@@ -96,8 +97,8 @@ export default async function LocationTreatmentPage({ params }: { params: Params
     breadcrumb: {
       "@type": "BreadcrumbList",
       itemListElement: [
-        { "@type": "ListItem", position: 1, name: "Home", item: "https://renovaaura.com" },
-        { "@type": "ListItem", position: 2, name: "Locations", item: "https://renovaaura.com/locations" },
+        { "@type": "ListItem", position: 1, name: "Home", item: SITE_URL },
+        { "@type": "ListItem", position: 2, name: "Locations", item: `${SITE_URL}/locations` },
         { "@type": "ListItem", position: 3, name: location.city },
         { "@type": "ListItem", position: 4, name: location.area },
         { "@type": "ListItem", position: 5, name: procedure.name },
