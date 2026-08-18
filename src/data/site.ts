@@ -45,7 +45,7 @@ export const TRUST_ITEMS = [
   { icon: "award", text: "FDA-approved devices" },
   { icon: "check", text: "USFDA-cleared injectables" },
   { icon: "sparkle", text: "Calibrated for Indian skin" },
-  { icon: "calendar", text: "6-month outcome support" },
+
 ];
 
 export const FOOTER_LINKS: Record<string, { label: string; href: string }[]> = {

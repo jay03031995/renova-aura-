@@ -8,9 +8,10 @@
  *
  * Configure the webhook in Sanity:
  *   sanity.io/manage/project/<id>/api/webhooks → Create webhook
- *   URL: https://<your-domain>/api/revalidate
+ *   URL: https://www.renovaaura.com/api/revalidate
  *   Trigger: Create, Update, Delete (document level)
  *   HTTP method: POST
+ *   HTTP headers: leave blank; Sanity adds sanity-webhook-signature automatically
  *   Secret: same value as SANITY_REVALIDATE_SECRET env var
  *
  * Env vars required (set in .env.local and Vercel):
@@ -61,10 +62,9 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Second arg is the stale-while-revalidate window — "max" lets the
-    // current cached HTML serve immediately while Next.js regenerates
-    // fresh content in the background. See Next 16 revalidating docs.
-    revalidateTag("sanity", "max");
+    // External webhooks should expire the tagged data immediately so the next
+    // request fetches fresh Sanity content instead of serving stale data first.
+    revalidateTag("sanity", { expire: 0 });
 
     return NextResponse.json({
       revalidated: true,
