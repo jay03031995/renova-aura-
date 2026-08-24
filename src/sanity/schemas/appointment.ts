@@ -86,6 +86,13 @@ export const appointmentSchema = defineType({
       description:
         "Where the request came from (e.g. website-booking-modal, homepage-simple).",
     }),
+    defineField({ name: "landingPage", title: "Landing page", type: "string", readOnly: true }),
+    defineField({ name: "referrer", title: "Referrer", type: "string", readOnly: true }),
+    defineField({ name: "utmSource", title: "UTM source", type: "string", readOnly: true }),
+    defineField({ name: "utmMedium", title: "UTM medium", type: "string", readOnly: true }),
+    defineField({ name: "utmCampaign", title: "UTM campaign", type: "string", readOnly: true }),
+    defineField({ name: "utmTerm", title: "UTM term", type: "string", readOnly: true }),
+    defineField({ name: "utmContent", title: "UTM content", type: "string", readOnly: true }),
     defineField({
       name: "notes",
       title: "Internal notes",

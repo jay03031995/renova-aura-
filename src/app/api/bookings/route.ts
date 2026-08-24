@@ -23,6 +23,8 @@ type Body = {
   date?: string;
   time?: string;
   source?: string;
+  landingPage?: string; referrer?: string; utmSource?: string; utmMedium?: string;
+  utmCampaign?: string; utmTerm?: string; utmContent?: string;
 };
 
 function bad(message: string, status = 400) {
@@ -66,6 +68,13 @@ export async function POST(req: NextRequest) {
       preferredTime: body.time || undefined,
       submittedAt: new Date().toISOString(),
       source: body.source || "website-booking-modal",
+      landingPage: body.landingPage || undefined,
+      referrer: body.referrer || undefined,
+      utmSource: body.utmSource || undefined,
+      utmMedium: body.utmMedium || undefined,
+      utmCampaign: body.utmCampaign || undefined,
+      utmTerm: body.utmTerm || undefined,
+      utmContent: body.utmContent || undefined,
     });
 
     return NextResponse.json({ ok: true, id: doc._id });

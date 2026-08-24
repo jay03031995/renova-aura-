@@ -209,5 +209,6 @@ export const structure = (S: StructureBuilder) =>
       S.documentTypeListItem("trustItem").title("Trust strip items"),
       S.divider(),
       S.documentTypeListItem("location").title("📍 NCR Locations"),
+      S.documentTypeListItem("pageMetric").title("📈 NCR Page Metrics"),
       S.documentTypeListItem("redirect").title("URL redirects"),
     ]);

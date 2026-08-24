@@ -45,6 +45,15 @@ const QUERY = /* groq */ `{
   "thisWeekSubmitted": count(*[_type == "appointment" && submittedAt >= $weekAgo]),
   "last30dNew": count(*[_type == "appointment" && submittedAt >= $monthAgo]),
   "last30dConfirmed": count(*[_type == "appointment" && status in ["confirmed","completed"] && submittedAt >= $monthAgo]),
+  "web": {
+    "impressions": math::sum(*[_type == "pageMetric" && date >= $monthDate].impressions),
+    "appointmentStarts": math::sum(*[_type == "pageMetric" && date >= $monthDate].appointmentStarts),
+    "appointmentSubmissions": math::sum(*[_type == "pageMetric" && date >= $monthDate].appointmentSubmissions),
+    "callClicks": math::sum(*[_type == "pageMetric" && date >= $monthDate].callClicks),
+    "whatsappClicks": math::sum(*[_type == "pageMetric" && date >= $monthDate].whatsappClicks),
+    "directionsClicks": math::sum(*[_type == "pageMetric" && date >= $monthDate].directionsClicks)
+  },
+  "topAreas": *[_type == "pageMetric" && date >= $monthDate] | order(impressions desc)[0...8] { area, city, date, impressions, appointmentSubmissions, callClicks, whatsappClicks },
   "recentNew": *[_type == "appointment" && status == "new"] | order(submittedAt desc) [0...5] {
     _id, name, phone, concern, preferredDate, preferredTime, submittedAt
   },
@@ -77,6 +86,8 @@ type DashboardData = {
   thisWeekSubmitted: number;
   last30dNew: number;
   last30dConfirmed: number;
+  web: { impressions: number | null; appointmentStarts: number | null; appointmentSubmissions: number | null; callClicks: number | null; whatsappClicks: number | null; directionsClicks: number | null };
+  topAreas: { area: string; city?: string; date: string; impressions?: number; appointmentSubmissions?: number; callClicks?: number; whatsappClicks?: number }[];
   recentNew: ApptStub[];
   upcomingConfirmed: ApptStub[];
 };
@@ -88,7 +99,7 @@ function makeQueryParams() {
   const today = now.toISOString().slice(0, 10);
   const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000).toISOString();
   const monthAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000).toISOString();
-  return { today, weekAgo, monthAgo };
+  return { today, weekAgo, monthAgo, monthDate: monthAgo.slice(0, 10) };
 }
 
 function relativeTime(iso?: string): string {
@@ -253,6 +264,18 @@ export default function AppointmentsDashboard() {
 
         {data && (
           <>
+            <Stack space={3}>
+              <Text size={1} muted weight="medium">NCR PAGE PERFORMANCE · LAST 30 DAYS</Text>
+              <Grid columns={[2, 3, 6]} gap={3}>
+                <StatCard label="Impressions" value={data.web.impressions ?? 0} hint="Area-page views" />
+                <StatCard label="Appointment starts" value={data.web.appointmentStarts ?? 0} hint="Booking form opened" />
+                <StatCard label="Submissions" value={data.web.appointmentSubmissions ?? 0} tone="positive" hint="Completed forms" />
+                <StatCard label="Call clicks" value={data.web.callClicks ?? 0} />
+                <StatCard label="WhatsApp clicks" value={data.web.whatsappClicks ?? 0} />
+                <StatCard label="Direction clicks" value={data.web.directionsClicks ?? 0} />
+              </Grid>
+              {data.topAreas.length > 0 && <Card padding={4} radius={3} shadow={1}><Stack space={3}><Heading size={1}>Top NCR activity</Heading>{data.topAreas.map((row, i) => <Flex key={`${row.area}-${row.date}-${i}`} justify="space-between" gap={3}><Text size={1}>{row.area}{row.city ? `, ${row.city}` : ""}</Text><Text size={1} muted>{row.impressions || 0} views · {row.appointmentSubmissions || 0} forms · {(row.callClicks || 0) + (row.whatsappClicks || 0)} contact clicks</Text></Flex>)}</Stack></Card>}
+            </Stack>
             {/* Pipeline counts */}
             <Stack space={3}>
               <Text size={1} muted weight="medium">

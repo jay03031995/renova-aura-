@@ -10,6 +10,7 @@ import {
   type SavedBooking,
   type SavedPatient,
 } from "@/lib/bookingStore";
+import { getUtmParams, trackEvent } from "@/lib/analytics";
 
 // RenovaAura services — map to the two surgical pillars + dermatology.
 const CONCERN_CHIPS = [
@@ -140,6 +141,9 @@ export default function BookingModal({ clinicName }: { clinicName: string }) {
           date: data.date,
           time: data.time,
           source: prefill?.source ?? "website-booking-modal",
+          landingPage: window.location.pathname,
+          referrer: document.referrer,
+          ...getUtmParams(),
         }),
       });
       const payload = (await res.json().catch(() => ({}))) as {
@@ -165,6 +169,7 @@ export default function BookingModal({ clinicName }: { clinicName: string }) {
       setSavedPatients(getPatients());
       setSavedBookings(getBookings());
       setStep(3);
+      trackEvent({ event: "appointment_submit", label: prefill?.source });
     } catch (err) {
       setSubmitError(
         err instanceof Error

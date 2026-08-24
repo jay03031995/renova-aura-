@@ -38,6 +38,7 @@ import {
 import { appointmentSchema } from "./appointment";
 import { leadSchema } from "./lead";
 import { locationSchema } from "./location";
+import { pageMetricSchema } from "./pageMetric";
 
 export const schemaTypes = [
   // Objects
@@ -77,6 +78,7 @@ export const schemaTypes = [
   redirectSchema,
   appointmentSchema,
   leadSchema,
+  pageMetricSchema,
 ];
 
 export const singletonTypes = new Set([

@@ -86,6 +86,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: p.pillar === "hair-transplant" ? 0.85 : 0.8,
     })),
   );
+  const locationAreaPages = locations.map((loc) => ({
+    path: `/locations/${loc.citySlug}/${loc.areaSlug}`,
+    priority: 0.9,
+  }));
   // Doctor-in-location pages
   const locationDoctorPages = locations.flatMap((loc) =>
     allProcedures.flatMap((p) =>
@@ -103,6 +107,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...bodyConcerns,
     ...equipments,
     ...doctors,
+    ...locationAreaPages,
     ...locationPages,
     ...locationDoctorPages,
   ].map(

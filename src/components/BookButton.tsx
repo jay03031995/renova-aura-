@@ -2,6 +2,7 @@
 
 import { useBooking, type BookingPrefill } from "@/components/BookingContext";
 import { ArrowRight } from "@/components/icons";
+import { trackEvent } from "@/lib/analytics";
 
 type Props = {
   className?: string;
@@ -19,7 +20,7 @@ export default function BookButton({
 }: Props) {
   const { open } = useBooking();
   return (
-    <button className={className} onClick={() => open(prefill)} type="button">
+    <button className={className} onClick={() => { trackEvent({ event: "appointment_start", label: prefill?.source }); open(prefill); }} type="button">
       {children}
       {withArrow && (
         <span className="arrow">
