@@ -13,6 +13,7 @@ import {
   getProcedures,
 } from "@/sanity/lib/fetchers";
 import { SITE_URL } from "@/lib/siteUrl";
+import { indexableRobots, locationSeoKeywords } from "@/lib/locationSeo";
 
 type Params = Promise<{
   city: string;
@@ -59,8 +60,10 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
   return {
     title,
     description,
+    keywords: locationSeoKeywords({ area: location.area, city: location.city, treatment: procedure.name, doctor: doctorData.name, customKeywords: location.metaKeywords }),
+    robots: indexableRobots,
     alternates: { canonical: `/locations/${city}/${area}/${treatment}/${doctor}` },
-    openGraph: { title, description },
+    openGraph: { title, description, url: `${SITE_URL}/locations/${city}/${area}/${treatment}/${doctor}` },
   };
 }
 

@@ -4829,7 +4829,7 @@ button.sbv-card-clickable:focus-visible {
 .section-head { text-align:center; max-width:850px; margin:0 auto 38px; }
 .section-head h2,.area-overview h2,.area-nearby h2,.area-faq h2 { margin-bottom:14px; }
 .area-treatments,.area-consult,.area-faq { background:linear-gradient(135deg,var(--cream-2),#eef7f5); }
-.area-service-columns { display:grid; grid-template-columns:repeat(3,1fr); gap:22px; }
+.area-service-columns { display:grid; grid-template-columns:repeat(2,1fr); gap:22px; }
 .area-service-group { background:var(--paper); border:1px solid var(--line); border-radius:22px; overflow:hidden; }
 .area-service-image { position:relative; height:190px; background:var(--cream-2); }
 .area-service-image img { object-fit:cover; }
@@ -4854,18 +4854,34 @@ button.sbv-card-clickable:focus-visible {
 .area-closing h2 { color:#fff; margin-bottom:8px; }
 .area-closing p { color:rgba(255,255,255,.8); }
 .area-closing .btn { background:#fff; color:var(--cocoa); flex:0 0 auto; }
+@media (max-width:1200px) {
+  .area-hero-grid { grid-template-columns:minmax(0,1fr) minmax(360px,.85fr); gap:36px; }
+  .area-hero-images { min-height:430px; }
+}
 @media (max-width:900px) {
   .area-hero-grid { grid-template-columns:1fr; }
   .area-hero-images { min-height:380px; }
   .area-service-columns { grid-template-columns:1fr; }
+  .area-consult-grid { gap:20px; }
 }
 @media (max-width:640px) {
-  .area-hero { padding-top:28px; }
-  .area-hero h1 { font-size:clamp(34px,11vw,48px); }
-  .area-hero-images { min-height:290px; }
-  .area-anchor-nav .container { gap:22px; }
+  .area-hero { padding:24px 0 38px; }
+  .area-hero h1 { font-size:clamp(32px,10vw,44px); margin:14px 0 24px; overflow-wrap:anywhere; }
+  .area-hero-actions { display:grid; grid-template-columns:1fr; }
+  .area-hero-actions .btn { width:100%; justify-content:center; }
+  .area-hero-images { min-height:250px; grid-template-columns:1fr; }
+  .area-image-main { min-height:250px; border-radius:18px; }
+  .area-image-side { display:none; }
+  .area-anchor-nav .container { gap:20px; padding-top:13px; padding-bottom:13px; scrollbar-width:none; }
+  .area-anchor-nav .container::-webkit-scrollbar { display:none; }
+  .area-service-image { height:160px; }
+  .area-service-body { padding:20px; }
+  .area-service-group a { padding:12px 0; font-size:14px; }
   .area-consult-grid { grid-template-columns:1fr; }
+  .area-consult-grid>div { padding:24px 20px; }
+  .area-nearby a { padding:9px 14px; font-size:13px; }
   .area-closing .container { align-items:flex-start; flex-direction:column; }
+  .area-closing .btn { width:100%; justify-content:center; }
 }
 /* Hero banner */
 .loc-hero {
@@ -5028,17 +5044,32 @@ button.sbv-card-clickable:focus-visible {
   .loc-sidebar { order: -1; }
   .loc-sidebar-card { position: static; }
   .loc-reach-grid { grid-template-columns: 1fr; }
+  .loc-doctor-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 @media (max-width: 640px) {
-  .loc-hero { min-height: 300px; }
-  .loc-hero-title { font-size: clamp(24px, 7vw, 36px); }
-  .loc-trust-inner { gap: 12px 20px; }
+  .loc-hero { min-height: 340px; background-position:center; }
+  .loc-hero-body { padding-top:42px; padding-bottom:38px; }
+  .loc-hero-title { font-size: clamp(28px, 8.5vw, 38px); overflow-wrap:anywhere; }
+  .loc-hero-sub { font-size:14px; line-height:1.6; }
+  .loc-hero-ctas { display:grid; grid-template-columns:1fr; width:100%; }
+  .loc-hero-ctas .btn { width:100%; justify-content:center; }
+  .loc-trust-inner { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:16px 12px; padding:0 18px; }
   .loc-trust-num { font-size: 15px; }
-  .loc-doctor-grid { grid-template-columns: 1fr 1fr; }
-  .loc-doctor-img { height: 160px; }
-  .loc-doctor-body { padding: 14px; }
-  .loc-doctor-name { font-size: 14px; }
-  .loc-doctor-bio { display: none; }
+  .loc-two-col { gap:28px; }
+  .loc-sidebar-card { padding:22px 18px; }
+  .loc-sidebar-card .btn { width:100%; justify-content:center; }
+  .loc-doctor-grid { grid-template-columns: 1fr; gap:18px; }
+  .loc-doctor-img { height: clamp(220px,70vw,320px); }
+  .loc-doctor-body { padding:18px; }
+  .loc-doctor-name { font-size:17px; }
+  .loc-doctor-bio { display:-webkit-box; }
+  .loc-breadcrumb { font-size:11px; margin-bottom:16px; }
+}
+
+@media (max-width: 380px) {
+  .area-hero h1,.loc-hero-title { font-size:28px; }
+  .loc-trust-inner { grid-template-columns:1fr; }
+  .area-service-body { padding:18px 16px; }
 }
 
 /* =========================================================

@@ -549,7 +549,8 @@ const HAIR: Procedure[] = [
 const PLASTIC: Procedure[] = [
   {
     slug: "rhinoplasty",
-    image: IMG.noseProfile,
+    image:
+      "https://cdn.sanity.io/images/q7pg9y33/production/c2ce4cc4d96e0830228cec464e9343e29d5dbbc9-1045x758.png",
     name: "Rhinoplasty (Nose Reshaping)",
     pillar: "plastic-surgery",
     tag: "Most popular",

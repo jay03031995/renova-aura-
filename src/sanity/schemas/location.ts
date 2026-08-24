@@ -130,6 +130,15 @@ export const locationSchema = defineType({
       description: "Overrides the auto-generated description. 140–160 chars.",
       validation: (r) => r.max(160),
     }),
+    defineField({
+      name: "metaKeywords",
+      title: "Meta keywords",
+      type: "array",
+      of: [{ type: "string" }],
+      group: "seo",
+      description: "Optional area-specific keywords. The website also adds relevant terms from the Delhi keyword plan automatically.",
+      options: { layout: "tags" },
+    }),
   ],
   orderings: [
     { name: "city",  title: "By city",  by: [{ field: "citySlug",   direction: "asc" }] },

@@ -439,7 +439,8 @@ export const allLocationsQuery = /* groq */ `
     intro,
     faqs[]{ question, answer },
     metaTitle,
-    metaDescription
+    metaDescription,
+    metaKeywords
   }
 `;
 
@@ -455,6 +456,7 @@ export const locationByCityAreaQuery = /* groq */ `
     intro,
     faqs[]{ question, answer },
     metaTitle,
-    metaDescription
+    metaDescription,
+    metaKeywords
   }
 `;

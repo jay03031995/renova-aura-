@@ -75,6 +75,7 @@ import {
   CONCERN_SLUGS as LOCAL_CONCERN_SLUGS,
   type Concern,
 } from "@/data/concerns";
+import { BODY_CONCERNS as LOCAL_BODY_CONCERNS } from "@/data/bodyConcerns";
 import {
   PACKAGES as LOCAL_PACKAGES,
   type TreatmentPackage,
@@ -142,6 +143,12 @@ function isFilled<T>(v: T | null | undefined): v is T {
   if (Array.isArray(v)) return v.length > 0;
   if (typeof v === "string") return v.length > 0;
   return true;
+}
+
+function mergeBySlug<T extends { slug: string }>(local: T[], remote: T[]): T[] {
+  const merged = new Map(local.map((item) => [item.slug, item]));
+  remote.forEach((item) => merged.set(item.slug, item));
+  return Array.from(merged.values());
 }
 
 async function safeFetch<T>(query: string, params?: Record<string, unknown>) {
@@ -686,7 +693,7 @@ function mapProcedure(d: SanityProcedure): Procedure {
 export async function getProcedures(): Promise<Procedure[]> {
   const { available, data: docs } =
     await safeFetchWithAvailability<SanityProcedure[]>(proceduresQuery);
-  if (available) return (docs ?? []).map(mapProcedure);
+  if (available) return mergeBySlug(LOCAL_PROCEDURES, (docs ?? []).map(mapProcedure));
   return LOCAL_PROCEDURES;
 }
 
@@ -698,10 +705,11 @@ export async function getProceduresByPillar(
       proceduresByPillarQuery,
       { pillar },
     );
-  if (available) return (docs ?? []).map(mapProcedure);
-  return pillar === "hair-transplant"
+  const local = pillar === "hair-transplant"
     ? LOCAL_HAIR_PROCEDURES
     : LOCAL_PLASTIC_PROCEDURES;
+  if (available) return mergeBySlug(local, (docs ?? []).map(mapProcedure));
+  return local;
 }
 
 export async function getProcedureBySlug(
@@ -713,7 +721,8 @@ export async function getProcedureBySlug(
       { slug },
     );
   if (doc) return mapProcedure(doc);
-  if (available) return undefined;
+  // Sanity may intentionally contain only a subset of the complete catalogue.
+  // Keep published local procedures routable when no matching remote document exists.
   return LOCAL_PROCEDURES.find((p) => p.slug === slug);
 }
 
@@ -724,8 +733,13 @@ export async function getProcedureSlugs(): Promise<
     await safeFetchWithAvailability<
       { slug: string; pillar: ProcedurePillar }[]
     >(procedureSlugsQuery);
-  if (available) return docs ?? [];
-  return LOCAL_PROCEDURES.map((p) => ({ slug: p.slug, pillar: p.pillar }));
+  const local = LOCAL_PROCEDURES.map((p) => ({ slug: p.slug, pillar: p.pillar }));
+  if (available) {
+    const merged = new Map(local.map((item) => [item.slug, item]));
+    (docs ?? []).forEach((item) => merged.set(item.slug, item));
+    return Array.from(merged.values());
+  }
+  return local;
 }
 
 // ----- Skin Concerns --------------------------------------------------------
@@ -779,7 +793,7 @@ function mapConcern(d: SanityConcern): Concern {
 export async function getConcerns(): Promise<Concern[]> {
   const docs = await safeFetch<SanityConcern[]>(concernsQuery);
   if (!isFilled(docs)) return LOCAL_CONCERNS;
-  return docs.map(mapConcern);
+  return mergeBySlug(LOCAL_CONCERNS, docs.map(mapConcern));
 }
 
 export async function getConcernBySlug(slug: string): Promise<Concern | undefined> {
@@ -792,7 +806,7 @@ export async function getConcernBySlug(slug: string): Promise<Concern | undefine
 
 export async function getConcernSlugs(): Promise<string[]> {
   const slugs = await safeFetch<string[]>(concernSlugsQuery);
-  if (isFilled(slugs)) return slugs;
+  if (isFilled(slugs)) return Array.from(new Set([...LOCAL_CONCERN_SLUGS, ...slugs]));
   return LOCAL_CONCERN_SLUGS;
 }
 
@@ -829,10 +843,23 @@ function mapBodyConcern(d: SanityBodyConcern): BodyConcern {
   };
 }
 
+function mapLocalBodyConcern(d: (typeof LOCAL_BODY_CONCERNS)[number]): BodyConcern {
+  return {
+    ...d,
+    image: undefined,
+    relatedPackages: [],
+    relatedProcedures: [],
+    technologiesUsed: [],
+    realResults: [],
+    videos: [],
+  };
+}
+
 export async function getBodyConcerns(): Promise<BodyConcern[]> {
   const docs = await safeFetch<SanityBodyConcern[]>(bodyConcernsQuery);
-  if (!isFilled(docs)) return [];
-  return docs.map(mapBodyConcern);
+  const local = LOCAL_BODY_CONCERNS.map(mapLocalBodyConcern);
+  if (!isFilled(docs)) return local;
+  return mergeBySlug(local, docs.map(mapBodyConcern));
 }
 
 export async function getBodyConcernBySlug(
@@ -847,7 +874,8 @@ export async function getBodyConcernBySlug(
 
 export async function getBodyConcernSlugs(): Promise<string[]> {
   const slugs = await safeFetch<string[]>(bodyConcernSlugsQuery);
-  return isFilled(slugs) ? slugs : [];
+  const local = LOCAL_BODY_CONCERNS.map((item) => item.slug);
+  return isFilled(slugs) ? Array.from(new Set([...local, ...slugs])) : local;
 }
 
 // ----- Lasers / Technologies -----------------------------------------------
@@ -955,14 +983,13 @@ export type SanityLocation = {
   faqs?: { question: string; answer: string }[];
   metaTitle?: string;
   metaDescription?: string;
+  metaKeywords?: string[];
 };
 
 /** All enabled locations from Sanity, falling back to the static NCR_AREAS. */
 export async function getAllLocations(): Promise<SanityLocation[]> {
   const docs = await safeFetch<SanityLocation[]>(allLocationsQuery);
-  if (isFilled(docs)) return docs;
-  // Fallback: map static data to the same shape (no overrides)
-  return NCR_AREAS.map((a) => ({
+  const local = NCR_AREAS.map((a) => ({
     _id: `location.${a.areaSlug}`,
     area: a.area,
     areaSlug: a.areaSlug,
@@ -970,6 +997,12 @@ export async function getAllLocations(): Promise<SanityLocation[]> {
     citySlug: a.citySlug,
     pincode: a.pincode,
   }));
+  if (isFilled(docs)) {
+    const merged = new Map<string, SanityLocation>(local.map((item) => [`${item.citySlug}/${item.areaSlug}`, item]));
+    docs.forEach((item) => merged.set(`${item.citySlug}/${item.areaSlug}`, item));
+    return Array.from(merged.values());
+  }
+  return local;
 }
 
 /** Single location by city + area slug. */

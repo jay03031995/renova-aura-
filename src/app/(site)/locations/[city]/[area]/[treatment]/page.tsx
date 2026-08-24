@@ -15,6 +15,7 @@ import {
 import { telHref, waHref } from "@/data/clinic";
 import { WhatsappLogo } from "@/components/icons";
 import { SITE_URL } from "@/lib/siteUrl";
+import { indexableRobots, locationSeoKeywords } from "@/lib/locationSeo";
 
 type Params = Promise<{ city: string; area: string; treatment: string }>;
 
@@ -47,6 +48,8 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
   return {
     title,
     description,
+    keywords: locationSeoKeywords({ area: location.area, city: location.city, treatment: procedure.name, customKeywords: location.metaKeywords }),
+    robots: indexableRobots,
     alternates: { canonical: `/locations/${city}/${area}/${treatment}` },
     openGraph: { title, description, url: `${SITE_URL}/locations/${city}/${area}/${treatment}` },
   };
@@ -215,7 +218,12 @@ export default async function LocationTreatmentPage({ params }: { params: Params
                 <div key={d.slug} className="loc-doctor-card">
                   <div
                     className={"loc-doctor-img " + d.img}
-                    style={d.imageUrl ? { backgroundImage: `url(${d.imageUrl})` } : undefined}
+                    style={d.imageUrl ? {
+                      backgroundImage: `url(${d.imageUrl})`,
+                      backgroundPosition: d.slug === "bhawna-bhardwaj" ? "center 48%" : "center 30%",
+                    } : undefined}
+                    role="img"
+                    aria-label={`${d.name}, ${d.specialty || d.title}`}
                   />
                   <div className="loc-doctor-body">
                     <div className="loc-doctor-name">{d.name}</div>
