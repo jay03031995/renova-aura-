@@ -983,7 +983,7 @@ export type SanityLocation = {
   faqs?: { question: string; answer: string }[];
   metaTitle?: string;
   metaDescription?: string;
-  metaKeywords?: string[];
+  metaKeywords?: string[] | string | null;
 };
 
 /** All enabled locations from Sanity, falling back to the static NCR_AREAS. */
