@@ -16,6 +16,7 @@ import { telHref, waHref } from "@/data/clinic";
 import { WhatsappLogo } from "@/components/icons";
 import { SITE_URL } from "@/lib/siteUrl";
 import { indexableRobots, locationSeoKeywords } from "@/lib/locationSeo";
+import { doctorPortrait, doctorPortraitPosition } from "@/lib/doctorPortrait";
 
 type Params = Promise<{ city: string; area: string; treatment: string }>;
 
@@ -218,10 +219,10 @@ export default async function LocationTreatmentPage({ params }: { params: Params
                 <div key={d.slug} className="loc-doctor-card">
                   <div
                     className={"loc-doctor-img " + d.img}
-                    style={d.imageUrl ? {
-                      backgroundImage: `url(${d.imageUrl})`,
-                      backgroundPosition: d.slug === "bhawna-bhardwaj" ? "center 48%" : "center 30%",
-                    } : undefined}
+                    style={{
+                      backgroundImage: `url(${doctorPortrait(d.slug, d.imageUrl)})`,
+                      backgroundPosition: doctorPortraitPosition(d.slug),
+                    }}
                     role="img"
                     aria-label={`${d.name}, ${d.specialty || d.title}`}
                   />

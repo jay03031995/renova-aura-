@@ -14,6 +14,7 @@ import {
 } from "@/sanity/lib/fetchers";
 import { SITE_URL } from "@/lib/siteUrl";
 import { indexableRobots, locationSeoKeywords } from "@/lib/locationSeo";
+import { doctorPortrait, doctorPortraitPosition } from "@/lib/doctorPortrait";
 
 type Params = Promise<{
   city: string;
@@ -85,7 +86,7 @@ export default async function LocationDoctorPage({ params }: { params: Params })
     name: doctorData.name,
     jobTitle: doctorData.title,
     description: doctorData.listBio,
-    image: doctorData.imageUrl,
+    image: doctorPortrait(doctorData.slug, doctorData.imageUrl),
     url: `${SITE_URL}/locations/${city}/${area}/${treatment}/${doctor}`,
     telephone: clinic.phone,
     address: {
@@ -166,10 +167,10 @@ export default async function LocationDoctorPage({ params }: { params: Params })
                 </Link>
               </div>
             </div>
-            {doctorData.imageUrl && (
+            {doctorPortrait(doctorData.slug, doctorData.imageUrl) && (
               <div
                 className="pillar-hero-image"
-                style={{ backgroundImage: `url(${doctorData.imageUrl})`, backgroundSize: "cover", backgroundPosition: "center" }}
+                style={{ backgroundImage: `url(${doctorPortrait(doctorData.slug, doctorData.imageUrl)})`, backgroundSize: "cover", backgroundPosition: doctorPortraitPosition(doctorData.slug) }}
                 role="img"
                 aria-label={`Dr. ${doctorData.name}`}
               />
