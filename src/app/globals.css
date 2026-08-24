@@ -4830,9 +4830,12 @@ button.sbv-card-clickable:focus-visible {
 .section-head h2,.area-overview h2,.area-nearby h2,.area-faq h2 { margin-bottom:14px; }
 .area-treatments,.area-consult,.area-faq { background:linear-gradient(135deg,var(--cream-2),#eef7f5); }
 .area-service-columns { display:grid; grid-template-columns:repeat(3,1fr); gap:22px; }
-.area-service-group { background:var(--paper); border:1px solid var(--line); border-radius:22px; padding:26px; }
+.area-service-group { background:var(--paper); border:1px solid var(--line); border-radius:22px; overflow:hidden; }
+.area-service-image { position:relative; height:190px; background:var(--cream-2); }
+.area-service-image img { object-fit:cover; }
+.area-service-body { padding:26px; }
 .area-service-group h3 { margin-bottom:18px; color:var(--cocoa); }
-.area-service-group>div { display:grid; gap:8px; }
+.area-service-body>div { display:grid; gap:8px; }
 .area-service-group a { display:flex; justify-content:space-between; gap:12px; padding:13px 0; border-bottom:1px solid var(--line); color:var(--ink); font-weight:550; }
 .area-service-group a span { color:var(--sage); }
 .area-consult h2 { text-align:center; margin-bottom:30px; }

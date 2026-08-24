@@ -8,7 +8,7 @@ import { LocationPageView, TrackedLink } from "@/components/LocationAnalytics";
 import { Clock, MapPin, Phone, WhatsappLogo } from "@/components/icons";
 import { NCR_AREAS } from "@/data/locations";
 import { telHref, waHref } from "@/data/clinic";
-import { getAllLocations, getClinic, getConcerns, getDoctors, getLocationByCityArea, getProcedures } from "@/sanity/lib/fetchers";
+import { getAllLocations, getClinic, getConcerns, getDoctors, getGalleryImages, getLocationByCityArea, getProcedures } from "@/sanity/lib/fetchers";
 import { SITE_URL } from "@/lib/siteUrl";
 
 type Params = Promise<{ city: string; area: string }>;
@@ -28,13 +28,14 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
 
 export default async function AreaPage({ params }: { params: Params }) {
   const { city, area } = await params;
-  const [location, clinic, doctors, procedures, concerns] = await Promise.all([
-    getLocationByCityArea(city, area), getClinic(), getDoctors(), getProcedures(), getConcerns(),
+  const [location, clinic, doctors, procedures, concerns, gallery] = await Promise.all([
+    getLocationByCityArea(city, area), getClinic(), getDoctors(), getProcedures(), getConcerns(), getGalleryImages(),
   ]);
   if (!location) return notFound();
   const hair = procedures.filter((p) => p.pillar === "hair-transplant").slice(0, 6);
   const cosmetic = procedures.filter((p) => p.pillar === "plastic-surgery").slice(0, 6);
   const skin = concerns.slice(0, 6);
+  const clinicImages = gallery.filter((image) => image.category === "Clinic" && image.image);
   const nearby = NCR_AREAS.filter((a) => a.areaSlug !== area && (a.citySlug === city || ["new-delhi","noida","ghaziabad"].includes(a.citySlug))).slice(0, 16);
   const intro = location.intro || `RenovaAura is a dermatologist-led skin, hair and cosmetic clinic in Anand Vihar welcoming patients from ${location.area}, ${location.city}. Our specialists provide individual assessment, transparent treatment planning and evidence-based care in one confirmed clinic location.`;
   const faqs = location.faqs?.length ? location.faqs : [
@@ -66,8 +67,8 @@ export default async function AreaPage({ params }: { params: Params }) {
             </div>
           </div>
           <div className="area-hero-images">
-            <div className="area-image-main"><Image src="/images/doctors/bhawna-bhardwaj.jpg" alt="RenovaAura dermatologist" fill sizes="(max-width:900px) 100vw, 34vw"/></div>
-            <div className="area-image-side"><Image src="/images/doctors/ankur-bhatia.jpg" alt="RenovaAura plastic surgeon" fill sizes="240px"/></div>
+            <div className="area-image-main"><Image src={clinicImages[0]?.image || "/images/doctors/bhawna-bhardwaj.jpg"} alt={clinicImages[0]?.title || "RenovaAura clinic"} fill sizes="(max-width:900px) 100vw, 34vw"/></div>
+            <div className="area-image-side"><Image src={clinicImages[1]?.image || "/images/doctors/ankur-bhatia.jpg"} alt={clinicImages[1]?.title || "RenovaAura specialist"} fill sizes="240px"/></div>
           </div>
         </div>
       </div>
@@ -76,9 +77,9 @@ export default async function AreaPage({ params }: { params: Params }) {
     <section id="overview" className="section area-overview"><div className="container narrow"><h2>RenovaAura serving {location.area}</h2><p>{intro}</p></div></section>
     <section id="treatments" className="section area-treatments"><div className="container"><div className="section-head"><h2>Skin, Hair and Cosmetic Treatment Options</h2><p>Explore common concerns and specialist-led procedures. Recommendations depend on a clinical consultation.</p></div>
       <div className="area-service-columns">
-        <ServiceGroup title="Skin & Dermatology" items={skin.map((x) => ({ name: x.name, href: `/concerns/${x.slug}` }))}/>
-        <ServiceGroup title="Hair Treatments" items={hair.map((x) => ({ name: x.name, href: `/locations/${city}/${area}/${x.slug}` }))}/>
-        <ServiceGroup title="Cosmetic Treatments" items={cosmetic.map((x) => ({ name: x.name, href: `/locations/${city}/${area}/${x.slug}` }))}/>
+        <ServiceGroup title="Skin & Dermatology" image={skin.find((x) => x.image)?.image} items={skin.map((x) => ({ name: x.name, href: `/concerns/${x.slug}` }))}/>
+        <ServiceGroup title="Hair Treatments" image={hair.find((x) => x.image)?.image} items={hair.map((x) => ({ name: x.name, href: `/locations/${city}/${area}/${x.slug}` }))}/>
+        <ServiceGroup title="Cosmetic Treatments" image={cosmetic.find((x) => x.image)?.image} items={cosmetic.map((x) => ({ name: x.name, href: `/locations/${city}/${area}/${x.slug}` }))}/>
       </div>
     </div></section>
     <section id="doctors" className="section"><div className="container"><div className="section-head"><h2>Meet the RenovaAura Specialists</h2><p>Board-certified clinicians providing dermatology, hair restoration, plastic surgery and aesthetic care.</p></div><div className="loc-doctor-grid">{doctors.map((d) => <article className="loc-doctor-card" key={d.slug}><div className="loc-doctor-img" style={{ backgroundImage: d.imageUrl ? `url(${d.imageUrl})` : undefined }}/><div className="loc-doctor-body"><div className="loc-doctor-name">{d.name}</div><div className="loc-doctor-title">{d.specialty || d.title}</div><p className="loc-doctor-bio">{d.homeBio}</p><Link href={`/doctors/${d.slug}`} className="btn btn-ghost">View Profile</Link></div></article>)}</div></div></section>
@@ -89,6 +90,6 @@ export default async function AreaPage({ params }: { params: Params }) {
   </>;
 }
 
-function ServiceGroup({ title, items }: { title: string; items: { name: string; href: string }[] }) {
-  return <div className="area-service-group"><h3>{title}</h3><div>{items.map((item) => <Link key={item.href} href={item.href}>{item.name}<span>→</span></Link>)}</div></div>;
+function ServiceGroup({ title, image, items }: { title: string; image?: string; items: { name: string; href: string }[] }) {
+  return <div className="area-service-group">{image && <div className="area-service-image"><Image src={image} alt={title} fill sizes="(max-width:900px) 100vw, 30vw"/></div>}<div className="area-service-body"><h3>{title}</h3><div>{items.map((item) => <Link key={item.href} href={item.href}>{item.name}<span>→</span></Link>)}</div></div></div>;
 }
