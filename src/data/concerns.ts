@@ -39,30 +39,30 @@ export type Concern = {
   faqs: { q: string; a: string }[];
 };
 
-/** Curated placeholder images per concern (Unsplash, already whitelisted). */
+/** Renova Aura's published Sanity assets, selected by concern. */
 const IMG = {
   acne:
-    "https://images.unsplash.com/photo-1612817288484-6f916006741a?w=800&q=80",
+    "https://cdn.sanity.io/images/q7pg9y33/production/85afcfe8cae4f0dd62f5233972650f4149240619-1536x1024.png",
   pigmentation:
-    "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=800&q=80",
+    "https://cdn.sanity.io/images/q7pg9y33/production/68cba0b21849c536eb5102015a7cd426f37fccd7-900x600.webp",
   antiAgeing:
-    "https://images.unsplash.com/photo-1522337660859-02fbefca4702?w=800&q=80",
+    "https://cdn.sanity.io/images/q7pg9y33/production/d20c118ad95d4611a7d5a45a55f3b5d1b19b919b-1280x720.jpg",
   laserHair:
-    "https://images.unsplash.com/photo-1559599101-f09722fb4948?w=800&q=80",
+    "https://cdn.sanity.io/images/q7pg9y33/production/aa0bf937a2e90a9f52d665b0059987161a320804-1955x1302.webp",
   dullSkin:
-    "https://images.unsplash.com/photo-1556228720-195a672e8a03?w=800&q=80",
+    "https://cdn.sanity.io/images/q7pg9y33/production/d20c118ad95d4611a7d5a45a55f3b5d1b19b919b-1280x720.jpg",
   openPores:
-    "https://images.unsplash.com/photo-1571781926291-c477ebfd024b?w=800&q=80",
+    "https://cdn.sanity.io/images/q7pg9y33/production/3c50d4156fb5b5a24c013ebf5a804f24b1b74ef3-800x452.jpg",
   darkCircles:
-    "https://images.unsplash.com/photo-1474552226712-ac0f0961a954?w=800&q=80",
+    "https://cdn.sanity.io/images/q7pg9y33/production/eb54cd4142f6f47672b590c6287acc5867afcc7d-750x400.jpg",
   rosacea:
-    "https://images.unsplash.com/photo-1580618672591-eb180b1a973f?w=800&q=80",
+    "https://cdn.sanity.io/images/q7pg9y33/production/ffe912bc07651f481eb01d304e23e9d881364e06-1700x1272.jpg",
   scars:
-    "https://images.unsplash.com/photo-1488477181946-6428a0291777?w=800&q=80",
+    "https://cdn.sanity.io/images/q7pg9y33/production/28ab2c18508984eeda4cd9bcb2d9b310290172ad-1000x667.jpg",
   stretchMarks:
-    "https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=800&q=80",
+    "https://cdn.sanity.io/images/q7pg9y33/production/28ab2c18508984eeda4cd9bcb2d9b310290172ad-1000x667.jpg",
   tattoo:
-    "https://images.unsplash.com/photo-1565058379802-bbe93b2f703a?w=800&q=80",
+    "https://cdn.sanity.io/images/q7pg9y33/production/aa0bf937a2e90a9f52d665b0059987161a320804-1955x1302.webp",
 };
 
 export const CONCERNS: Concern[] = [

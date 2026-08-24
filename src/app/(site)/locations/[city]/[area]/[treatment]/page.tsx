@@ -102,10 +102,8 @@ export default async function LocationTreatmentPage({ params }: { params: Params
       "@type": "BreadcrumbList",
       itemListElement: [
         { "@type": "ListItem", position: 1, name: "Home", item: SITE_URL },
-        { "@type": "ListItem", position: 2, name: "Locations", item: `${SITE_URL}/locations` },
-        { "@type": "ListItem", position: 3, name: location.city },
-        { "@type": "ListItem", position: 4, name: location.area },
-        { "@type": "ListItem", position: 5, name: procedure.name },
+        { "@type": "ListItem", position: 2, name: `${location.area}, ${location.city}`, item: `${SITE_URL}/locations/${city}/${area}` },
+        { "@type": "ListItem", position: 3, name: procedure.name, item: `${SITE_URL}/locations/${city}/${area}/${treatment}` },
       ],
     },
   };
@@ -125,9 +123,7 @@ export default async function LocationTreatmentPage({ params }: { params: Params
         <div className="container loc-hero-body">
           <nav className="loc-breadcrumb loc-breadcrumb-light" aria-label="Breadcrumb">
             <Link href="/">Home</Link><span>/</span>
-            <span>Locations</span><span>/</span>
-            <span>{location.city}</span><span>/</span>
-            <span>{location.area}</span><span>/</span>
+            <Link href={`/locations/${city}/${area}`}>{location.area}, {location.city}</Link><span>/</span>
             <span>{procedure.name}</span>
           </nav>
           <h1 className="loc-hero-title">{headline}</h1>

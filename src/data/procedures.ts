@@ -55,32 +55,32 @@ export type Procedure = {
   videos?: import("@/sanity/lib/fetchers").Video[];
 };
 
-/** Curated placeholder images by procedure category (Unsplash, no auth). */
+/** Renova Aura's published Sanity assets, grouped by procedure category. */
 const IMG = {
   hairSurgery:
-    "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?w=800&q=80",
+    "https://cdn.sanity.io/images/q7pg9y33/production/e8fe4b563acf77282b2cbbe4a6947298f03b9989-900x600.jpg",
   hairHealthy:
-    "https://images.unsplash.com/photo-1503951914875-452162b0f3f1?w=800&q=80",
+    "https://cdn.sanity.io/images/q7pg9y33/production/3012c6785cb23deea5bb8e3d4173d4a60d630ed3-750x400.webp",
   hairWoman:
-    "https://images.unsplash.com/photo-1559599101-f09722fb4948?w=800&q=80",
+    "https://cdn.sanity.io/images/q7pg9y33/production/970f04e16f90ee7cf01ecedcb908bf90300d8ba5-800x400.png",
   beard:
-    "https://images.unsplash.com/photo-1503443207922-dff7d543fd0e?w=800&q=80",
+    "https://cdn.sanity.io/images/q7pg9y33/production/ecbec83256278dce032e69bd5dc6943d001f9012-1024x460.webp",
   eyebrow:
-    "https://images.unsplash.com/photo-1583241475880-083f84372725?w=800&q=80",
+    "https://cdn.sanity.io/images/q7pg9y33/production/eb54cd4142f6f47672b590c6287acc5867afcc7d-750x400.jpg",
   injection:
-    "https://images.unsplash.com/photo-1607619056574-7b8d3ee536b2?w=800&q=80",
+    "https://cdn.sanity.io/images/q7pg9y33/production/5dbb438ab4cd7ed7cb52527d960da1944fb81b35-1000x663.png",
   faceTreatment:
-    "https://images.unsplash.com/photo-1522337660859-02fbefca4702?w=800&q=80",
+    "https://cdn.sanity.io/images/q7pg9y33/production/d20c118ad95d4611a7d5a45a55f3b5d1b19b919b-1280x720.jpg",
   faceConsult:
-    "https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=800&q=80",
+    "https://cdn.sanity.io/images/q7pg9y33/production/c80d7108540eafb3d362163ae7b541c38275f88f-1920x800.jpg",
   eyesCloseup:
-    "https://images.unsplash.com/photo-1474552226712-ac0f0961a954?w=800&q=80",
+    "https://cdn.sanity.io/images/q7pg9y33/production/eb54cd4142f6f47672b590c6287acc5867afcc7d-750x400.jpg",
   noseProfile:
-    "https://images.unsplash.com/photo-1487412947147-5cebf100ffc2?w=800&q=80",
+    "https://cdn.sanity.io/images/q7pg9y33/production/c2ce4cc4d96e0830228cec464e9343e29d5dbbc9-1045x758.png",
   bodyContour:
-    "https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=800&q=80",
+    "https://cdn.sanity.io/images/q7pg9y33/production/b53947c9af4f193282971733becb823660d95b1c-1920x1420.webp",
   lips:
-    "https://images.unsplash.com/photo-1588421357574-87938a86fa28?w=800&q=80",
+    "https://cdn.sanity.io/images/q7pg9y33/production/68cba0b21849c536eb5102015a7cd426f37fccd7-900x600.webp",
 };
 
 export const PILLAR_DEFAULT_IMAGE: Record<ProcedurePillar, string> = {

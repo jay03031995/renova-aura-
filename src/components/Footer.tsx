@@ -117,6 +117,12 @@ export default async function Footer() {
           <span>
             {clinic.phone} · {clinic.email}
           </span>
+          <span>
+            Created by{" "}
+            <a href="https://www.genesisvirtue.com" target="_blank" rel="noopener noreferrer">
+              Genesis Virtue
+            </a>
+          </span>
         </div>
       </div>
     </footer>

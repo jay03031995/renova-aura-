@@ -32,10 +32,7 @@ type Slide = {
   imageAlt: string;
 };
 
-/**
- * Built-in fallback slides. Used when Sanity has no hero slides (or is
- * unreachable). When Sanity is seeded, the `slides` prop overrides these.
- */
+/** Published-site slides retained locally for resilient rendering. */
 const FALLBACK_SLIDES: Slide[] = [
   {
     eyebrow: "Hair Transplant Specialists",
@@ -45,8 +42,7 @@ const FALLBACK_SLIDES: Slide[] = [
     ctaLabel: "Book Appointment",
     secondaryHref: "/procedures/hair-transplant",
     secondaryLabel: "Hair Transplant",
-    image:
-      "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?w=1600&q=80",
+    image: "https://cdn.sanity.io/images/q7pg9y33/production/3012c6785cb23deea5bb8e3d4173d4a60d630ed3-750x400.webp",
     imageAlt:
       "Surgeon performing a hair transplant procedure in a modern clinic",
   },
@@ -58,8 +54,7 @@ const FALLBACK_SLIDES: Slide[] = [
     ctaLabel: "Book Appointment",
     secondaryHref: "/procedures/plastic-surgery",
     secondaryLabel: "Plastic Surgery",
-    image:
-      "https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=1600&q=80",
+    image: "https://cdn.sanity.io/images/q7pg9y33/production/c80d7108540eafb3d362163ae7b541c38275f88f-1920x800.jpg",
     imageAlt: "Clinic consultation room with patient and aesthetic surgeon",
   },
   {
@@ -70,8 +65,7 @@ const FALLBACK_SLIDES: Slide[] = [
     ctaLabel: "Book Appointment",
     secondaryHref: "/results",
     secondaryLabel: "See Results",
-    image:
-      "https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?w=1600&q=80",
+    image: "https://cdn.sanity.io/images/q7pg9y33/production/d20c118ad95d4611a7d5a45a55f3b5d1b19b919b-1280x720.jpg",
     imageAlt: "Patient receiving a precision facial aesthetic treatment",
   },
 ];

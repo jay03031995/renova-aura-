@@ -108,11 +108,9 @@ export default async function LocationDoctorPage({ params }: { params: Params })
       "@type": "BreadcrumbList",
       itemListElement: [
         { "@type": "ListItem", position: 1, name: "Home", item: SITE_URL },
-        { "@type": "ListItem", position: 2, name: "Locations", item: `${SITE_URL}/locations` },
-        { "@type": "ListItem", position: 3, name: location.city, item: `${SITE_URL}/locations/${city}` },
-        { "@type": "ListItem", position: 4, name: location.area, item: `${SITE_URL}/locations/${city}/${area}` },
-        { "@type": "ListItem", position: 5, name: procedure.name, item: `${SITE_URL}/locations/${city}/${area}/${treatment}` },
-        { "@type": "ListItem", position: 6, name: doctorData.name },
+        { "@type": "ListItem", position: 2, name: `${location.area}, ${location.city}`, item: `${SITE_URL}/locations/${city}/${area}` },
+        { "@type": "ListItem", position: 3, name: procedure.name, item: `${SITE_URL}/locations/${city}/${area}/${treatment}` },
+        { "@type": "ListItem", position: 4, name: doctorData.name, item: `${SITE_URL}/locations/${city}/${area}/${treatment}/${doctor}` },
       ],
     },
   };
@@ -130,7 +128,7 @@ export default async function LocationDoctorPage({ params }: { params: Params })
           <nav className="loc-breadcrumb" aria-label="Breadcrumb">
             <Link href="/">Home</Link>
             <span>/</span>
-            <span>Locations</span>
+            <Link href={`/locations/${city}/${area}`}>{location.area}, {location.city}</Link>
             <span>/</span>
             <Link href={`/locations/${city}/${area}/${treatment}`}>
               {procedure.name} near {location.area}

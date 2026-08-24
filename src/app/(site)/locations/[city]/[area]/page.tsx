@@ -55,14 +55,21 @@ export default async function AreaPage({ params }: { params: Params }) {
     { question: "How can I book an appointment?", answer: `Use the appointment form, call ${clinic.phone}, or message the care team on WhatsApp. Your preferred time is confirmed by the clinic.` },
     { question: "What are the clinic timings?", answer: clinic.hours },
   ];
-  const jsonLd = { "@context": "https://schema.org", "@type": ["MedicalClinic","LocalBusiness"], name: `RenovaAura serving ${location.area}`, description: intro, url: `${SITE_URL}/locations/${city}/${area}`, telephone: clinic.phone, address: { "@type": "PostalAddress", streetAddress: clinic.address } };
+  const areaUrl = `${SITE_URL}/locations/${city}/${area}`;
+  const jsonLd = [
+    { "@context": "https://schema.org", "@type": ["MedicalClinic","LocalBusiness"], name: `RenovaAura serving ${location.area}`, description: intro, url: areaUrl, telephone: clinic.phone, address: { "@type": "PostalAddress", streetAddress: clinic.address } },
+    { "@context": "https://schema.org", "@type": "BreadcrumbList", itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Home", item: SITE_URL },
+      { "@type": "ListItem", position: 2, name: `${location.area}, ${location.city}`, item: areaUrl },
+    ] },
+  ];
 
   return <>
     <LocationPageView area={location.area} city={location.city} />
     <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
     <section className="area-hero">
       <div className="container">
-        <nav className="loc-breadcrumb"><Link href="/">Home</Link><span>›</span><span>Skin, Hair & Cosmetic Clinic</span><span>›</span><span>{location.area}</span></nav>
+        <nav className="loc-breadcrumb" aria-label="Breadcrumb"><Link href="/">Home</Link><span>›</span><span>Skin, Hair &amp; Cosmetic Clinic near {location.area}</span></nav>
         <div className="area-hero-grid">
           <div>
             <div className="eyebrow">RENOVAAURA · ANAND VIHAR</div>
