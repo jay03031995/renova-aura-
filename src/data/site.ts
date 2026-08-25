@@ -83,6 +83,19 @@ export const FOOTER_LINKS: Record<string, { label: string; href: string }[]> = {
     { label: "Gallery", href: "/gallery" },
     { label: "Contact", href: "/contact" },
   ],
+  // Site-wide internal links into the 41 /locations/{city}/{area} pages,
+  // which previously had zero entry point from navigation — only reachable
+  // by clicking through from one area page to another. One representative
+  // area per NCR city, plus the index, keeps this footer column short while
+  // giving every location page a real path in from crawl + real visitors.
+  "Near You": [
+    { label: "All Locations", href: "/locations" },
+    { label: "Anand Vihar, New Delhi", href: "/locations/new-delhi/anand-vihar" },
+    { label: "Sector 18, Noida", href: "/locations/noida/sector-18" },
+    { label: "Cyber City, Gurugram", href: "/locations/gurugram/cyber-city" },
+    { label: "Indirapuram, Ghaziabad", href: "/locations/ghaziabad/indirapuram" },
+    { label: "NIT Faridabad", href: "/locations/faridabad/nit-faridabad" },
+  ],
   Resources: [
     { label: "Book a Consultation", href: "/#book" },
     { label: "All Procedures", href: "/procedures" },
