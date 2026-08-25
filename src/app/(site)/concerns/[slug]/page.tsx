@@ -25,8 +25,8 @@ export async function generateMetadata({
   const c = await getConcernBySlug(slug);
   if (!c) return {};
   return {
-    title: c.name,
-    description: c.summary.slice(0, 160),
+    title: c.metaTitle || c.name,
+    description: c.metaDescription || c.summary.slice(0, 160),
     alternates: { canonical: `/concerns/${c.slug}` },
   };
 }
