@@ -5,9 +5,9 @@ import { ArrowRight } from "@/components/icons";
 import BookButton from "@/components/BookButton";
 
 export const metadata: Metadata = {
-  title: "Our Doctors — MD Dermatologists in Anand Vihar",
+  title: "Best Dermatologist & Plastic Surgeon in Delhi | RenovaAura",
   description:
-    "Meet the dermatology team at RenovaAura, Anand Vihar, New Delhi. Three MD dermatologists with subspecialties in cosmetic dermatology, aesthetics and lasers.",
+    "Meet the specialists at RenovaAura, Anand Vihar, New Delhi — a senior consultant dermatologist and hair transplant surgeon, and a consultant plastic and reconstructive microsurgeon. Board-certified care near you.",
   alternates: { canonical: "/doctors" },
 };
 
