@@ -101,6 +101,12 @@ const jsonLd = {
       ],
       sameAs: [
         BASE,
+        // Google Maps listing — placeholder query URL replaced below with the
+        // real clinic Maps link at runtime. NOTE: this is a maps.google.com
+        // search-query URL, not the clinic's actual Google Business Profile
+        // share link (the ?cid=... or maps.app.goo.gl/... URL from the GBP
+        // dashboard's "Share" button). The GBP link is the stronger signal
+        // for local/near-me ranking — swap it in here once available.
       ],
       foundingDate: "2020",
       numberOfEmployees: { "@type": "QuantitativeValue", value: 10 },
@@ -132,6 +138,7 @@ const jsonLd = {
         "Hair Restoration",
       ],
       hasMap: "",
+      sameAs: [],
       parentOrganization: { "@id": `${BASE}/#organization` },
     },
 
@@ -153,19 +160,36 @@ const jsonLd = {
         },
         "query-input": "required name=search_term_string",
       },
-      // SiteNavigationElement — the exact 6 links you want as sitelinks,
-      // in priority order: Treatments, Doctors, Book, Locations, Hair Test, Skin Analysis
+      // SiteNavigationElement — sitelink candidates in priority order.
+      // Reordered against the RenovaAura keyword research (Aug 2026):
+      // "dermatologist"/"skin clinic"/"skin specialist"/"skin doctor" searches
+      // outnumber every other cluster combined, so Skin Concerns and
+      // Locations (the near-me hub) now lead. Previously "Locations" pointed
+      // at /locations, which had no page behind it (404) — that page now
+      // exists (see src/app/(site)/locations/page.tsx).
       mainEntity: [
         {
           "@type": "SiteNavigationElement",
-          name: "Treatments",
-          description: "Hair transplant, plastic surgery and skin concern procedures at RenovaAura",
-          url: `${BASE}/procedures`,
+          name: "Skin Concerns",
+          description: "Dermatologist-led treatment for acne, pigmentation, anti-ageing and other skin concerns",
+          url: `${BASE}/concerns`,
+        },
+        {
+          "@type": "SiteNavigationElement",
+          name: "Locations Near You",
+          description: "RenovaAura serves patients from across Delhi NCR — find your nearest area",
+          url: `${BASE}/locations`,
+        },
+        {
+          "@type": "SiteNavigationElement",
+          name: "Hair Transplant",
+          description: "FUE, DHI and FUT hair transplant procedures at RenovaAura",
+          url: `${BASE}/procedures/hair-transplant`,
         },
         {
           "@type": "SiteNavigationElement",
           name: "Our Doctors",
-          description: "Board-certified hair transplant and plastic surgery specialists",
+          description: "Board-certified dermatology, hair transplant and plastic surgery specialists",
           url: `${BASE}/doctors`,
         },
         {
@@ -176,38 +200,45 @@ const jsonLd = {
         },
         {
           "@type": "SiteNavigationElement",
-          name: "Locations",
-          description: "RenovaAura serves patients from across Delhi NCR — find your nearest area",
-          url: `${BASE}/locations`,
+          name: "Plastic Surgery",
+          description: "Rhinoplasty, facelift, blepharoplasty and other plastic surgery procedures",
+          url: `${BASE}/procedures/plastic-surgery`,
         },
         {
           "@type": "SiteNavigationElement",
-          name: "Take Hair Test",
-          description: "Free Norwood-based hair graft calculator — get your personalised PDF",
-          url: `${BASE}/tools/graft-calculator`,
+          name: "Packages",
+          description: "Bundled treatment packages at RenovaAura",
+          url: `${BASE}/packages`,
         },
         {
           "@type": "SiteNavigationElement",
-          name: "AI Skin Analysis",
-          description: "Free AI skin analysis — map your skin type and get a personalised care plan",
-          url: `${BASE}/tools/skin-analysis`,
+          name: "Contact",
+          description: "Clinic address, phone, WhatsApp and directions for RenovaAura, Anand Vihar",
+          url: `${BASE}/contact`,
         },
       ],
     },
 
     // ── 4. ItemList — top treatments (helps Google link rich results) ───
+    // Rebalanced Aug 2026: keyword research shows "dermatologist"/"skin
+    // clinic"/"skin specialist"/"skin doctor" searches (~500+ combined)
+    // outweigh hair-transplant terms (~137) by a wide margin, so skin/concern
+    // entries now get equal billing with hair, plus a Locations entry for
+    // near-me intent.
     {
       "@type": "ItemList",
       "@id": `${BASE}/#treatments`,
-      name: "RenovaAura Treatments",
+      name: "RenovaAura Treatments & Locations",
       url: `${BASE}/procedures`,
       itemListElement: [
-        { "@type": "ListItem", position: 1, name: "FUE Hair Transplant",   url: `${BASE}/procedures/hair-transplant/fue-hair-transplant` },
-        { "@type": "ListItem", position: 2, name: "DHI Hair Transplant",   url: `${BASE}/procedures/hair-transplant/dhi-hair-transplant` },
-        { "@type": "ListItem", position: 3, name: "Rhinoplasty",           url: `${BASE}/procedures/plastic-surgery/rhinoplasty` },
-        { "@type": "ListItem", position: 4, name: "Facelift",              url: `${BASE}/procedures/plastic-surgery/facelift` },
-        { "@type": "ListItem", position: 5, name: "Acne Treatment",        url: `${BASE}/concerns/acne` },
-        { "@type": "ListItem", position: 6, name: "Pigmentation Treatment",url: `${BASE}/concerns/pigmentation-melasma` },
+        { "@type": "ListItem", position: 1, name: "Acne Treatment",         url: `${BASE}/concerns/acne` },
+        { "@type": "ListItem", position: 2, name: "Pigmentation Treatment", url: `${BASE}/concerns/pigmentation-melasma` },
+        { "@type": "ListItem", position: 3, name: "FUE Hair Transplant",    url: `${BASE}/procedures/hair-transplant/fue-hair-transplant` },
+        { "@type": "ListItem", position: 4, name: "DHI Hair Transplant",   url: `${BASE}/procedures/hair-transplant/dhi-hair-transplant` },
+        { "@type": "ListItem", position: 5, name: "Rhinoplasty",           url: `${BASE}/procedures/plastic-surgery/rhinoplasty` },
+        { "@type": "ListItem", position: 6, name: "Facelift",              url: `${BASE}/procedures/plastic-surgery/facelift` },
+        { "@type": "ListItem", position: 7, name: "All Skin Concerns",     url: `${BASE}/concerns` },
+        { "@type": "ListItem", position: 8, name: "Find a Location Near You", url: `${BASE}/locations` },
       ],
     },
   ],
@@ -291,7 +322,17 @@ export default async function SiteLayout({
     org.telephone = clinic.phone;
     org.email = clinic.email;
     org.address = address;
-    org.sameAs = [clinic.social.instagram, clinic.social.youtube, clinic.social.linkedin, BASE];
+    org.sameAs = [
+      clinic.social.instagram,
+      clinic.social.youtube,
+      clinic.social.linkedin,
+      BASE,
+      // Real clinic Maps link (from Sanity clinicSettings). Still the
+      // generic maps.google.com/?q= search-query form, not the canonical
+      // Google Business Profile share URL — replace with the GBP link for
+      // a stronger entity match once it's on hand.
+      clinic.googleMapsLinkUrl,
+    ].filter(Boolean);
     org.contactPoint = [
       {
         "@type": "ContactPoint",
@@ -320,6 +361,9 @@ export default async function SiteLayout({
     medicalBusiness.email = clinic.email;
     medicalBusiness.address = address;
     medicalBusiness.hasMap = clinic.googleMapsLinkUrl;
+    // Same caveat as Organization.sameAs above: this is the generic
+    // maps.google.com/?q= link, not the canonical GBP profile share URL.
+    medicalBusiness.sameAs = [clinic.googleMapsLinkUrl];
   }
   const website = ld["@graph"].find((n) => n["@id"] === `${BASE}/#website`);
   if (website) {
