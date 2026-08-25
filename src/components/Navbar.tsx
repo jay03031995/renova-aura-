@@ -29,6 +29,7 @@ const MOBILE_LINKS: { label: string; href: string }[] = [
   { label: "Lasers / Technologies", href: "/tools-equipments" },
   { label: "Packages", href: "/packages" },
   { label: "Doctors", href: "/doctors" },
+  { label: "Locations", href: "/locations" },
   { label: "Gallery", href: "/gallery" },
   { label: "Contact", href: "/contact" },
 ];
