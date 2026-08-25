@@ -16,17 +16,17 @@ type PillarMeta = {
 const PILLARS: Record<ProcedurePillar, PillarMeta> = {
   "hair-transplant": {
     eyebrow: "Hair Restoration",
-    title: "Hair Transplant Procedures",
+    title: "Best Hair Transplant Clinic in Delhi | Near You | RenovaAura",
     headline: "Permanent hair restoration, designed by surgeons.",
     subtitle:
-      "From FUE to DHI, beard restoration to eyebrow transplants — every hair procedure we perform is led by a board-certified surgeon and tailored to your hair pattern.",
+      "Looking for the best hair transplant clinic near you in Delhi? From FUE to DHI, beard restoration to eyebrow transplants — every hair procedure at RenovaAura is led by a board-certified surgeon and tailored to your hair pattern.",
   },
   "plastic-surgery": {
     eyebrow: "Plastic Surgery & Aesthetics",
-    title: "Plastic Surgery Procedures",
+    title: "Best Plastic Surgeon in Delhi | Plastic Surgery | RenovaAura",
     headline: "Refined, never overdone.",
     subtitle:
-      "Rhinoplasty, facelift, blepharoplasty and a full range of body contouring — delivered with the conservative aesthetic judgement that makes results look natural, not 'done'.",
+      "Rhinoplasty, facelift, blepharoplasty and a full range of body contouring, delivered by one of the best plastic surgeons in Delhi — with the conservative aesthetic judgement that makes results look natural, not 'done'.",
   },
 };
 
