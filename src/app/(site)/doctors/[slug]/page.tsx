@@ -125,7 +125,7 @@ export default async function DoctorDetailPage(props: {
             </div>
             <div>
               <div className="eyebrow" style={{ marginBottom: 18 }}>
-                Meet your dermatologist
+                Meet Your Aesthetic Surgeon
               </div>
               <h1>{d.name}</h1>
               <div className="dp-doc-title">{d.title}</div>
