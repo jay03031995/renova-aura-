@@ -112,7 +112,7 @@ export default async function DoctorDetailPage(props: {
                 </div>
               </div>
               <div className="dp-badge dp-badge-2">
-                <div className="dp-badge-num">MD</div>
+                <div className="dp-badge-num">MCh</div>
                 <div>
                   <div className="dp-badge-label">Board Certified</div>
                 </div>
