@@ -1,0 +1,88 @@
+/* ==========================================================
+   RenovaAura navbar – Windows / narrow-desktop overflow fix
+   Imported directly in Navbar.tsx (no globals.css needed).
+   Selectors start with ".nav" so they win over older rules.
+   ========================================================== */
+
+/* Row layout: logo + button never shrink, links take the rest */
+.nav .nav-inner {
+  display: flex;
+  align-items: center;
+  gap: clamp(12px, 1.4vw, 28px);
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.nav .logo {
+  flex-shrink: 0;
+}
+
+.nav .logo-img {
+  width: clamp(130px, 10vw, 180px);
+  height: auto;
+}
+
+.nav .nav-links {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1 1 auto;
+  min-width: 0;
+  gap: clamp(10px, 1.1vw, 24px);
+}
+
+.nav .nav-link {
+  white-space: nowrap;
+  font-size: clamp(14px, 0.95vw, 17px);
+}
+
+.nav .nav-cta {
+  flex-shrink: 0;
+}
+
+.nav .nav-cta .btn {
+  white-space: nowrap;
+  padding-inline: clamp(18px, 1.6vw, 32px);
+}
+
+/* Button label: full on big screens, short on smaller desktops */
+.nav .nav-cta .btn-label-short {
+  display: none;
+}
+
+@media (max-width: 1440px) {
+  .nav .nav-cta .btn-label-full {
+    display: none;
+  }
+  .nav .nav-cta .btn-label-short {
+    display: inline;
+  }
+}
+
+/* Tight desktops (Windows at 125–150% scaling) */
+@media (max-width: 1280px) {
+  .nav .nav-links {
+    gap: 12px;
+  }
+  .nav .nav-link {
+    font-size: 14px;
+  }
+}
+
+/* 981px–1200px: use the mobile layout (WhatsApp + Book + hamburger)
+   instead of squeezing 9 links. Below 980px your existing mobile
+   CSS already takes over. */
+@media (min-width: 981px) and (max-width: 1200px) {
+  .nav .nav-links,
+  .nav .nav-cta {
+    display: none;
+  }
+  .nav .nav-inner {
+    justify-content: space-between;
+  }
+  .nav .nav-mobile-controls {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+}
