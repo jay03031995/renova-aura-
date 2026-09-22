@@ -11,6 +11,7 @@ import type { Concern } from "@/data/concerns";
 import { ArrowRight, Phone, WhatsappLogo } from "@/components/icons";
 import BookButton from "@/components/BookButton";
 import { useBooking } from "@/components/BookingContext";
+import "./Navbar.css";
 
 /**
  * RenovaAura primary navigation.
