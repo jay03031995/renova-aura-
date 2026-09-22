@@ -111,17 +111,17 @@ export default async function DoctorDetailPage(props: {
                   <div className="dp-badge-label">Google Rating</div>
                 </div>
               </div>
-              {/* <div className="dp-badge dp-badge-2">
+               {/* <div className="dp-badge dp-badge-2">
                 <div className="dp-badge-num">MCh</div>
                 <div>
                   <div className="dp-badge-label">Board Certified</div>
-                </div>
+                </div> */}
               </div>
               <div className={"dp-photo " + d.img} style={bgImg(d.imageUrl)}>
                 <div className="dp-photo-tag">
-                  — portrait, {d.name.split(" ").slice(-1)[0].toLowerCase()}
+                   {d.name.split(" ").slice(-1)[0].toLowerCase()}
                 </div>
-              </div> */}
+              </div> 
             </div>
             <div>
               <div className="eyebrow" style={{ marginBottom: 18 }}>
