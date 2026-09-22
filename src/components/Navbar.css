@@ -1,66 +1,91 @@
 /* ==========================================================
-   RenovaAura navbar – Windows / narrow-desktop overflow fix
-   Imported directly in Navbar.tsx (no globals.css needed).
-   Selectors start with ".nav" so they win over older rules.
+   RenovaAura navbar – fits properly on Windows & Mac
+   Logo stays full size, button compact, nothing gets cut
    ========================================================== */
 
-/* Row layout: logo + button never shrink, links take the rest */
+/* ---------- Row layout ---------- */
 .nav .nav-inner {
   display: flex;
   align-items: center;
-  gap: clamp(12px, 1.4vw, 28px);
+  justify-content: space-between;
+  gap: clamp(12px, 1.5vw, 32px);
+  width: 100%;
   max-width: 100%;
+  padding-inline: clamp(16px, 2.5vw, 48px);
   box-sizing: border-box;
 }
 
+/* ---------- Logo: fixed size, never shrinks, never cut ---------- */
 .nav .logo {
+  flex: 0 0 auto;
   flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  min-width: 180px;
 }
 
 .nav .logo-img {
-  width: clamp(130px, 10vw, 180px);
-  height: auto;
+  display: block;
+  width: 180px !important;
+  min-width: 180px;
+  max-width: none;
+  height: auto !important;
+  max-height: none;
+  object-fit: contain;
 }
 
+/* ---------- Links ---------- */
 .nav .nav-links {
   display: flex;
   align-items: center;
   justify-content: center;
   flex: 1 1 auto;
   min-width: 0;
-  gap: clamp(10px, 1.1vw, 24px);
+  gap: clamp(8px, 1vw, 22px);
 }
 
 .nav .nav-link {
   white-space: nowrap;
-  font-size: clamp(14px, 0.95vw, 17px);
+  font-size: clamp(14px, 0.9vw, 16px);
 }
 
+/* ---------- Book button: compact ---------- */
 .nav .nav-cta {
-  flex-shrink: 0;
+  flex: 0 0 auto;
 }
 
 .nav .nav-cta .btn {
   white-space: nowrap;
-  padding-inline: clamp(18px, 1.6vw, 32px);
+  font-size: clamp(13px, 0.85vw, 15px);
+  padding: 10px clamp(16px, 1.3vw, 24px);
+  min-height: 0;
+  height: auto;
+  line-height: 1.2;
+  gap: 8px;
 }
 
-/* Button label: full on big screens, short on smaller desktops */
+.nav .nav-cta .btn .arrow,
+.nav .nav-cta .btn svg {
+  width: 14px;
+  height: 14px;
+}
+
+/* Full label on big screens, short label on smaller desktops */
 .nav .nav-cta .btn-label-short {
   display: none;
 }
 
-@media (max-width: 1440px) {
+/* ---------- Medium desktops (Windows laptops at 125% scaling) ---------- */
+@media (max-width: 1536px) {
   .nav .nav-cta .btn-label-full {
     display: none;
   }
   .nav .nav-cta .btn-label-short {
     display: inline;
   }
-}
-
-/* Tight desktops (Windows at 125–150% scaling) */
-@media (max-width: 1280px) {
+  .nav .nav-cta .btn .arrow {
+    display: none;
+  }
   .nav .nav-links {
     gap: 12px;
   }
@@ -69,16 +94,14 @@
   }
 }
 
-/* 981px–1200px: use the mobile layout (WhatsApp + Book + hamburger)
-   instead of squeezing 9 links. Below 980px your existing mobile
-   CSS already takes over. */
-@media (min-width: 981px) and (max-width: 1200px) {
+/* ---------- Small laptops (981px–1360px) ----------
+   Not enough room for a full-size logo + 9 links,
+   so switch to WhatsApp + Book + hamburger menu.
+   Below 980px your existing mobile CSS takes over. */
+@media (min-width: 981px) and (max-width: 1360px) {
   .nav .nav-links,
   .nav .nav-cta {
     display: none;
-  }
-  .nav .nav-inner {
-    justify-content: space-between;
   }
   .nav .nav-mobile-controls {
     display: flex;
