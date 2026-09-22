@@ -1,0 +1,1081 @@
+/**
+ * High-level data fetchers used by page components.
+ *
+ * Each function tries Sanity first when the project is configured, and
+ * falls back to the local TypeScript data files when Sanity is missing
+ * or empty.
+ *
+ * RenovaAura: treatment/concern fetchers from the dermaheal era are
+ * removed — procedures are served from the static `procedures.ts`
+ * data file directly (see /procedures routes).
+ */
+
+import { cache } from "react";
+import { client, sanityEnabled } from "./client";
+import {
+  announcementQuery,
+  bodyConcernBySlugQuery,
+  bodyConcernSlugsQuery,
+  bodyConcernsQuery,
+  clinicSettingsQuery,
+  concernBySlugQuery,
+  concernSlugsQuery,
+  concernsQuery,
+  doctorBySlugQuery,
+  doctorSlugsQuery,
+  doctorsQuery,
+  eeatPillarsQuery,
+  equipmentBySlugQuery,
+  equipmentQuery,
+  equipmentSlugsQuery,
+  galleryImagesQuery,
+  galleryRealResultsQuery,
+  galleryVideosQuery,
+  heroSlidesQuery,
+  homepageFaqsQuery,
+  packagesQuery,
+  procedureBySlugQuery,
+  procedureSlugsQuery,
+  proceduresByPillarQuery,
+  proceduresQuery,
+  resultsQuery,
+  siteSettingsQuery,
+  testimonialsQuery,
+  trustItemsQuery,
+  whyUsSectionQuery,
+} from "./queries";
+
+// ----- Local fallbacks ------------------------------------------------------
+
+import { CLINIC as LOCAL_CLINIC } from "@/data/clinic";
+import {
+  DOCTORS as LOCAL_DOCTORS,
+  DOCTOR_SLUGS as LOCAL_DOCTOR_SLUGS,
+  type Doctor,
+} from "@/data/doctors";
+import {
+  EEAT as LOCAL_EEAT,
+  FAQS as LOCAL_FAQS,
+  RESULTS as LOCAL_RESULTS,
+  TESTIMONIALS as LOCAL_TESTIMONIALS,
+  TRUST_ITEMS as LOCAL_TRUST_ITEMS,
+  type Result,
+} from "@/data/site";
+import {
+  PROCEDURES as LOCAL_PROCEDURES,
+  PROCEDURE_SLUGS as LOCAL_PROCEDURE_SLUGS,
+  HAIR_PROCEDURES as LOCAL_HAIR_PROCEDURES,
+  PLASTIC_PROCEDURES as LOCAL_PLASTIC_PROCEDURES,
+  type Procedure,
+  type PlasticSurgeryCategory,
+  type ProcedurePillar,
+} from "@/data/procedures";
+import {
+  CONCERNS as LOCAL_CONCERNS,
+  CONCERN_SLUGS as LOCAL_CONCERN_SLUGS,
+  type Concern,
+} from "@/data/concerns";
+import { BODY_CONCERNS as LOCAL_BODY_CONCERNS } from "@/data/bodyConcerns";
+import {
+  PACKAGES as LOCAL_PACKAGES,
+  type TreatmentPackage,
+} from "@/data/packages";
+
+export type RelatedTreatmentCard = {
+  slug: string;
+  name: string;
+  href: string;
+  category: string;
+  description: string;
+  image?: string;
+  tag?: string;
+  quickDuration?: string;
+  quickSessions?: string;
+};
+
+export type RealResult = {
+  id: string;
+  title: string;
+  caption?: string;
+  category: string;
+  before?: string;
+  after?: string;
+  displayOrder: number;
+  featured: boolean;
+};
+
+export type Video = {
+  id: string;
+  title: string;
+  sourceType: string; // "youtube" | "vimeo" | "upload"
+  youtubeUrl?: string;
+  vimeoUrl?: string;
+  fileUrl?: string;
+  thumbnail?: string;
+  category: string;
+  uploadDate?: string;
+  displayOrder: number;
+  featured: boolean;
+};
+
+export type GalleryImage = {
+  id: string;
+  title: string;
+  image?: string;
+  category: string;
+  description?: string;
+  displayOrder: number;
+  featured: boolean;
+};
+
+export type TreatmentRelatedContent = {
+  relatedPackages: TreatmentPackage[];
+  relatedProcedures: RelatedTreatmentCard[];
+  technologiesUsed: Equipment[];
+  realResults: RealResult[];
+  videos: Video[];
+};
+
+// ----- Shared helpers -------------------------------------------------------
+
+function isFilled<T>(v: T | null | undefined): v is T {
+  if (v == null) return false;
+  if (Array.isArray(v)) return v.length > 0;
+  if (typeof v === "string") return v.length > 0;
+  return true;
+}
+
+async function safeFetch<T>(query: string, params?: Record<string, unknown>) {
+  if (!sanityEnabled) return null;
+  try {
+    // No caching — every fetch goes straight to Sanity so published edits
+    // are live immediately. The (site) layout is also force-dynamic; this
+    // also covers fetches outside it (metadata, sitemap, redirects).
+   return await client.fetch<T>(query, params ?? {}, {
+  next: {
+    revalidate: 3600,
+    tags: ["sanity"],
+  },
+});
+  } catch (e) {
+    console.warn("[sanity] fetch failed, falling back to local data:", e);
+    return null;
+  }
+}
+
+async function safeFetchWithAvailability<T>(
+  query: string,
+  params?: Record<string, unknown>,
+): Promise<{ available: boolean; data: T | null }> {
+  if (!sanityEnabled) return { available: false, data: null };
+  try {
+    return {
+      available: true,
+data: await client.fetch<T>(query, params ?? {}, {
+  next: {
+    revalidate: 3600,
+    tags: ["sanity"],
+  },
+}),    };
+  } catch (e) {
+    console.warn("[sanity] fetch failed, falling back to local data:", e);
+    return { available: false, data: null };
+  }
+}
+
+// ----- Doctors --------------------------------------------------------------
+
+type SanityDoctor = {
+  _id: string;
+  name: string;
+  slug: string;
+  title: string;
+  specialty?: string;
+  imageVariant?: string;
+  years?: number;
+  focusLine?: string;
+  homeBio?: string;
+  portrait?: { url?: string };
+  shortLine?: string;
+  listBio?: string;
+  statCreds?: { value: string; superscript?: string; label: string }[];
+  listExpertise?: string[];
+  tagline?: string;
+  detailBio?: string;
+  credentials?: { icon: string; title: string; description?: string }[];
+  timeline?: { year: string; title: string; description?: string }[];
+  expertise?: string[];
+  treatments?: { icon?: string; name: string; category?: string }[];
+  quotes?: { quote: string; name: string; detail?: string }[];
+};
+
+export type DoctorFetched = Doctor & { imageUrl?: string };
+
+/**
+ * Sanity's doctor schema stores each treatment as free text (no reference
+ * field to a procedure/concern doc), so CMS-authored treatment names need
+ * to be matched back to a real page. We match against the FULL merged
+ * (Sanity + local) procedures/concerns lists — not just the local static
+ * file — since CMS-only procedures (e.g. a "Scar Revision" doc that has no
+ * local counterpart) wouldn't otherwise be found.
+ *
+ * Links go to the category *listing* page, not the item's own detail page:
+ * - plastic-surgery procedures carry a plasticSurgeryCategory ("Aesthetic
+ *   Surgery" / "Reconstructive Surgery") that the listing renders as tabs
+ *   defaulting to the first tab, so we pass it as ?category= to open the
+ *   listing on the tab that actually contains the treatment.
+ * - hair-transplant has no tabs, so it's just the plain pillar page.
+ * - untagged plastic-surgery procedures (e.g. Botox) never appear under
+ *   either tab, so they link straight to their own detail page instead.
+ * - concerns have no tabs either, so it's just the plain /concerns page.
+ */
+async function resolveTreatmentHref(name: string): Promise<string> {
+  const norm = name.trim().toLowerCase();
+  const [procedures, concerns] = await Promise.all([
+    getProcedures(),
+    getConcerns(),
+  ]);
+  const proc = procedures.find((p) => {
+    const pn = p.name.toLowerCase();
+    return pn.includes(norm) || norm.includes(pn) || pn.startsWith(norm);
+  });
+  if (proc) {
+    if (proc.pillar === "plastic-surgery") {
+      return proc.plasticSurgeryCategory
+        ? `/procedures/plastic-surgery?category=${encodeURIComponent(proc.plasticSurgeryCategory)}`
+        : `/procedures/plastic-surgery/${proc.slug}`;
+    }
+    return `/procedures/${proc.pillar}`;
+  }
+  const concern = concerns.find((c) => {
+    const cn = c.name.toLowerCase();
+    return cn.includes(norm) || norm.includes(cn) || cn.startsWith(norm);
+  });
+  if (concern) return "/concerns";
+  return "/procedures";
+}
+
+async function mapDoctor(d: SanityDoctor): Promise<DoctorFetched> {
+  const treatments = await Promise.all(
+    (d.treatments ?? []).map(async (t) => ({
+      i: t.icon ?? "✦",
+      n: t.name,
+      c: t.category ?? "",
+      href: await resolveTreatmentHref(t.name),
+    })),
+  );
+  return {
+    slug: d.slug,
+    name: d.name,
+    title: d.title,
+    specialty: d.specialty ?? "",
+    img: d.imageVariant ?? "d1",
+    focus: d.focusLine ?? "",
+    years: d.years ?? 0,
+    homeBio: d.homeBio ?? "",
+    short: d.shortLine ?? "",
+    listBio: d.listBio ?? "",
+    statCreds: (d.statCreds ?? []).map((s) => ({ n: s.value, sup: s.superscript, l: s.label })),
+    listExpertise: d.listExpertise ?? [],
+    tagline: d.tagline ?? "",
+    detailBio: d.detailBio ?? "",
+    credentials: (d.credentials ?? []).map((c) => ({ i: c.icon, t: c.title, d: c.description ?? "" })),
+    timeline: (d.timeline ?? []).map((t) => ({ y: t.year, t: t.title, d: t.description })),
+    expertise: d.expertise ?? [],
+    treatments,
+    quotes: (d.quotes ?? []).map((q) => ({ q: q.quote, n: q.name, d: q.detail ?? "" })),
+    imageUrl: d.portrait?.url,
+  };
+}
+
+/**
+ * Surface the local `photo` path as `imageUrl` so the bgImg() helper in
+ * the doctor components picks it up automatically. Sanity-uploaded
+ * portraits override this once the project is connected.
+ */
+function withLocalPhoto(d: Doctor): DoctorFetched {
+  return { ...d, imageUrl: d.photo };
+}
+
+export async function getDoctors(): Promise<DoctorFetched[]> {
+  const docs = await safeFetch<SanityDoctor[]>(doctorsQuery);
+  if (!isFilled(docs)) return LOCAL_DOCTORS.map(withLocalPhoto);
+  return Promise.all(docs.map(mapDoctor));
+}
+
+export async function getDoctorSlugs(): Promise<string[]> {
+  const slugs = await safeFetch<string[]>(doctorSlugsQuery);
+  if (isFilled(slugs)) return slugs;
+  return LOCAL_DOCTOR_SLUGS;
+}
+
+export async function getDoctorBySlug(slug: string): Promise<DoctorFetched | undefined> {
+  const doc = await safeFetch<SanityDoctor | null>(doctorBySlugQuery, { slug });
+  if (doc) return await mapDoctor(doc);
+  const local = LOCAL_DOCTORS.find((d) => d.slug === slug);
+  return local ? withLocalPhoto(local) : undefined;
+}
+
+// ----- Results --------------------------------------------------------------
+
+export type ResultFetched = Result & { imageUrl?: string };
+
+export async function getResults(): Promise<ResultFetched[]> {
+  const docs = await safeFetch<
+    {
+      _id: string;
+      name: string;
+      category: string;
+      weeks: string;
+      sessions: string;
+      patient: string;
+      concern: string;
+      externalImageUrl?: string;
+      image?: { url?: string };
+    }[]
+  >(resultsQuery);
+  if (!isFilled(docs)) return LOCAL_RESULTS;
+  return docs.map((d) => ({
+    id: d._id,
+    name: d.name,
+    cat: d.category,
+    weeks: d.weeks,
+    sessions: d.sessions,
+    patient: d.patient,
+    concern: d.concern,
+    img: d.image?.url || d.externalImageUrl || "",
+    imageUrl: d.image?.url || d.externalImageUrl,
+  }));
+}
+
+// ----- Site singletons ------------------------------------------------------
+
+export type ClinicData = typeof LOCAL_CLINIC & {
+  phone2?: string;
+  logoUrl?: string;
+  googleMapsEmbedUrl: string;
+  googleMapsLinkUrl: string;
+};
+
+export const getClinic = cache(async (): Promise<ClinicData> => {
+  const doc = await safeFetch<{
+    name?: string;
+    tagline?: string;
+    address?: string;
+    hours?: string;
+    phone?: string;
+    phone2?: string;
+    email?: string;
+    googleMapsEmbedUrl?: string;
+    googleMapsLinkUrl?: string;
+    shopUrl?: string;
+    instagramUrl?: string;
+    youtubeUrl?: string;
+    linkedinUrl?: string;
+    logo?: { url?: string };
+  } | null>(clinicSettingsQuery);
+  if (!doc) {
+    return {
+      ...LOCAL_CLINIC,
+      googleMapsEmbedUrl: `https://www.google.com/maps?q=${LOCAL_CLINIC.mapsQuery}&output=embed`,
+      googleMapsLinkUrl: `https://www.google.com/maps?q=${LOCAL_CLINIC.mapsQuery}`,
+    };
+  }
+  return {
+    ...LOCAL_CLINIC,
+    name: doc.name ?? LOCAL_CLINIC.name,
+    tagline: doc.tagline ?? LOCAL_CLINIC.tagline,
+    address: doc.address ?? LOCAL_CLINIC.address,
+    hours: doc.hours ?? LOCAL_CLINIC.hours,
+    phone: doc.phone ?? LOCAL_CLINIC.phone,
+    phone2: doc.phone2,
+    email: doc.email ?? LOCAL_CLINIC.email,
+    googleMapsEmbedUrl:
+      doc.googleMapsEmbedUrl ??
+      `https://www.google.com/maps?q=${LOCAL_CLINIC.mapsQuery}&output=embed`,
+    googleMapsLinkUrl:
+      doc.googleMapsLinkUrl ??
+      `https://www.google.com/maps?q=${LOCAL_CLINIC.mapsQuery}`,
+    shopUrl: doc.shopUrl ?? LOCAL_CLINIC.shopUrl,
+    social: {
+      instagram: doc.instagramUrl ?? LOCAL_CLINIC.social.instagram,
+      youtube: doc.youtubeUrl ?? LOCAL_CLINIC.social.youtube,
+      linkedin: doc.linkedinUrl ?? LOCAL_CLINIC.social.linkedin,
+    },
+    logoUrl: doc.logo?.url,
+  };
+});
+
+export type AnnouncementData = {
+  enabled: boolean;
+  message: string;
+  linkLabel?: string;
+  linkUrl?: string;
+};
+
+export async function getAnnouncement(): Promise<AnnouncementData> {
+  const doc = await safeFetch<AnnouncementData | null>(announcementQuery);
+  if (doc && typeof doc.message === "string") return doc;
+  return {
+    enabled: true,
+    message: "BOOK A CONSULTATION WITH A BOARD-CERTIFIED SURGEON",
+    linkLabel: "Book this week →",
+    linkUrl: "/#book",
+  };
+}
+
+export type WhyUsSectionData = {
+  mainImageUrl?: string;
+  mainImageAlt: string;
+  supportingImageUrl?: string;
+  supportingImageAlt: string;
+};
+
+export async function getWhyUsSection(): Promise<WhyUsSectionData> {
+  const doc = await safeFetch<{
+    mainImageUrl?: string;
+    mainImageAlt?: string;
+    supportingImageUrl?: string;
+    supportingImageAlt?: string;
+  } | null>(whyUsSectionQuery);
+
+  return {
+    mainImageUrl: doc?.mainImageUrl,
+    mainImageAlt: doc?.mainImageAlt ?? "Procedure room at RenovaAura Anand Vihar Clinic",
+    supportingImageUrl: doc?.supportingImageUrl,
+    supportingImageAlt: doc?.supportingImageAlt ?? "RenovaAura clinic detail",
+  };
+}
+
+export type SiteSettingsData = {
+  siteUrl?: string;
+  canonicalUrl?: string;
+  defaultSeoTitle?: string;
+  titleTemplate?: string;
+  defaultSeoDescription?: string;
+  faviconUrl?: string;
+  openGraphImageUrl?: string;
+  twitterImageUrl?: string;
+  featuredSocial?: string;
+};
+
+export async function getSiteSettings(): Promise<SiteSettingsData> {
+  const doc = await safeFetch<{
+    siteUrl?: string;
+    canonicalUrl?: string;
+    defaultSeoTitle?: string;
+    titleTemplate?: string;
+    defaultSeoDescription?: string;
+    favicon?: { url?: string };
+    openGraphImage?: { url?: string };
+    twitterImage?: { url?: string };
+    featuredSocial?: string;
+  } | null>(siteSettingsQuery);
+  if (!doc) return {};
+  return {
+    siteUrl: doc.siteUrl,
+    canonicalUrl: doc.canonicalUrl,
+    defaultSeoTitle: doc.defaultSeoTitle,
+    titleTemplate: doc.titleTemplate,
+    defaultSeoDescription: doc.defaultSeoDescription,
+    faviconUrl: doc.favicon?.url,
+    openGraphImageUrl: doc.openGraphImage?.url,
+    twitterImageUrl: doc.twitterImage?.url,
+    featuredSocial: doc.featuredSocial,
+  };
+}
+
+// ----- Treatment packages ---------------------------------------------------
+
+type SanityPackageCard = {
+  slug: string;
+  name: string;
+  category: string;
+  image?: { url?: string };
+  includes?: string;
+  price?: string;
+  concernSlug?: string;
+  order?: number;
+};
+
+function mapPackage(d: SanityPackageCard): TreatmentPackage {
+  return {
+    slug: d.slug,
+    name: d.name,
+    category: d.category as TreatmentPackage["category"],
+    image: d.image?.url,
+    includes: d.includes ?? "",
+    price: d.price,
+    concernSlug: d.concernSlug || undefined,
+    order: d.order ?? 0,
+  };
+}
+
+/** All enabled packages, ordered. Falls back to local data when Sanity empty. */
+export async function getPackages(): Promise<TreatmentPackage[]> {
+  const docs = await safeFetch<SanityPackageCard[]>(packagesQuery);
+  if (!isFilled(docs)) return LOCAL_PACKAGES;
+  return docs.map(mapPackage);
+}
+
+/** Packages tied to a given concern slug (for the per-concern section). */
+export async function getPackagesByConcern(
+  concernSlug: string,
+): Promise<TreatmentPackage[]> {
+  const all = await getPackages();
+  return all.filter((p) => p.concernSlug === concernSlug);
+}
+
+// ----- Hero carousel --------------------------------------------------------
+
+export type HeroSlideData = {
+  eyebrow: string;
+  headline: { line1: string; line2: string };
+  subtitle: string;
+  ctaLabel: string;
+  secondaryHref: string;
+  secondaryLabel: string;
+  image: string;
+  imageAlt: string;
+};
+
+type SanityHeroSlide = {
+  eyebrow?: string;
+  headlineLine1?: string;
+  headlineLine2?: string;
+  subtitle?: string;
+  ctaLabel?: string;
+  secondaryHref?: string;
+  secondaryLabel?: string;
+  image?: string;
+  imageAlt?: string;
+};
+
+/**
+ * Hero carousel slides from Sanity. Returns `null` when Sanity is empty or
+ * unreachable so the Hero component renders its built-in fallback slides.
+ */
+export async function getHeroSlides(): Promise<HeroSlideData[] | null> {
+  const docs = await safeFetch<SanityHeroSlide[]>(heroSlidesQuery);
+  if (!isFilled(docs)) return null;
+  return docs
+    .filter((d) => d.image && d.headlineLine1)
+    .map((d) => ({
+      eyebrow: d.eyebrow ?? "",
+      headline: { line1: d.headlineLine1 ?? "", line2: d.headlineLine2 ?? "" },
+      subtitle: d.subtitle ?? "",
+      ctaLabel: d.ctaLabel ?? "Book Appointment",
+      secondaryHref: d.secondaryHref ?? "/procedures",
+      secondaryLabel: d.secondaryLabel ?? "Explore Services",
+      image: d.image as string,
+      imageAlt: d.imageAlt ?? "",
+    }));
+}
+
+// ----- Homepage strings -----------------------------------------------------
+
+export async function getTestimonials() {
+  const docs = await safeFetch<{ quote: string; name: string; detail?: string }[]>(testimonialsQuery);
+  if (!isFilled(docs)) return LOCAL_TESTIMONIALS;
+  return docs.map((d) => ({ q: d.quote, name: d.name, detail: d.detail ?? "" }));
+}
+
+export async function getHomepageFaqs() {
+  const docs = await safeFetch<{ question: string; answer: string }[]>(homepageFaqsQuery);
+  if (!isFilled(docs)) return LOCAL_FAQS;
+  return docs.map((d) => ({ q: d.question, a: d.answer }));
+}
+
+export async function getEeatPillars() {
+  const docs = await safeFetch<{
+    letter: string;
+    title: string;
+    description: string;
+    imageUrl?: string;
+  }[]>(eeatPillarsQuery);
+  if (!isFilled(docs)) return LOCAL_EEAT.map((e) => ({ ...e, imageUrl: undefined }));
+  return docs.map((d) => ({
+    letter: d.letter,
+    title: d.title,
+    desc: d.description,
+    imageUrl: d.imageUrl,
+  }));
+}
+
+export async function getTrustItems(): Promise<{ icon: string; text: string }[]> {
+  const docs = await safeFetch<{ icon: string; text: string }[]>(trustItemsQuery);
+  if (!isFilled(docs)) return LOCAL_TRUST_ITEMS;
+  return docs;
+}
+
+// ----- Procedures -----------------------------------------------------------
+
+type SanityProcedure = {
+  _id: string;
+  name: string;
+  slug: string;
+  pillar: ProcedurePillar;
+  plasticSurgeryCategory?: PlasticSurgeryCategory;
+  tag?: string;
+  headline: string;
+  overview?: string;
+  image?: { url?: string };
+  quickDuration?: string;
+  quickSessions?: string;
+  quickDowntime?: string;
+  quickAnaesthesia?: string;
+  keyPoints?: string[];
+  suitableFor?: string[];
+  process?: { title: string; description: string }[];
+  benefits?: { icon: string; title: string; description: string }[];
+  faqs?: { question: string; answer: string }[];
+  medicallyReviewedBy?: string;
+  lastReviewed?: string;
+  relatedPackages?: (SanityPackageCard | null)[];
+  relatedProcedures?: (SanityRelatedTreatment | null)[];
+  technologiesUsed?: (SanityEquipment | null)[];
+  realResults?: RealResult[];
+  videos?: Video[];
+};
+
+type SanityRelatedTreatment = {
+  _id: string;
+  _type: "procedure" | "concern" | "bodyConcern";
+  name: string;
+  slug: string;
+  image?: { url?: string };
+  pillar?: ProcedurePillar;
+  tag?: string;
+  headline?: string;
+  overview?: string;
+  quickDuration?: string;
+  quickSessions?: string;
+  icon?: string;
+  cardTagline?: string;
+  summary?: string;
+};
+
+function isPresent<T>(item: T | null | undefined): item is T {
+  return item != null;
+}
+
+function mapRelatedTreatment(d: SanityRelatedTreatment): RelatedTreatmentCard {
+  if (d._type === "procedure") {
+    const pillarLabel =
+      d.pillar === "hair-transplant" ? "Hair Transplant" : "Plastic Surgery";
+    return {
+      slug: d.slug,
+      name: d.name,
+      href: `/procedures/${d.pillar}/${d.slug}`,
+      category: pillarLabel,
+      description: d.headline ?? d.overview ?? "",
+      image: d.image?.url,
+      tag: d.tag,
+      quickDuration: d.quickDuration,
+      quickSessions: d.quickSessions,
+    };
+  }
+
+  if (d._type === "bodyConcern") {
+    return {
+      slug: d.slug,
+      name: d.name,
+      href: `/body-concerns/${d.slug}`,
+      category: "Body Concern",
+      description: d.headline ?? d.summary ?? d.cardTagline ?? "",
+      image: d.image?.url,
+      tag: d.cardTagline,
+    };
+  }
+
+  return {
+    slug: d.slug,
+    name: d.name,
+    href: `/concerns/${d.slug}`,
+    category: "Skin Concern",
+    description: d.headline ?? d.summary ?? d.cardTagline ?? "",
+    image: d.image?.url,
+    tag: d.cardTagline,
+  };
+}
+
+function mapProcedure(d: SanityProcedure): Procedure {
+  return {
+    slug: d.slug,
+    name: d.name,
+    pillar: d.pillar,
+    plasticSurgeryCategory: d.plasticSurgeryCategory,
+    tag: d.tag,
+    image: d.image?.url,
+    headline: d.headline,
+    overview: d.overview ?? "",
+    quick: {
+      duration: d.quickDuration ?? "",
+      sessions: d.quickSessions ?? "",
+      downtime: d.quickDowntime ?? "",
+      anaesthesia: d.quickAnaesthesia,
+    },
+    keyPoints: d.keyPoints ?? [],
+    suitableFor: d.suitableFor ?? [],
+    process: (d.process ?? []).map((s) => ({ t: s.title, d: s.description })),
+    benefits: (d.benefits ?? []).map((b) => ({
+      i: b.icon,
+      t: b.title,
+      d: b.description,
+    })),
+    faqs: (d.faqs ?? []).map((f) => ({ q: f.question, a: f.answer })),
+    medicallyReviewedBy: d.medicallyReviewedBy,
+    lastReviewed: d.lastReviewed,
+    relatedPackages: (d.relatedPackages ?? []).filter(isPresent).map(mapPackage),
+    relatedProcedures: (d.relatedProcedures ?? [])
+      .filter(isPresent)
+      .map(mapRelatedTreatment),
+    technologiesUsed: (d.technologiesUsed ?? []).filter(isPresent).map(mapEquipment),
+    realResults: d.realResults ?? [],
+    videos: d.videos ?? [],
+  };
+}
+
+export async function getProcedures(): Promise<Procedure[]> {
+  const docs = await safeFetch<SanityProcedure[]>(proceduresQuery);
+  if (isFilled(docs)) return docs.map(mapProcedure);
+  return LOCAL_PROCEDURES;
+}
+
+export async function getProceduresByPillar(
+  pillar: ProcedurePillar,
+): Promise<Procedure[]> {
+  const docs = await safeFetch<SanityProcedure[]>(proceduresByPillarQuery, {
+    pillar,
+  });
+  const local = pillar === "hair-transplant"
+    ? LOCAL_HAIR_PROCEDURES
+    : LOCAL_PLASTIC_PROCEDURES;
+  if (isFilled(docs)) return docs.map(mapProcedure);
+  return local;
+}
+
+export async function getProcedureBySlug(
+  slug: string,
+): Promise<Procedure | undefined> {
+  const { available, data: doc } =
+    await safeFetchWithAvailability<SanityProcedure | null>(
+      procedureBySlugQuery,
+      { slug },
+    );
+  if (doc) return mapProcedure(doc);
+  // Sanity may intentionally contain only a subset of the complete catalogue.
+  // Keep published local procedures routable when no matching remote document exists.
+  return LOCAL_PROCEDURES.find((p) => p.slug === slug);
+}
+
+export async function getProcedureSlugs(): Promise<
+  { slug: string; pillar: ProcedurePillar }[]
+> {
+  const docs = await safeFetch<
+    { slug: string; pillar: ProcedurePillar }[]
+  >(procedureSlugsQuery);
+  const local = LOCAL_PROCEDURES.map((p) => ({ slug: p.slug, pillar: p.pillar }));
+  if (isFilled(docs)) return docs;
+  return local;
+}
+
+// ----- Skin Concerns --------------------------------------------------------
+
+type SanityConcern = {
+  _id: string;
+  name: string;
+  slug: string;
+  icon?: string;
+  cardTagline?: string;
+  image?: { url?: string };
+  headline?: string;
+  summary?: string;
+  symptoms?: string[];
+  causes?: string[];
+  approach?: string[];
+  relatedPackages?: (SanityPackageCard | null)[];
+  relatedProcedures?: (SanityRelatedTreatment | null)[];
+  technologiesUsed?: (SanityEquipment | null)[];
+  realResults?: RealResult[];
+  videos?: Video[];
+  faqs?: { question: string; answer: string }[];
+};
+
+function mapConcern(d: SanityConcern): Concern {
+  return {
+    slug: d.slug,
+    name: d.name,
+    icon: d.icon ?? "◍",
+    image: d.image?.url,
+    cardTagline: d.cardTagline ?? "",
+    headline: d.headline ?? "",
+    summary: d.summary ?? "",
+    symptoms: d.symptoms ?? [],
+    causes: d.causes ?? [],
+    approach: d.approach ?? [],
+    relatedProcedureSlugs: (d.relatedProcedures ?? [])
+      .filter(isPresent)
+      .map((p) => p.slug),
+    relatedPackages: (d.relatedPackages ?? []).filter(isPresent).map(mapPackage),
+    relatedProcedures: (d.relatedProcedures ?? [])
+      .filter(isPresent)
+      .map(mapRelatedTreatment),
+    technologiesUsed: (d.technologiesUsed ?? []).filter(isPresent).map(mapEquipment),
+    realResults: d.realResults ?? [],
+    videos: d.videos ?? [],
+    faqs: (d.faqs ?? []).map((f) => ({ q: f.question, a: f.answer })),
+  };
+}
+
+export async function getConcerns(): Promise<Concern[]> {
+  const docs = await safeFetch<SanityConcern[]>(concernsQuery);
+  if (isFilled(docs)) return docs.map(mapConcern);
+  return LOCAL_CONCERNS;
+}
+
+export async function getConcernBySlug(slug: string): Promise<Concern | undefined> {
+  const doc = await safeFetch<SanityConcern | null>(concernBySlugQuery, {
+    slug,
+  });
+  if (doc) return mapConcern(doc);
+  return LOCAL_CONCERNS.find((c) => c.slug === slug);
+}
+
+export async function getConcernSlugs(): Promise<string[]> {
+  const slugs = await safeFetch<string[]>(concernSlugsQuery);
+  if (isFilled(slugs)) return Array.from(new Set([...LOCAL_CONCERN_SLUGS, ...slugs]));
+  return LOCAL_CONCERN_SLUGS;
+}
+
+// ----- Body Concerns --------------------------------------------------------
+
+export type BodyConcern = Omit<Concern, "relatedProcedureSlugs"> & {
+  relatedPackages: TreatmentPackage[];
+  relatedProcedures: RelatedTreatmentCard[];
+  technologiesUsed: Equipment[];
+};
+
+type SanityBodyConcern = SanityConcern;
+
+function mapBodyConcern(d: SanityBodyConcern): BodyConcern {
+  return {
+    slug: d.slug,
+    name: d.name,
+    icon: d.icon ?? "◍",
+    image: d.image?.url,
+    cardTagline: d.cardTagline ?? "",
+    headline: d.headline ?? "",
+    summary: d.summary ?? "",
+    symptoms: d.symptoms ?? [],
+    causes: d.causes ?? [],
+    approach: d.approach ?? [],
+    relatedPackages: (d.relatedPackages ?? []).filter(isPresent).map(mapPackage),
+    relatedProcedures: (d.relatedProcedures ?? [])
+      .filter(isPresent)
+      .map(mapRelatedTreatment),
+    technologiesUsed: (d.technologiesUsed ?? []).filter(isPresent).map(mapEquipment),
+    realResults: d.realResults ?? [],
+    videos: d.videos ?? [],
+    faqs: (d.faqs ?? []).map((f) => ({ q: f.question, a: f.answer })),
+  };
+}
+
+function mapLocalBodyConcern(d: (typeof LOCAL_BODY_CONCERNS)[number]): BodyConcern {
+  return {
+    ...d,
+    image: undefined,
+    relatedPackages: [],
+    relatedProcedures: [],
+    technologiesUsed: [],
+    realResults: [],
+    videos: [],
+  };
+}
+
+export async function getBodyConcerns(): Promise<BodyConcern[]> {
+  const docs = await safeFetch<SanityBodyConcern[]>(bodyConcernsQuery);
+  if (isFilled(docs)) return docs.map(mapBodyConcern);
+  return LOCAL_BODY_CONCERNS.map(mapLocalBodyConcern);
+}
+
+export async function getBodyConcernBySlug(
+  slug: string,
+): Promise<BodyConcern | undefined> {
+  const doc = await safeFetch<SanityBodyConcern | null>(
+    bodyConcernBySlugQuery,
+    { slug },
+  );
+  return doc ? mapBodyConcern(doc) : undefined;
+}
+
+export async function getBodyConcernSlugs(): Promise<string[]> {
+  const slugs = await safeFetch<string[]>(bodyConcernSlugsQuery);
+  const local = LOCAL_BODY_CONCERNS.map((item) => item.slug);
+  return isFilled(slugs) ? Array.from(new Set([...local, ...slugs])) : local;
+}
+
+// ----- Lasers / Technologies -----------------------------------------------
+
+export type EquipmentSpec = { label: string; value: string };
+export type EquipmentFaq = { question: string; answer: string };
+
+export type Equipment = {
+  slug: string;
+  name: string;
+  treatmentName?: string;
+  image?: string;
+  shortDescription: string;
+  detailedDescription: string;
+  category: string;
+  displayOrder: number;
+  featured: boolean;
+  technologyPartner?: string;
+  specifications: EquipmentSpec[];
+  keyBenefits: string[];
+  treatmentAreas: string[];
+  idealFor?: string;
+  faqs: EquipmentFaq[];
+  seoTitle?: string;
+  seoDescription?: string;
+};
+
+type SanityEquipment = {
+  _id: string;
+  slug: string;
+  name: string;
+  treatmentName?: string;
+  image?: { url?: string };
+  shortDescription?: string;
+  detailedDescription?: string;
+  category?: string;
+  displayOrder?: number;
+  featured?: boolean;
+  technologyPartner?: string;
+  specifications?: EquipmentSpec[];
+  keyBenefits?: string[];
+  treatmentAreas?: string[];
+  idealFor?: string;
+  faqs?: EquipmentFaq[];
+  seoTitle?: string;
+  seoDescription?: string;
+};
+
+function mapEquipment(d: SanityEquipment): Equipment {
+  return {
+    slug: d.slug,
+    name: d.name,
+    treatmentName: d.treatmentName,
+    image: d.image?.url,
+    shortDescription: d.shortDescription ?? "",
+    detailedDescription: d.detailedDescription ?? "",
+    category: d.category ?? "Other",
+    displayOrder: d.displayOrder ?? 0,
+    featured: d.featured ?? false,
+    technologyPartner: d.technologyPartner,
+    specifications: (d.specifications ?? []).filter((s) => s?.label || s?.value),
+    keyBenefits: d.keyBenefits ?? [],
+    treatmentAreas: d.treatmentAreas ?? [],
+    idealFor: d.idealFor,
+    faqs: (d.faqs ?? []).filter((f) => f?.question),
+    seoTitle: d.seoTitle,
+    seoDescription: d.seoDescription,
+  };
+}
+
+export async function getEquipments(): Promise<Equipment[]> {
+  const docs = await safeFetch<SanityEquipment[]>(equipmentQuery);
+  if (!isFilled(docs)) return [];
+  return docs.map(mapEquipment);
+}
+
+export async function getEquipmentBySlug(
+  slug: string,
+): Promise<Equipment | undefined> {
+  const doc = await safeFetch<SanityEquipment | null>(equipmentBySlugQuery, {
+    slug,
+  });
+  return doc ? mapEquipment(doc) : undefined;
+}
+
+export async function getEquipmentSlugs(): Promise<string[]> {
+  const slugs = await safeFetch<string[]>(equipmentSlugsQuery);
+  return isFilled(slugs) ? slugs : [];
+}
+
+// ── Location fetchers ────────────────────────────────────────────────────────
+
+import { allLocationsQuery, locationByCityAreaQuery } from "./queries";
+import { NCR_AREAS, type NcrArea } from "@/data/locations";
+
+export type SanityLocation = {
+  _id: string;
+  area: string;
+  areaSlug: string;
+  city: string;
+  citySlug: string;
+  pincode?: string;
+  headline?: string;
+  intro?: string;
+  faqs?: { question: string; answer: string }[];
+  metaTitle?: string;
+  metaDescription?: string;
+  metaKeywords?: string[] | string | null;
+};
+
+/** All enabled locations from Sanity, falling back to the static NCR_AREAS. */
+export async function getAllLocations(): Promise<SanityLocation[]> {
+  const docs = await safeFetch<SanityLocation[]>(allLocationsQuery);
+  const local = NCR_AREAS.map((a) => ({
+    _id: `location.${a.areaSlug}`,
+    area: a.area,
+    areaSlug: a.areaSlug,
+    city: a.city,
+    citySlug: a.citySlug,
+    pincode: a.pincode,
+  }));
+  if (isFilled(docs)) return docs;
+  return local;
+}
+
+/** Single location by city + area slug. */
+export async function getLocationByCityArea(
+  citySlug: string,
+  areaSlug: string,
+): Promise<SanityLocation | null> {
+  const doc = await safeFetch<SanityLocation | null>(
+    locationByCityAreaQuery,
+    { citySlug, areaSlug },
+  );
+  if (doc) return doc;
+  // Static fallback
+  const area = NCR_AREAS.find(
+    (a) => a.citySlug === citySlug && a.areaSlug === areaSlug,
+  );
+  if (!area) return null;
+  return {
+    _id: `location.${area.areaSlug}`,
+    area: area.area,
+    areaSlug: area.areaSlug,
+    city: area.city,
+    citySlug: area.citySlug,
+    pincode: area.pincode,
+  };
+}
+
+// ----- Media gallery --------------------------------------------------------
+
+export async function getGalleryImages(): Promise<GalleryImage[]> {
+  const docs = await safeFetch<GalleryImage[]>(galleryImagesQuery);
+  return isFilled(docs) ? docs : [];
+}
+
+export async function getGalleryRealResults(): Promise<RealResult[]> {
+  const docs = await safeFetch<RealResult[]>(galleryRealResultsQuery);
+  return isFilled(docs) ? docs : [];
+}
+
+export async function getGalleryVideos(): Promise<Video[]> {
+  const docs = await safeFetch<Video[]>(galleryVideosQuery);
+  return isFilled(docs) ? docs : [];
+}

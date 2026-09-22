@@ -1,0 +1,462 @@
+/**
+ * GROQ query strings for every fetcher in fetchers.ts.
+ */
+
+export const clinicSettingsQuery = /* groq */ `
+  *[_type == "clinicSettings"][0]{
+    name, tagline, address, hours, phone, phone2, email,
+    googleMapsEmbedUrl, googleMapsLinkUrl, shopUrl,
+    instagramUrl, youtubeUrl, linkedinUrl,
+    "logo": logo.asset->{_id, url}
+  }
+`;
+
+export const siteSettingsQuery = /* groq */ `
+  *[_type == "siteSettings"][0]{
+    siteUrl, canonicalUrl, titleTemplate,
+    "defaultSeoTitle": coalesce(defaultSeoTitle, defaultMetaTitle),
+    "defaultSeoDescription": coalesce(defaultSeoDescription, defaultMetaDescription),
+    "favicon": favicon.asset->{_id, url},
+    "openGraphImage": select(defined(openGraphImage.asset) => openGraphImage.asset->{_id, url}, defaultOgImage.asset->{_id, url}),
+    "twitterImage": twitterImage.asset->{_id, url},
+    footerColumns[]{title, links[]{label, href}},
+    footerBottomNote,
+    featuredSocial,
+    heroEyebrow, heroHeadline, heroSubhead
+  }
+`;
+
+export const announcementQuery = /* groq */ `
+  *[_type == "announcementBar"][0]{ enabled, message, linkLabel, linkUrl }
+`;
+
+export const whyUsSectionQuery = /* groq */ `
+  *[_type == "whyUsSection"][0]{
+    "mainImageUrl": mainImage.asset->url,
+    mainImageAlt,
+    "supportingImageUrl": supportingImage.asset->url,
+    supportingImageAlt
+  }
+`;
+
+export const packagesQuery = /* groq */ `
+  *[_type == "package" && enabled != false] | order(order asc, name asc){
+    "slug": slug.current,
+    "image": image.asset->{_id, url},
+    name, category, includes, price, concernSlug, order
+  }
+`;
+
+export const heroSlidesQuery = /* groq */ `
+  *[_type == "heroSlide" && enabled != false] | order(order asc, _createdAt asc){
+    eyebrow, headlineLine1, headlineLine2, subtitle,
+    ctaLabel, secondaryLabel, secondaryHref,
+    "image": image.asset->url,
+    imageAlt
+  }
+`;
+
+const seoProjection = /* groq */ `
+  seo{ title, description, canonicalUrl, noIndex,
+    "ogImage": ogImage.asset->{_id, url}
+  }
+`;
+
+// =========================================================================
+// Procedures (Hair Transplant + Plastic Surgery)
+// =========================================================================
+
+const procedureCardProjection = /* groq */ `
+  _id,
+  name,
+  "slug": slug.current,
+  pillar,
+  plasticSurgeryCategory,
+  tag,
+  headline,
+  "image": image.asset->{_id, url},
+  quickDuration,
+  quickSessions,
+  "order": coalesce(order, 999)
+`;
+
+const packageCardProjection = /* groq */ `
+  _id,
+  name,
+  "slug": slug.current,
+  category,
+  includes,
+  price,
+  concernSlug,
+  "image": image.asset->{_id, url},
+  "order": coalesce(order, 999)
+`;
+
+const equipmentCardProjection = /* groq */ `
+  _id,
+  name,
+  "slug": slug.current,
+  "image": image.asset->{_id, url},
+  shortDescription,
+  detailedDescription,
+  category,
+  "displayOrder": coalesce(displayOrder, 999),
+  "featured": coalesce(featured, false),
+  seoTitle,
+  seoDescription
+`;
+
+const relatedTreatmentProjection = /* groq */ `
+  _id,
+  _type,
+  name,
+  "slug": slug.current,
+  "image": image.asset->{_id, url},
+  _type == "procedure" => {
+    pillar,
+    plasticSurgeryCategory,
+    tag,
+    headline,
+    overview,
+    quickDuration,
+    quickSessions,
+    "order": coalesce(order, 999)
+  },
+  _type == "concern" => {
+    icon,
+    cardTagline,
+    headline,
+    summary,
+    "order": coalesce(order, 999)
+  },
+  _type == "bodyConcern" => {
+    icon,
+    cardTagline,
+    headline,
+    summary,
+    "order": coalesce(order, 999)
+  }
+`;
+
+// =========================================================================
+// Media projections — Real Results, Videos, Gallery Images
+// (defined here so the treatment-detail queries below can reuse them)
+// =========================================================================
+
+const realResultProjection = /* groq */ `
+  "id": _id,
+  title,
+  caption,
+  category,
+  "before": beforeImage.asset->url,
+  "after": afterImage.asset->url,
+  "displayOrder": coalesce(displayOrder, 999),
+  featured
+`;
+
+const linkedRealResultsProjection = /* groq */ `
+  *[
+    _type == "realResult" &&
+    consentOnFile == true &&
+    ^._id in treatments[]._ref
+  ] | order(displayOrder asc, _createdAt desc){ ${realResultProjection} }
+`;
+
+const videoProjection = /* groq */ `
+  "id": _id,
+  title,
+  sourceType,
+  youtubeUrl,
+  vimeoUrl,
+  "fileUrl": videoFile.asset->url,
+  "thumbnail": thumbnail.asset->url,
+  category,
+  "uploadDate": _createdAt,
+  "displayOrder": coalesce(displayOrder, 999),
+  featured
+`;
+
+const galleryImageProjection = /* groq */ `
+  "id": _id,
+  title,
+  "image": image.asset->url,
+  category,
+  description,
+  "displayOrder": coalesce(displayOrder, 999),
+  featured
+`;
+
+export const galleryImagesQuery = /* groq */ `
+  *[_type == "galleryImage"] | order(displayOrder asc, _createdAt desc){ ${galleryImageProjection} }
+`;
+export const galleryRealResultsQuery = /* groq */ `
+  *[_type == "realResult"] | order(displayOrder asc){ ${realResultProjection} }
+`;
+export const galleryVideosQuery = /* groq */ `
+  *[_type == "video"] | order(displayOrder asc){ ${videoProjection} }
+`;
+
+export const proceduresQuery = /* groq */ `
+  *[_type == "procedure"] | order(pillar asc, order asc, name asc){
+    ${procedureCardProjection}
+  }
+`;
+
+export const proceduresByPillarQuery = /* groq */ `
+  *[_type == "procedure" && pillar == $pillar] | order(order asc, name asc){
+    ${procedureCardProjection}
+  }
+`;
+
+export const procedureBySlugQuery = /* groq */ `
+  *[_type == "procedure" && slug.current == $slug][0]{
+    ${procedureCardProjection},
+    overview,
+    quickDowntime,
+    quickAnaesthesia,
+    keyPoints,
+    suitableFor,
+    process[]{title, description},
+    benefits[]{icon, title, description},
+    faqs[]{question, answer},
+    "relatedPackages": relatedPackages[]->{ ${packageCardProjection} },
+    "relatedProcedures": relatedProcedures[]->{ ${relatedTreatmentProjection} },
+    "technologiesUsed": technologiesUsed[]->{ ${equipmentCardProjection} },
+    "realResults": ${linkedRealResultsProjection},
+    "videos": *[_type == "video" && references(^._id)] | order(displayOrder asc){ ${videoProjection} },
+    medicallyReviewedBy,
+    lastReviewed
+  }
+`;
+
+export const procedureSlugsQuery = /* groq */ `
+  *[_type == "procedure" && defined(slug.current)][]{
+    "slug": slug.current,
+    pillar
+  }
+`;
+
+// =========================================================================
+// Skin Concerns
+// =========================================================================
+
+const concernCardProjection = /* groq */ `
+  _id,
+  name,
+  "slug": slug.current,
+  icon,
+  cardTagline,
+  "image": image.asset->{_id, url},
+  "order": coalesce(order, 999)
+`;
+
+export const concernsQuery = /* groq */ `
+  *[_type == "concern"] | order(order asc, name asc){
+    ${concernCardProjection}
+  }
+`;
+
+export const concernBySlugQuery = /* groq */ `
+  *[_type == "concern" && slug.current == $slug][0]{
+    ${concernCardProjection},
+    headline,
+    summary,
+    symptoms,
+    causes,
+    approach,
+    "relatedPackages": relatedPackages[]->{ ${packageCardProjection} },
+    "relatedProcedures": relatedProcedures[]->{ ${relatedTreatmentProjection} },
+    "technologiesUsed": technologiesUsed[]->{ ${equipmentCardProjection} },
+    "realResults": ${linkedRealResultsProjection},
+    "videos": *[_type == "video" && references(^._id)] | order(displayOrder asc){ ${videoProjection} },
+    faqs[]{question, answer}
+  }
+`;
+
+export const concernSlugsQuery = /* groq */ `
+  *[_type == "concern" && defined(slug.current)][].slug.current
+`;
+
+// =========================================================================
+// Body Concerns
+// =========================================================================
+
+export const bodyConcernsQuery = /* groq */ `
+  *[_type == "bodyConcern"] | order(order asc, name asc){
+    ${concernCardProjection}
+  }
+`;
+
+export const bodyConcernBySlugQuery = /* groq */ `
+  *[_type == "bodyConcern" && slug.current == $slug][0]{
+    ${concernCardProjection},
+    headline,
+    summary,
+    symptoms,
+    causes,
+    approach,
+    "relatedPackages": relatedPackages[]->{ ${packageCardProjection} },
+    "relatedProcedures": relatedProcedures[]->{ ${relatedTreatmentProjection} },
+    "technologiesUsed": technologiesUsed[]->{ ${equipmentCardProjection} },
+    "realResults": ${linkedRealResultsProjection},
+    "videos": *[_type == "video" && references(^._id)] | order(displayOrder asc){ ${videoProjection} },
+    faqs[]{question, answer}
+  }
+`;
+
+export const bodyConcernSlugsQuery = /* groq */ `
+  *[_type == "bodyConcern" && defined(slug.current)][].slug.current
+`;
+
+// =========================================================================
+// Lasers / Technologies
+// =========================================================================
+
+const equipmentProjection = /* groq */ `
+  ${equipmentCardProjection},
+  treatmentName
+`;
+
+// Detail projection adds the rich, sectioned content used on the machine page.
+const equipmentDetailProjection = /* groq */ `
+  ${equipmentProjection},
+  technologyPartner,
+  specifications[]{ label, value },
+  keyBenefits,
+  treatmentAreas,
+  idealFor,
+  faqs[]{ question, answer }
+`;
+
+export const equipmentQuery = /* groq */ `
+  *[_type == "equipment"] | order(displayOrder asc, name asc){
+    ${equipmentProjection}
+  }
+`;
+
+export const equipmentBySlugQuery = /* groq */ `
+  *[_type == "equipment" && slug.current == $slug][0]{
+    ${equipmentDetailProjection}
+  }
+`;
+
+export const equipmentSlugsQuery = /* groq */ `
+  *[_type == "equipment" && defined(slug.current)][].slug.current
+`;
+
+const doctorCardProjection = /* groq */ `
+  _id,
+  name,
+  "slug": slug.current,
+  title,
+  specialty,
+  imageVariant,
+  years,
+  focusLine,
+  homeBio,
+  "portrait": portrait.asset->{_id, url}
+`;
+
+export const doctorsQuery = /* groq */ `
+  *[_type == "doctor"] | order(order asc){
+    ${doctorCardProjection},
+    shortLine,
+    listBio,
+    statCreds[]{value, superscript, label},
+    listExpertise
+  }
+`;
+
+export const doctorBySlugQuery = /* groq */ `
+  *[_type == "doctor" && slug.current == $slug][0]{
+    ${doctorCardProjection},
+    shortLine,
+    listBio,
+    statCreds[]{value, superscript, label},
+    listExpertise,
+    tagline,
+    detailBio,
+    credentials[]{icon, title, description},
+    timeline[]{year, title, description},
+    expertise,
+    treatments[]{icon, name, category},
+    quotes[]{quote, name, detail},
+    ${seoProjection}
+  }
+`;
+
+export const doctorSlugsQuery = /* groq */ `
+  *[_type == "doctor" && defined(slug.current)][].slug.current
+`;
+
+export const resultsQuery = /* groq */ `
+  *[_type == "result" && consentOnFile == true] | order(order asc){
+    _id,
+    name,
+    category,
+    weeks,
+    sessions,
+    patient,
+    concern,
+    externalImageUrl,
+    "image": image.asset->{_id, url},
+    "treatmentSlug": treatment->slug.current
+  }
+`;
+
+export const testimonialsQuery = /* groq */ `
+  *[_type == "testimonial" && showOnHomepage == true] | order(order asc){
+    quote, name, detail
+  }
+`;
+
+export const homepageFaqsQuery = /* groq */ `
+  *[_type == "homepageFaq"] | order(order asc){ question, answer }
+`;
+
+export const eeatPillarsQuery = /* groq */ `
+  *[_type == "eeatPillar"] | order(order asc){
+    letter, title, description,
+    "imageUrl": image.asset->url
+  }
+`;
+
+export const trustItemsQuery = /* groq */ `
+  *[_type == "trustItem"] | order(order asc){ icon, text }
+`;
+
+// ── Location queries ─────────────────────────────────────────────────────────
+
+export const allLocationsQuery = /* groq */ `
+  *[_type == "location" && enabled != false] | order(citySlug asc, areaSlug.current asc) {
+    _id,
+    area,
+    "areaSlug": areaSlug.current,
+    city,
+    citySlug,
+    pincode,
+    headline,
+    intro,
+    faqs[]{ question, answer },
+    metaTitle,
+    metaDescription,
+    metaKeywords
+  }
+`;
+
+export const locationByCityAreaQuery = /* groq */ `
+  *[_type == "location" && citySlug == $citySlug && areaSlug.current == $areaSlug && enabled != false][0] {
+    _id,
+    area,
+    "areaSlug": areaSlug.current,
+    city,
+    citySlug,
+    pincode,
+    headline,
+    intro,
+    faqs[]{ question, answer },
+    metaTitle,
+    metaDescription,
+    metaKeywords
+  }
+`;

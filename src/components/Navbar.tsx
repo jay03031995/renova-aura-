@@ -1,0 +1,374 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
+import Link from "next/link";
+import { telHref, waHref } from "@/data/clinic";
+import type { BodyConcern, ClinicData } from "@/sanity/lib/fetchers";
+import { DOCTORS } from "@/data/doctors";
+import type { Procedure } from "@/data/procedures";
+import type { Concern } from "@/data/concerns";
+import { ArrowRight, Phone, WhatsappLogo } from "@/components/icons";
+import BookButton from "@/components/BookButton";
+import { useBooking } from "@/components/BookingContext";
+import "./Navbar.css";
+
+/**
+ * RenovaAura primary navigation.
+ *
+ * Desktop: two procedure pillars (Hair Transplant / Plastic Surgery) plus
+ * Skin Concerns / Doctors get mega-menu dropdowns.
+ * Mobile (≤980px): the link bar is hidden and replaced by a WhatsApp quick
+ * link + a hamburger that opens a slide-in drawer with the full menu and
+ * tap actions.
+ */
+const MOBILE_LINKS: { label: string; href: string }[] = [
+  { label: "Hair Transplant", href: "/procedures/hair-transplant" },
+  { label: "Plastic Surgery", href: "/procedures/plastic-surgery" },
+  { label: "Skin Concerns", href: "/concerns" },
+  { label: "Body Concerns", href: "/body-concerns" },
+  { label: "Lasers / Technologies", href: "/tools-equipments" },
+  { label: "Packages", href: "/packages" },
+  { label: "Doctors", href: "/doctors" },
+  { label: "Gallery", href: "/gallery" },
+  { label: "Contact", href: "/contact" },
+];
+
+export default function Navbar({
+  clinic,
+  hairProcedures,
+  plasticProcedures,
+  skinConcerns,
+  bodyConcerns,
+}: {
+  clinic: ClinicData;
+  hairProcedures: Procedure[];
+  plasticProcedures: Procedure[];
+  skinConcerns: Concern[];
+  bodyConcerns: BodyConcern[];
+}) {
+  const [scrolled, setScrolled] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+  // Portal the drawer to <body> only after mount (avoids SSR mismatch and
+  // escapes the .nav backdrop-filter containing block that was shoving the
+  // fixed drawer off-screen).
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    const id = window.setTimeout(() => setMounted(true), 0);
+    return () => window.clearTimeout(id);
+  }, []);
+  const { open } = useBooking();
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 8);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  // Lock body scroll + close on Esc while the drawer is open.
+  useEffect(() => {
+    document.body.style.overflow = menuOpen ? "hidden" : "";
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setMenuOpen(false);
+    };
+    if (menuOpen) window.addEventListener("keydown", onKey);
+    return () => {
+      document.body.style.overflow = "";
+      window.removeEventListener("keydown", onKey);
+    };
+  }, [menuOpen]);
+
+  const closeMenu = () => setMenuOpen(false);
+
+  const hairTop = hairProcedures.slice(0, 6);
+  const plasticTop = plasticProcedures.slice(0, 6);
+  const concernTop = skinConcerns.slice(0, 6);
+  const bodyConcernTop = bodyConcerns.slice(0, 6);
+
+  return (
+    <nav className={"nav" + (scrolled ? " scrolled" : "")}>
+      <div className="nav-inner">
+        <Link href="/" className="logo" aria-label={clinic.name}>
+          <img
+            src={clinic.logoUrl ?? "/renovaaura-logo.png"}
+            alt={clinic.name}
+            className="logo-img"
+            width={180}
+            height={50}
+          />
+        </Link>
+
+        <div className="nav-links">
+          <div className="nav-item">
+            <Link
+              className="nav-link has-dd"
+              href="/procedures/hair-transplant"
+            >
+              Hair Transplant
+            </Link>
+            <div className="nav-dd wide">
+              <div className="nav-dd-hd">
+                Hair restoration · {hairProcedures.length} procedures
+              </div>
+              {hairTop.map((p) => (
+                <Link
+                  key={p.slug}
+                  className="nav-dd-item"
+                  href={`/procedures/hair-transplant/${p.slug}`}
+                >
+                  <span>{p.name}</span>
+                  <small>{p.quick.duration}</small>
+                </Link>
+              ))}
+              <div className="nav-dd-foot">
+                <span>All led by board-certified surgeons</span>
+                <Link href="/procedures/hair-transplant">
+                  See all <ArrowRight size={11} />
+                </Link>
+              </div>
+            </div>
+          </div>
+
+          <div className="nav-item">
+            <Link
+              className="nav-link has-dd"
+              href="/procedures/plastic-surgery"
+            >
+              Plastic Surgery
+            </Link>
+            <div className="nav-dd wide">
+              <div className="nav-dd-hd">
+                Plastic surgery · {plasticProcedures.length} procedures
+              </div>
+              {plasticTop.map((p) => (
+                <Link
+                  key={p.slug}
+                  className="nav-dd-item"
+                  href={`/procedures/plastic-surgery/${p.slug}`}
+                >
+                  <span>{p.name}</span>
+                  <small>{p.quick.duration}</small>
+                </Link>
+              ))}
+              <div className="nav-dd-foot">
+                <span>Refined, never overdone</span>
+                <Link href="/procedures/plastic-surgery">
+                  See all <ArrowRight size={11} />
+                </Link>
+              </div>
+            </div>
+          </div>
+
+          <div className="nav-item">
+            <Link className="nav-link has-dd" href="/concerns">
+              Skin Concerns
+            </Link>
+            <div className="nav-dd wide">
+              <div className="nav-dd-hd">
+                Skin concerns · {skinConcerns.length} treated
+              </div>
+              {concernTop.map((c) => (
+                <Link
+                  key={c.slug}
+                  className="nav-dd-item"
+                  href={`/concerns/${c.slug}`}
+                >
+                  <span>{c.name}</span>
+                  <small>{c.cardTagline}</small>
+                </Link>
+              ))}
+              <div className="nav-dd-foot">
+                <span>Calibrated for Indian skin</span>
+                <Link href="/concerns">
+                  See all <ArrowRight size={11} />
+                </Link>
+              </div>
+            </div>
+          </div>
+
+          <div className="nav-item">
+            <Link className="nav-link has-dd" href="/body-concerns">
+              Body Concerns
+            </Link>
+            <div className="nav-dd wide">
+              <div className="nav-dd-hd">
+                Body concerns · {bodyConcerns.length} treated
+              </div>
+              {bodyConcernTop.map((c) => (
+                <Link
+                  key={c.slug}
+                  className="nav-dd-item"
+                  href={`/body-concerns/${c.slug}`}
+                >
+                  <span>{c.name}</span>
+                  <small>{c.cardTagline}</small>
+                </Link>
+              ))}
+              <div className="nav-dd-foot">
+                <span>Doctor-led body protocols</span>
+                <Link href="/body-concerns">
+                  See all <ArrowRight size={11} />
+                </Link>
+              </div>
+            </div>
+          </div>
+
+          <div className="nav-item">
+            <Link className="nav-link" href="/tools-equipments">
+              Lasers / Technologies
+            </Link>
+          </div>
+
+          <div className="nav-item">
+            <Link className="nav-link" href="/packages">
+              Packages
+            </Link>
+          </div>
+
+          <div className="nav-item">
+            <Link className="nav-link has-dd" href="/doctors">
+              Doctors
+            </Link>
+            <div className="nav-dd">
+              <div className="nav-dd-hd">Our specialists</div>
+              {DOCTORS.map((d) => (
+                <Link
+                  key={d.slug}
+                  className="nav-dd-item"
+                  href={`/doctors/${d.slug}`}
+                >
+                  <span>{d.name}</span>
+                  <small>{d.title}</small>
+                </Link>
+              ))}
+              <div className="nav-dd-foot">
+                <span>Board-certified team</span>
+                <Link href="/doctors">
+                  All doctors <ArrowRight size={11} />
+                </Link>
+              </div>
+            </div>
+          </div>
+
+          <Link className="nav-link" href="/gallery">
+            Gallery
+          </Link>
+          <Link className="nav-link" href="/contact">
+            Contact
+          </Link>
+        </div>
+
+        <div className="nav-cta">
+          <BookButton>
+            <span className="btn-label-full">Book Consultation</span>
+            <span className="btn-label-short">Book Now</span>
+          </BookButton>
+        </div>
+
+        {/* Mobile-only controls (≤980px) */}
+        <div className="nav-mobile-controls">
+          <a
+            className="nav-wa"
+            href={waHref(undefined, clinic.phone)}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Chat on WhatsApp"
+          >
+            <WhatsappLogo size={24} />
+          </a>
+          <button
+            type="button"
+            className="nav-book-mobile"
+            onClick={() => open()}
+          >
+            Book
+          </button>
+          <button
+            type="button"
+            className={"nav-hamburger" + (menuOpen ? " open" : "")}
+            aria-label={menuOpen ? "Close menu" : "Open menu"}
+            aria-expanded={menuOpen}
+            onClick={() => setMenuOpen((v) => !v)}
+          >
+            <span />
+            <span />
+            <span />
+          </button>
+        </div>
+      </div>
+
+      {/* Slide-in drawer (mobile) — portalled to <body> so it isn't trapped
+          by the .nav backdrop-filter containing block / stacking context */}
+      {mounted &&
+        createPortal(
+          <>
+            <div
+              className={"nav-drawer-backdrop" + (menuOpen ? " open" : "")}
+              onClick={closeMenu}
+              aria-hidden={!menuOpen}
+            />
+            <aside
+              className={"nav-drawer" + (menuOpen ? " open" : "")}
+              aria-hidden={!menuOpen}
+              aria-label="Menu"
+            >
+        <button
+          type="button"
+          className="nav-drawer-close"
+          aria-label="Close menu"
+          onClick={closeMenu}
+        >
+          ×
+        </button>
+        <nav className="nav-drawer-links">
+          {MOBILE_LINKS.map((l) => (
+            <Link
+              key={l.href}
+              href={l.href}
+              className="nav-drawer-link"
+              onClick={closeMenu}
+            >
+              {l.label}
+              <ArrowRight size={15} />
+            </Link>
+          ))}
+        </nav>
+
+        <div className="nav-drawer-actions">
+          <a className="nav-drawer-action" href={telHref(clinic.phone)} onClick={closeMenu}>
+            <Phone size={17} /> Call
+          </a>
+          <a
+            className="nav-drawer-action"
+            href={waHref(undefined, clinic.phone)}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={closeMenu}
+          >
+            <WhatsappLogo size={18} /> WhatsApp
+          </a>
+        </div>
+
+        <button
+          type="button"
+          className="btn btn-primary nav-drawer-book"
+          onClick={() => {
+            closeMenu();
+            open();
+          }}
+        >
+          Book Consultation
+          <span className="arrow">
+            <ArrowRight />
+          </span>
+        </button>
+
+        <div className="nav-drawer-hours">{clinic.hours}</div>
+            </aside>
+          </>,
+          document.body,
+        )}
+    </nav>
+  );
+}

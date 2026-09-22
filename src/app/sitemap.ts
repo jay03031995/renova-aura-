@@ -1,0 +1,121 @@
+import type { MetadataRoute } from "next";
+import {
+  getBodyConcernSlugs,
+  getConcernSlugs,
+  getDoctorSlugs,
+  getEquipmentSlugs,
+  getAllLocations,
+  getProcedures,
+  getSiteSettings,
+} from "@/sanity/lib/fetchers";
+import { normalizeSiteUrl } from "@/lib/siteUrl";
+
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  const settings = await getSiteSettings();
+  const baseUrl = normalizeSiteUrl(settings.siteUrl);
+  const lastModified = new Date();
+
+  const [
+    doctorSlugs,
+    locations,
+    allProcedures,
+    concernSlugs,
+    bodyConcernSlugs,
+    equipmentSlugs,
+  ] = await Promise.all([
+    getDoctorSlugs(),
+    getAllLocations(),
+    getProcedures(),
+    getConcernSlugs(),
+    getBodyConcernSlugs(),
+    getEquipmentSlugs(),
+  ]);
+
+  const top = [
+    { path: "", priority: 1 },
+    { path: "/procedures", priority: 0.95 },
+    { path: "/procedures/hair-transplant", priority: 0.95 },
+    { path: "/procedures/plastic-surgery", priority: 0.9 },
+    { path: "/concerns", priority: 0.9 },
+    { path: "/body-concerns", priority: 0.85 },
+    { path: "/tools-equipments", priority: 0.85 },
+    { path: "/packages", priority: 0.85 },
+    { path: "/tools", priority: 0.9 },
+    { path: "/tools/skin-analysis", priority: 0.85 },
+    { path: "/tools/graft-calculator", priority: 0.85 },
+    { path: "/doctors", priority: 0.85 },
+    { path: "/gallery", priority: 0.8 },
+    { path: "/contact", priority: 0.8 },
+    // /results withheld from sitemap until RenovaAura's own before/after
+    // gallery replaces the dermaheal-era patient photos.
+  ];
+
+  const procedures = allProcedures.map((p) => ({
+    path: `/procedures/${p.pillar}/${p.slug}`,
+    priority: p.pillar === "hair-transplant" ? 0.85 : 0.8,
+  }));
+
+  const concerns = concernSlugs.map((slug) => ({
+    path: `/concerns/${slug}`,
+    priority: 0.8,
+  }));
+
+  const bodyConcerns = bodyConcernSlugs.map((slug) => ({
+    path: `/body-concerns/${slug}`,
+    priority: 0.8,
+  }));
+
+  const equipments = equipmentSlugs.map((slug) => ({
+    path: `/tools-equipments/${slug}`,
+    priority: 0.75,
+  }));
+
+  const doctors = doctorSlugs.map((slug) => ({
+    path: `/doctors/${slug}`,
+    priority: 0.7,
+  }));
+
+  // Location SEO pages: all area × treatment combinations.
+  // The browsable /locations directory hub is intentionally NOT part of the
+  // public site (no nav link, no index page) — only these deep landing pages
+  // are exposed to search engines via the sitemap.
+  // Priority: 0.85 for hair transplant (main pillar), 0.8 for others.
+  const locationPages = locations.flatMap((loc) =>
+    allProcedures.map((p) => ({
+      path: `/locations/${loc.citySlug}/${loc.areaSlug}/${p.slug}`,
+      priority: p.pillar === "hair-transplant" ? 0.85 : 0.8,
+    })),
+  );
+  const locationAreaPages = locations.map((loc) => ({
+    path: `/locations/${loc.citySlug}/${loc.areaSlug}`,
+    priority: 0.9,
+  }));
+  // Doctor-in-location pages
+  const locationDoctorPages = locations.flatMap((loc) =>
+    allProcedures.flatMap((p) =>
+      doctorSlugs.map((dSlug) => ({
+        path: `/locations/${loc.citySlug}/${loc.areaSlug}/${p.slug}/${dSlug}`,
+        priority: 0.75,
+      })),
+    ),
+  );
+
+  return [
+    ...top,
+    ...procedures,
+    ...concerns,
+    ...bodyConcerns,
+    ...equipments,
+    ...doctors,
+    ...locationAreaPages,
+    ...locationPages,
+    ...locationDoctorPages,
+  ].map(
+    ({ path, priority }) => ({
+      url: `${baseUrl}${path}`,
+      lastModified,
+      changeFrequency: path === "" ? "weekly" : "monthly",
+      priority,
+    }),
+  );
+}
