@@ -64,21 +64,26 @@ export default async function DoctorsPage() {
                     <div className="doc-badge-val">4.9 / 5</div>
                   </div>
                 </div>
-                <div className="doc-badge doc-badge-2">
+                {/* <div className="doc-badge doc-badge-2">
                   <div className="doc-badge-icon">MD</div>
                   <div>
                     <div className="doc-badge-label">Specialty</div>
                     <div className="doc-badge-val">{d.specialty}</div>
                   </div>
-                </div>
-                <div
+                </div> */}
+                {/* <div
                   className={"doc-photo " + d.img}
                   style={bgImg(d.imageUrl)}
                 >
                   <div className="doc-photo-label">
                     — portrait, {d.name.split(" ").slice(-1)[0].toLowerCase()}
                   </div>
-                </div>
+                </div> */}
+                <div
+  className={"doc-photo " + d.img}
+  style={bgImg(d.imageUrl)}
+>
+</div>
               </div>
               <div className="doc-body">
                 <div className="eyebrow">
