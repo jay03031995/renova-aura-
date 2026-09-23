@@ -15,16 +15,30 @@ export default async function Contact() {
   return (
     <section className="contact-section" id="contact">
       <div className="container">
-        <div className="section-head reveal" style={{ marginBottom: 50 }}>
-          <div className="section-head-copy">
-            <div className="eyebrow">Get in touch</div>
-            <h2>Two ways to reach us. Both are answered.</h2>
-          </div>
-          <p>
-            Walk in, call, message or email, our care team replies within 10
-            minutes during clinic hours.
-          </p>
-        </div>
+       <div
+  className="reveal mx-auto grid w-full max-w-[1100px] grid-cols-1 items-center gap-12 lg:grid-cols-2 lg:gap-20"
+  style={{ marginBottom: 50 }}
+>
+  {/* LEFT */}
+  <div className="flex flex-col">
+    <div className="eyebrow mb-5 text-left">
+      Get in touch
+    </div>
+
+    <h2 className="m-0 max-w-[600px] text-left text-[42px] font-normal leading-[1.08] tracking-[-0.03em] sm:text-[50px] lg:text-[58px]">
+      Two ways to reach us. Both are answered.
+    </h2>
+  </div>
+
+  {/* RIGHT */}
+  <div className="flex items-center justify-center">
+    <p className="m-0 max-w-[500px] text-center text-[17px] leading-[1.8] text-[#73796c]">
+      Walk in, call, message or email, our care team replies within 10
+      minutes during clinic hours.
+    </p>
+  </div>
+</div>
+        
         <div className="contact-grid">
           <div className="contact-info reveal">
             <div className="eyebrow">Anand Vihar, New Delhi</div>

@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
 import { ArrowRight } from "@/components/icons";
+import { waHref } from "@/data/clinic";
 
 export default function FaqClient({
   faqs,
@@ -30,12 +30,17 @@ export default function FaqClient({
               Can&apos;t find what you&apos;re looking for? Our care team replies
               within 10 minutes on WhatsApp.
             </p>
-            <Link className="btn btn-sage" href="/#book">
+            <a
+              className="btn btn-sage"
+              href={waHref()}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
               Message us on WhatsApp{" "}
               <span className="arrow">
                 <ArrowRight />
               </span>
-            </Link>
+            </a>
           </div>
           <div className="faq-list reveal">
             {faqs.map((f, i) => (
