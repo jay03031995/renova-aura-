@@ -17,18 +17,19 @@ import { WhatsappLogo } from "@/components/icons";
 import { SITE_URL } from "@/lib/siteUrl";
 import { indexableRobots, locationSeoKeywords } from "@/lib/locationSeo";
 import { doctorPortrait, doctorPortraitPosition } from "@/lib/doctorPortrait";
+import {
+  formatBreadcrumb,
+  shouldPublishLocationTreatment,
+  strategicLocationTreatmentParams,
+  treatmentLocationMeta,
+  treatmentSpecialist,
+} from "@/lib/ncrLocationStrategy";
 
 type Params = Promise<{ city: string; area: string; treatment: string }>;
 
 export async function generateStaticParams() {
   const procedures = await getProcedures();
-  return NCR_AREAS.flatMap((a) =>
-    procedures.map((p) => ({
-      city: a.citySlug,
-      area: a.areaSlug,
-      treatment: p.slug,
-    })),
-  );
+  return strategicLocationTreatmentParams(procedures);
 }
 
 export async function generateMetadata({ params }: { params: Params }): Promise<Metadata> {
@@ -39,12 +40,9 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
   ]);
   if (!procedure || !location) return {};
 
-  const title =
-    location.metaTitle ??
-    `${procedure.name} near ${location.area}, ${location.city} | RenovaAura`;
-  const description =
-    location.metaDescription ??
-    `Looking for ${procedure.name} near ${location.area}? RenovaAura's board-certified specialists offer ${procedure.name.toLowerCase()} with natural-looking results. Book a free consultation in Anand Vihar, New Delhi.`;
+  const meta = treatmentLocationMeta(procedure, location.area);
+  const title = meta.title;
+  const description = meta.description;
 
   return {
     title,
@@ -64,16 +62,22 @@ export default async function LocationTreatmentPage({ params }: { params: Params
   ]);
 
   if (!procedure || !location) return notFound();
+  if (!shouldPublishLocationTreatment(area, treatment)) return notFound();
 
   const [doctors, clinic] = await Promise.all([getDoctors(), getClinic()]);
+  const specialist = treatmentSpecialist(procedure, doctors);
+  const meta = treatmentLocationMeta(procedure, location.area);
+  const selectedDoctors = specialist
+    ? [specialist]
+    : doctors.filter((doctor) => procedure.pillar === "plastic-surgery" ? doctor.slug === "ankur-bhatia" : doctor.slug === "bhawna-bhardwaj");
 
-  const headline =
-    location.headline ??
-    `Best ${procedure.name} near ${location.area}, ${location.city}`;
+  const headline = location.headline ?? meta.h1;
 
   const intro =
     location.intro ??
-    `Patients from ${location.area}, ${location.city} trust RenovaAura at Anand Vihar for ${procedure.name.toLowerCase()}. Our board-certified specialists provide evidence-based, natural-looking results with full aftercare — serving patients from across NCR including ${location.area}.`;
+    (location.area === "Anand Vihar"
+      ? `${procedure.name} consultations are available at RenovaAura's confirmed Anand Vihar clinic. The care plan is based on specialist assessment, medical history, goals and suitability.`
+      : `Patients from ${location.area}, ${location.city} can visit RenovaAura's confirmed Anand Vihar clinic for ${procedure.name.toLowerCase()} consultation. This page explains access for patients from ${location.area}; it does not represent a separate branch.`);
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -102,8 +106,10 @@ export default async function LocationTreatmentPage({ params }: { params: Params
       "@type": "BreadcrumbList",
       itemListElement: [
         { "@type": "ListItem", position: 1, name: "Home", item: SITE_URL },
-        { "@type": "ListItem", position: 2, name: `${location.area}, ${location.city}`, item: `${SITE_URL}/locations/${city}/${area}` },
-        { "@type": "ListItem", position: 3, name: procedure.name, item: `${SITE_URL}/locations/${city}/${area}/${treatment}` },
+        { "@type": "ListItem", position: 2, name: "Locations", item: `${SITE_URL}/locations` },
+        { "@type": "ListItem", position: 3, name: location.city, item: `${SITE_URL}/locations/${city}` },
+        { "@type": "ListItem", position: 4, name: location.area, item: `${SITE_URL}/locations/${city}/${area}` },
+        { "@type": "ListItem", position: 5, name: procedure.name, item: `${SITE_URL}/locations/${city}/${area}/${treatment}` },
       ],
     },
   };
@@ -122,9 +128,11 @@ export default async function LocationTreatmentPage({ params }: { params: Params
         <div className="loc-hero-overlay" />
         <div className="container loc-hero-body">
           <nav className="loc-breadcrumb loc-breadcrumb-light" aria-label="Breadcrumb">
-            <Link href="/">Home</Link><span>/</span>
-            <Link href={`/locations/${city}/${area}`}>{location.area}, {location.city}</Link><span>/</span>
-            <span>{procedure.name}</span>
+            <Link href="/">Home</Link><span aria-hidden="true">›</span>
+            <Link href="/locations">Locations</Link><span aria-hidden="true">›</span>
+            <Link href={`/locations/${city}`}>{location.city}</Link><span aria-hidden="true">›</span>
+            <Link href={`/locations/${city}/${area}`}>{location.area}</Link><span aria-hidden="true">›</span>
+            <span aria-current="page">{procedure.name}</span>
           </nav>
           <h1 className="loc-hero-title">{headline}</h1>
           <p className="loc-hero-sub">{intro}</p>
@@ -134,7 +142,7 @@ export default async function LocationTreatmentPage({ params }: { params: Params
               prefill={{ concern: procedure.name, source: `location-${area}-${treatment}` }}
               withArrow={false}
             >
-              Book Free Consultation
+              Book Consultation
             </BookButton>
             <a className="btn loc-btn-ghost" href={telHref(clinic.phone)}>
               <Phone size={15} /> {clinic.phone}
@@ -146,11 +154,11 @@ export default async function LocationTreatmentPage({ params }: { params: Params
       {/* ─── Trust strip ─── */}
       <div className="loc-trust-strip">
         <div className="container loc-trust-inner">
-          <div className="loc-trust-item"><span className="loc-trust-num">MD</span><span className="loc-trust-lbl">Board-Certified</span></div>
-          <div className="loc-trust-item"><span className="loc-trust-num">4.9★</span><span className="loc-trust-lbl">Patient Rating</span></div>
-          <div className="loc-trust-item"><span className="loc-trust-num">FUE·DHI·FUT</span><span className="loc-trust-lbl">All Techniques</span></div>
-          <div className="loc-trust-item"><span className="loc-trust-num">Free</span><span className="loc-trust-lbl">Written Plan</span></div>
-          <div className="loc-trust-item"><span className="loc-trust-num">6-mo</span><span className="loc-trust-lbl">Follow-up</span></div>
+          <div className="loc-trust-item"><span className="loc-trust-num">Anand Vihar</span><span className="loc-trust-lbl">Confirmed clinic</span></div>
+          <div className="loc-trust-item"><span className="loc-trust-num">{specialist?.years ?? 15}+</span><span className="loc-trust-lbl">Years of practice</span></div>
+          <div className="loc-trust-item"><span className="loc-trust-num">{procedure.quick.duration}</span><span className="loc-trust-lbl">Typical duration</span></div>
+          <div className="loc-trust-item"><span className="loc-trust-num">{procedure.quick.sessions}</span><span className="loc-trust-lbl">Sessions</span></div>
+          <div className="loc-trust-item"><span className="loc-trust-num">Plan</span><span className="loc-trust-lbl">After assessment</span></div>
         </div>
       </div>
 
@@ -159,9 +167,12 @@ export default async function LocationTreatmentPage({ params }: { params: Params
         <div className="container loc-two-col">
           <div className="loc-main">
             <div className="eyebrow" style={{ marginBottom: 12 }}>About the treatment</div>
-            <h2 style={{ marginBottom: 18 }}>{procedure.name} in {location.area}</h2>
+            <h2 style={{ marginBottom: 18 }}>{procedure.name} {location.area === "Anand Vihar" ? "in" : "for patients from"} {location.area}</h2>
             <p style={{ fontSize: 16, lineHeight: 1.8, color: "var(--muted)", marginBottom: 28 }}>
               {procedure.overview}
+            </p>
+            <p style={{ fontSize: 15, lineHeight: 1.75, color: "var(--muted)", marginBottom: 24 }}>
+              <strong>Clinic location:</strong> {clinic.address}. <strong>Breadcrumb:</strong> {formatBreadcrumb(location.city, location.area, procedure.name)}.
             </p>
             {procedure.benefits && procedure.benefits.length > 0 && (
               <ul className="loc-benefit-list">
@@ -178,14 +189,14 @@ export default async function LocationTreatmentPage({ params }: { params: Params
             <div className="loc-sidebar-card">
               <div className="loc-sidebar-title">Book a Consultation</div>
               <p style={{ fontSize: 13.5, color: "var(--muted)", marginBottom: 18, lineHeight: 1.6 }}>
-                Free, written plan. No pressure. Serving patients from {location.area}.
+                Personalised assessment at the Anand Vihar clinic. Serving patients from {location.area}.
               </p>
               <BookButton
                 className="btn btn-primary"
                 prefill={{ concern: procedure.name, source: `location-sidebar-${area}` }}
                 withArrow={false}
               >
-                Book Free Consultation
+                Book Consultation
               </BookButton>
               <div className="loc-sidebar-meta">
                 <span><Clock size={13} /> {clinic.hours}</span>
@@ -203,15 +214,15 @@ export default async function LocationTreatmentPage({ params }: { params: Params
       </section>
 
       {/* ─── Doctors ─── */}
-      {doctors.length > 0 && (
+      {selectedDoctors.length > 0 && (
         <section className="section" style={{ background: "var(--cream-2)" }}>
           <div className="container">
             <div className="eyebrow" style={{ marginBottom: 14 }}>Our specialists</div>
             <h2 style={{ marginBottom: 32 }}>
-              {procedure.name} performed by board-certified specialists.
+              {procedure.name} specialist for this page
             </h2>
             <div className="loc-doctor-grid">
-              {doctors.map((d) => (
+              {selectedDoctors.map((d) => (
                 <div key={d.slug} className="loc-doctor-card">
                   <div
                     className={"loc-doctor-img " + d.img}
@@ -254,7 +265,7 @@ export default async function LocationTreatmentPage({ params }: { params: Params
           <div className="loc-reach-grid">
             <div>
               <p style={{ fontSize: 15, lineHeight: 1.75, color: "var(--muted)", marginBottom: 20 }}>
-                RenovaAura is at <strong>{clinic.address}</strong>. From {location.area} you can reach us via Metro (Blue / Pink line to Anand Vihar ISBT or Kaushambi), cab or auto — typically under 30–40 minutes from most NCR locations.
+                RenovaAura is at <strong>{clinic.address}</strong>. Use the directions link below for the current route from {location.area}; travel time can vary by traffic and metro service.
               </p>
               <p style={{ fontSize: 15, color: "var(--muted)", marginBottom: 22, lineHeight: 1.7 }}>
                 <strong>Hours:</strong> {clinic.hours}
@@ -284,7 +295,7 @@ export default async function LocationTreatmentPage({ params }: { params: Params
         <div className="container">
           <div className="eyebrow" style={{ marginBottom: 14 }}>Serving NCR</div>
           <p style={{ fontSize: 14, color: "var(--muted)", marginBottom: 16 }}>
-            Also serving patients for {procedure.name.toLowerCase()} from:
+            Also serving patients for {procedure.name.toLowerCase()} from selected high-intent NCR areas:
           </p>
           <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
             {NCR_AREAS.filter((a) => a.areaSlug !== area).slice(0, 14).map((a) => (
@@ -314,10 +325,10 @@ export default async function LocationTreatmentPage({ params }: { params: Params
             Ready to regain your confidence?
           </h2>
           <p style={{ color: "rgba(255,255,255,.82)", marginBottom: 26, fontSize: 16 }}>
-            Book a free, no-pressure consultation at RenovaAura. Serving patients from {location.area} and across Delhi NCR.
+            Book a personalised consultation at RenovaAura&apos;s Anand Vihar clinic. Serving patients from {location.area} and across Delhi NCR.
           </p>
           <BookButton prefill={{ concern: procedure.name, source: `location-cta-${area}` }}>
-            Book free consultation
+            Book consultation
           </BookButton>
         </div>
       </section>

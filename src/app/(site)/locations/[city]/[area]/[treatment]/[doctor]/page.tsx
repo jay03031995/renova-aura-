@@ -3,7 +3,6 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowRight, MapPin, Check } from "@/components/icons";
 import BookButton from "@/components/BookButton";
-import { NCR_AREAS } from "@/data/locations";
 import {
   getDoctors,
   getDoctorBySlug,
@@ -15,6 +14,12 @@ import {
 import { SITE_URL } from "@/lib/siteUrl";
 import { indexableRobots, locationSeoKeywords } from "@/lib/locationSeo";
 import { doctorPortrait, doctorPortraitPosition } from "@/lib/doctorPortrait";
+import {
+  doctorTreatmentLocationMeta,
+  shouldPublishLocationTreatment,
+  strategicLocationTreatmentParams,
+  treatmentSpecialist,
+} from "@/lib/ncrLocationStrategy";
 
 type Params = Promise<{
   city: string;
@@ -23,26 +28,17 @@ type Params = Promise<{
   doctor: string;
 }>;
 
-/** Build all static params: area × treatment × doctor. */
 export async function generateStaticParams() {
   const [doctors, procedures] = await Promise.all([
     getDoctors(),
     getProcedures(),
   ]);
-  const params = [];
-  for (const a of NCR_AREAS) {
-    for (const p of procedures) {
-      for (const d of doctors) {
-        params.push({
-          city: a.citySlug,
-          area: a.areaSlug,
-          treatment: p.slug,
-          doctor: d.slug,
-        });
-      }
-    }
-  }
-  return params;
+  return strategicLocationTreatmentParams(procedures).flatMap((param) => {
+    const procedure = procedures.find((item) => item.slug === param.treatment);
+    if (!procedure) return [];
+    const specialist = treatmentSpecialist(procedure, doctors);
+    return specialist ? [{ ...param, doctor: specialist.slug }] : [];
+  });
 }
 
 export async function generateMetadata({ params }: { params: Params }): Promise<Metadata> {
@@ -55,16 +51,15 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
 
   if (!procedure || !location || !doctorData) return {};
 
-  const title = `${doctorData.name} — ${procedure.name} near ${location.area}, ${location.city} | RenovaAura`;
-  const description = `Book ${procedure.name} with ${doctorData.name} at RenovaAura. Serving patients from ${location.area}, ${location.city}. Board-certified specialist. Free written consultation plan.`;
+  const meta = doctorTreatmentLocationMeta(procedure, doctorData.name, location.area, location.city);
 
   return {
-    title,
-    description,
+    title: meta.title,
+    description: meta.description,
     keywords: locationSeoKeywords({ area: location.area, city: location.city, treatment: procedure.name, doctor: doctorData.name, customKeywords: location.metaKeywords }),
     robots: indexableRobots,
     alternates: { canonical: `/locations/${city}/${area}/${treatment}/${doctor}` },
-    openGraph: { title, description, url: `${SITE_URL}/locations/${city}/${area}/${treatment}/${doctor}` },
+    openGraph: { title: meta.title, description: meta.description, url: `${SITE_URL}/locations/${city}/${area}/${treatment}/${doctor}` },
   };
 }
 
@@ -79,6 +74,8 @@ export default async function LocationDoctorPage({ params }: { params: Params })
   ]);
 
   if (!procedure || !location || !doctorData) return notFound();
+  const expectedSpecialist = treatmentSpecialist(procedure, [doctorData]);
+  if (!shouldPublishLocationTreatment(area, treatment) || expectedSpecialist?.slug !== doctorData.slug) return notFound();
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -108,9 +105,11 @@ export default async function LocationDoctorPage({ params }: { params: Params })
       "@type": "BreadcrumbList",
       itemListElement: [
         { "@type": "ListItem", position: 1, name: "Home", item: SITE_URL },
-        { "@type": "ListItem", position: 2, name: `${location.area}, ${location.city}`, item: `${SITE_URL}/locations/${city}/${area}` },
-        { "@type": "ListItem", position: 3, name: procedure.name, item: `${SITE_URL}/locations/${city}/${area}/${treatment}` },
-        { "@type": "ListItem", position: 4, name: doctorData.name, item: `${SITE_URL}/locations/${city}/${area}/${treatment}/${doctor}` },
+        { "@type": "ListItem", position: 2, name: "Locations", item: `${SITE_URL}/locations` },
+        { "@type": "ListItem", position: 3, name: location.city, item: `${SITE_URL}/locations/${city}` },
+        { "@type": "ListItem", position: 4, name: location.area, item: `${SITE_URL}/locations/${city}/${area}` },
+        { "@type": "ListItem", position: 5, name: procedure.name, item: `${SITE_URL}/locations/${city}/${area}/${treatment}` },
+        { "@type": "ListItem", position: 6, name: doctorData.name, item: `${SITE_URL}/locations/${city}/${area}/${treatment}/${doctor}` },
       ],
     },
   };
@@ -127,14 +126,18 @@ export default async function LocationDoctorPage({ params }: { params: Params })
         <div className="container">
           <nav className="loc-breadcrumb" aria-label="Breadcrumb">
             <Link href="/">Home</Link>
-            <span>/</span>
-            <Link href={`/locations/${city}/${area}`}>{location.area}, {location.city}</Link>
-            <span>/</span>
+            <span aria-hidden="true">›</span>
+            <Link href="/locations">Locations</Link>
+            <span aria-hidden="true">›</span>
+            <Link href={`/locations/${city}`}>{location.city}</Link>
+            <span aria-hidden="true">›</span>
+            <Link href={`/locations/${city}/${area}`}>{location.area}</Link>
+            <span aria-hidden="true">›</span>
             <Link href={`/locations/${city}/${area}/${treatment}`}>
               {procedure.name} near {location.area}
             </Link>
-            <span>/</span>
-            <span>{doctorData.name}</span>
+            <span aria-hidden="true">›</span>
+            <span aria-current="page">{doctorData.name}</span>
           </nav>
 
           <div className="pillar-hero-grid" style={{ marginTop: 28 }}>
@@ -145,6 +148,9 @@ export default async function LocationDoctorPage({ params }: { params: Params })
               <h1 className="pillar-hero-headline">
                 {doctorData.name} — {procedure.name} near {location.area}.
               </h1>
+              <p className="pillar-hero-subtitle" style={{ marginTop: 16 }}>
+                Consultation is at RenovaAura&apos;s confirmed Anand Vihar clinic; this page serves patients travelling from {location.area}.
+              </p>
               <p className="pillar-hero-subtitle" style={{ marginTop: 20 }}>
                 {doctorData.listBio}
               </p>
@@ -239,7 +245,7 @@ export default async function LocationDoctorPage({ params }: { params: Params })
               source: `location-dr-cta-${area}`,
             }}
           >
-            Book free consultation
+            Book consultation
           </BookButton>
         </div>
       </section>
