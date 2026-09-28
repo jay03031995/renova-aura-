@@ -4,13 +4,13 @@ import { notFound } from "next/navigation";
 import { ArrowRight, Check, MapPin, Phone, Clock } from "@/components/icons";
 import BookButton from "@/components/BookButton";
 import FaqItem from "@/components/FaqItem";
+import { PROCEDURES } from "@/data/procedures";
 import { NCR_AREAS } from "@/data/locations";
 import {
   getDoctors,
   getClinic,
   getLocationByCityArea,
   getProcedureBySlug,
-  getProcedures,
 } from "@/sanity/lib/fetchers";
 import { telHref, waHref } from "@/data/clinic";
 import { WhatsappLogo } from "@/components/icons";
@@ -28,8 +28,7 @@ import {
 type Params = Promise<{ city: string; area: string; treatment: string }>;
 
 export async function generateStaticParams() {
-  const procedures = await getProcedures();
-  return strategicLocationTreatmentParams(procedures);
+  return strategicLocationTreatmentParams(PROCEDURES);
 }
 
 export async function generateMetadata({ params }: { params: Params }): Promise<Metadata> {
@@ -298,7 +297,7 @@ export default async function LocationTreatmentPage({ params }: { params: Params
             Also serving patients for {procedure.name.toLowerCase()} from selected high-intent NCR areas:
           </p>
           <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
-            {NCR_AREAS.filter((a) => a.areaSlug !== area).slice(0, 14).map((a) => (
+            {NCR_AREAS.filter((a) => a.areaSlug !== area && shouldPublishLocationTreatment(a.areaSlug, treatment)).slice(0, 14).map((a) => (
               <Link key={a.areaSlug} href={`/locations/${a.citySlug}/${a.areaSlug}/${treatment}`} className="filter-chip">
                 {a.area}
               </Link>

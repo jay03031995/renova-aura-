@@ -230,7 +230,7 @@ export const procedureBySlugQuery = /* groq */ `
 `;
 
 export const procedureSlugsQuery = /* groq */ `
-  *[_type == "procedure" && defined(slug.current)][]{
+  *[_type == "procedure" && defined(slug.current) && indexable != false][]{
     "slug": slug.current,
     pillar
   }
@@ -386,7 +386,7 @@ export const doctorBySlugQuery = /* groq */ `
 `;
 
 export const doctorSlugsQuery = /* groq */ `
-  *[_type == "doctor" && defined(slug.current)][].slug.current
+  *[_type == "doctor" && defined(slug.current) && indexable != false][].slug.current
 `;
 
 export const resultsQuery = /* groq */ `
@@ -458,5 +458,56 @@ export const locationByCityAreaQuery = /* groq */ `
     metaTitle,
     metaDescription,
     metaKeywords
+  }
+`;
+
+// ── Blog queries ────────────────────────────────────────────────────────────
+
+const blogPostProjection = /* groq */ `
+  _id,
+  title,
+  "slug": slug.current,
+  excerpt,
+  publishedAt,
+  _updatedAt,
+  indexable,
+  ${seoProjection}
+`;
+
+export const blogPostsQuery = /* groq */ `
+  *[
+    _type == "blogPost" &&
+    defined(slug.current) &&
+    publishedAt <= now() &&
+    indexable == true &&
+    coalesce(seo.noIndex, false) != true
+  ] | order(publishedAt desc){
+    ${blogPostProjection}
+  }
+`;
+
+export const blogPostSlugsQuery = /* groq */ `
+  *[
+    _type == "blogPost" &&
+    defined(slug.current) &&
+    publishedAt <= now() &&
+    indexable == true &&
+    coalesce(seo.noIndex, false) != true
+  ][]{
+    "slug": slug.current,
+    _updatedAt
+  }
+`;
+
+export const blogPostBySlugQuery = /* groq */ `
+  *[
+    _type == "blogPost" &&
+    slug.current == $slug &&
+    publishedAt <= now() &&
+    indexable == true &&
+    coalesce(seo.noIndex, false) != true
+  ][0]{
+    ${blogPostProjection},
+    body
   }
 `;

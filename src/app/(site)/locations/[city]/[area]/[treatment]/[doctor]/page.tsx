@@ -3,22 +3,22 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowRight, MapPin, Check } from "@/components/icons";
 import BookButton from "@/components/BookButton";
+import { DOCTORS } from "@/data/doctors";
+import { PROCEDURES } from "@/data/procedures";
 import {
-  getDoctors,
   getDoctorBySlug,
   getClinic,
   getLocationByCityArea,
   getProcedureBySlug,
-  getProcedures,
 } from "@/sanity/lib/fetchers";
 import { SITE_URL } from "@/lib/siteUrl";
 import { indexableRobots, locationSeoKeywords } from "@/lib/locationSeo";
 import { doctorPortrait, doctorPortraitPosition } from "@/lib/doctorPortrait";
 import {
   doctorTreatmentLocationMeta,
+  indexableLocationDoctorParams,
+  isDoctorApprovedForProcedure,
   shouldPublishLocationTreatment,
-  strategicLocationTreatmentParams,
-  treatmentSpecialist,
 } from "@/lib/ncrLocationStrategy";
 
 type Params = Promise<{
@@ -29,16 +29,7 @@ type Params = Promise<{
 }>;
 
 export async function generateStaticParams() {
-  const [doctors, procedures] = await Promise.all([
-    getDoctors(),
-    getProcedures(),
-  ]);
-  return strategicLocationTreatmentParams(procedures).flatMap((param) => {
-    const procedure = procedures.find((item) => item.slug === param.treatment);
-    if (!procedure) return [];
-    const specialist = treatmentSpecialist(procedure, doctors);
-    return specialist ? [{ ...param, doctor: specialist.slug }] : [];
-  });
+  return indexableLocationDoctorParams(PROCEDURES, DOCTORS);
 }
 
 export async function generateMetadata({ params }: { params: Params }): Promise<Metadata> {
@@ -74,8 +65,7 @@ export default async function LocationDoctorPage({ params }: { params: Params })
   ]);
 
   if (!procedure || !location || !doctorData) return notFound();
-  const expectedSpecialist = treatmentSpecialist(procedure, [doctorData]);
-  if (!shouldPublishLocationTreatment(area, treatment) || expectedSpecialist?.slug !== doctorData.slug) return notFound();
+  if (!shouldPublishLocationTreatment(area, treatment) || !isDoctorApprovedForProcedure(procedure, doctorData.slug)) return notFound();
 
   const jsonLd = {
     "@context": "https://schema.org",

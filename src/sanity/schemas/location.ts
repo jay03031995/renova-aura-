@@ -84,6 +84,34 @@ export const locationSchema = defineType({
       initialValue: true,
       description: "When off, all pages for this location return 404.",
     }),
+    defineField({
+      name: "indexable",
+      title: "Allow this service-area page in search",
+      type: "boolean",
+      group: "main",
+      initialValue: false,
+      description:
+        "Safe default is off for new locations. Enable only after confirming this is a real service area with useful local content.",
+    }),
+    defineField({
+      name: "serviceAreaVerified",
+      title: "Verified as a patient service area",
+      type: "boolean",
+      group: "main",
+      initialValue: false,
+      description:
+        "Confirms this page describes patients travelling from the area, not a RenovaAura branch.",
+    }),
+    defineField({
+      name: "approvedProcedures",
+      title: "Approved local procedure pages",
+      type: "array",
+      group: "main",
+      of: [{ type: "reference", to: [{ type: "procedure" }] }],
+      validation: (rule) => rule.unique(),
+      description:
+        "Only these procedures are eligible for location + procedure URLs for this area. Leave empty until reviewed.",
+    }),
 
     // ── Optional unique SEO copy ───────────────────────────────────────
     defineField({

@@ -16,6 +16,7 @@ export const procedureSchema = defineType({
     { name: "quick", title: "Quick facts" },
     { name: "content", title: "Detail content" },
     { name: "linking", title: "Related content" },
+    { name: "localSeo", title: "Local SEO approval" },
     { name: "faqs", title: "FAQs" },
     { name: "eeat", title: "EEAT signals" },
   ],
@@ -203,6 +204,35 @@ export const procedureSchema = defineType({
       of: [{ type: "reference", to: [{ type: "equipment" }] }],
       description:
         "Technology cards shown below the related procedures section.",
+    }),
+    // ---- Local SEO approvals ----
+    defineField({
+      name: "indexable",
+      title: "Allow this procedure page in search",
+      type: "boolean",
+      group: "localSeo",
+      initialValue: true,
+      description:
+        "When off, this procedure should be excluded from the sitemap and marked noindex when route-level SEO is wired.",
+    }),
+    defineField({
+      name: "approvedDoctors",
+      title: "Approved doctors for this procedure",
+      type: "array",
+      group: "localSeo",
+      of: [{ type: "reference", to: [{ type: "doctor" }] }],
+      validation: (rule) => rule.unique(),
+      description:
+        "Required before creating doctor + procedure local SEO pages. Do not approve a doctor unless they genuinely provide this procedure.",
+    }),
+    defineField({
+      name: "allowLocationProcedurePages",
+      title: "Allow location + procedure pages",
+      type: "boolean",
+      group: "localSeo",
+      initialValue: false,
+      description:
+        "Safe default is off. Enable only when there is distinct local demand and the page has useful, non-duplicative content.",
     }),
     // ---- FAQs ----
     defineField({

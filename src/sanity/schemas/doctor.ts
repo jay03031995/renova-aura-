@@ -129,6 +129,15 @@ export const doctorSchema = defineType({
       group: "detail",
     }),
     defineField({
+      name: "indexable",
+      title: "Allow this doctor profile in search",
+      type: "boolean",
+      group: "seo",
+      initialValue: true,
+      description:
+        "When off, exclude this doctor from XML sitemap and local SEO combinations once route-level SEO is wired.",
+    }),
+    defineField({
       name: "quotes",
       title: "Patient quotes",
       type: "array",

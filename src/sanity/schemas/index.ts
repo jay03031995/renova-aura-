@@ -24,6 +24,7 @@ import { resultSchema } from "./result";
 import { procedureSchema } from "./procedure";
 import { concernSchema } from "./concern";
 import { bodyConcernSchema } from "./bodyConcern";
+import { blogPostSchema } from "./blogPost";
 import { equipmentSchema } from "./equipment";
 import { realResultSchema } from "./realResult";
 import { videoSchema } from "./video";
@@ -64,6 +65,7 @@ export const schemaTypes = [
   procedureSchema,
   concernSchema,
   bodyConcernSchema,
+  blogPostSchema,
   equipmentSchema,
   doctorSchema,
   resultSchema,

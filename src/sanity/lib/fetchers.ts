@@ -14,6 +14,9 @@ import { cache } from "react";
 import { client, sanityEnabled } from "./client";
 import {
   announcementQuery,
+  blogPostBySlugQuery,
+  blogPostSlugsQuery,
+  blogPostsQuery,
   bodyConcernBySlugQuery,
   bodyConcernSlugsQuery,
   bodyConcernsQuery,
@@ -80,6 +83,22 @@ import {
   PACKAGES as LOCAL_PACKAGES,
   type TreatmentPackage,
 } from "@/data/packages";
+
+export type BlogPost = {
+  _id: string;
+  title: string;
+  slug: string;
+  excerpt?: string;
+  publishedAt?: string;
+  _updatedAt?: string;
+  body?: unknown[];
+  seo?: {
+    title?: string;
+    description?: string;
+    canonicalUrl?: string;
+    noIndex?: boolean;
+  };
+};
 
 export type RelatedTreatmentCard = {
   slug: string;
@@ -1078,4 +1097,21 @@ export async function getGalleryRealResults(): Promise<RealResult[]> {
 export async function getGalleryVideos(): Promise<Video[]> {
   const docs = await safeFetch<Video[]>(galleryVideosQuery);
   return isFilled(docs) ? docs : [];
+}
+
+// ----- Blog posts -----------------------------------------------------------
+
+export async function getBlogPosts(): Promise<BlogPost[]> {
+  const docs = await safeFetch<BlogPost[]>(blogPostsQuery);
+  return isFilled(docs) ? docs : [];
+}
+
+export async function getBlogPostSlugs(): Promise<{ slug: string; _updatedAt?: string }[]> {
+  const docs = await safeFetch<{ slug: string; _updatedAt?: string }[]>(blogPostSlugsQuery);
+  return isFilled(docs) ? docs : [];
+}
+
+export async function getBlogPostBySlug(slug: string): Promise<BlogPost | null> {
+  const doc = await safeFetch<BlogPost | null>(blogPostBySlugQuery, { slug });
+  return doc ?? null;
 }

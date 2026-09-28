@@ -1,10 +1,8 @@
 import type { MetadataRoute } from "next";
-import { getSiteSettings } from "@/sanity/lib/fetchers";
-import { normalizeSiteUrl } from "@/lib/siteUrl";
+import { normalizeSiteUrl, SITE_URL } from "@/lib/siteUrl";
 
-export default async function robots(): Promise<MetadataRoute.Robots> {
-  const settings = await getSiteSettings();
-  const baseUrl = normalizeSiteUrl(settings.siteUrl);
+export default function robots(): MetadataRoute.Robots {
+  const baseUrl = normalizeSiteUrl(SITE_URL);
 
   const blocked = ["/api/", "/admin/", "/studio"];
 

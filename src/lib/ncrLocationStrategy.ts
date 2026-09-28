@@ -15,8 +15,11 @@ const HAIR_PRIMARY_SLUGS = [
 
 const PLASTIC_PRIORITY_SLUGS = [
   "gynecomastia-surgery",
+  "scar-revision",
+  "keloid-hypertrophic-scar",
   "liposuction",
   "tummy-tuck",
+  "post-burn-contracture",
 ];
 
 const HIGH_INTENT_AREA_SLUGS = [
@@ -90,7 +93,7 @@ export function shouldPublishLocationTreatment(areaSlug: string, procedureSlug: 
   return areaSlug === "anand-vihar";
 }
 
-export function strategicLocationTreatmentParams(procedures: Procedure[]) {
+export function indexableLocationTreatmentParams(procedures: Procedure[]) {
   return NCR_AREAS.flatMap((area) =>
     procedures
       .filter((procedure) => shouldPublishLocationTreatment(area.areaSlug, procedure.slug))
@@ -102,10 +105,28 @@ export function strategicLocationTreatmentParams(procedures: Procedure[]) {
   );
 }
 
+export const strategicLocationTreatmentParams = indexableLocationTreatmentParams;
+
+export function approvedDoctorSlugForProcedure(procedure: Pick<Procedure, "pillar">) {
+  return procedure.pillar === "plastic-surgery" ? "ankur-bhatia" : "bhawna-bhardwaj";
+}
+
+export function isDoctorApprovedForProcedure(procedure: Pick<Procedure, "pillar">, doctorSlug: string) {
+  return doctorSlug === approvedDoctorSlugForProcedure(procedure);
+}
+
 export function treatmentSpecialist(procedure: Procedure, doctors: DoctorFetched[]) {
-  const bhawna = doctors.find((doctor) => doctor.slug === "bhawna-bhardwaj");
-  const ankur = doctors.find((doctor) => doctor.slug === "ankur-bhatia");
-  return procedure.pillar === "plastic-surgery" ? ankur ?? bhawna : bhawna ?? ankur;
+  const approvedSlug = approvedDoctorSlugForProcedure(procedure);
+  return doctors.find((doctor) => doctor.slug === approvedSlug);
+}
+
+export function indexableLocationDoctorParams(procedures: Procedure[], doctors: DoctorFetched[]) {
+  return indexableLocationTreatmentParams(procedures).flatMap((param) => {
+    const procedure = procedures.find((item) => item.slug === param.treatment);
+    if (!procedure) return [];
+    const doctor = doctors.find((item) => isDoctorApprovedForProcedure(procedure, item.slug));
+    return doctor ? [{ ...param, doctor: doctor.slug }] : [];
+  });
 }
 
 export function treatmentLocationMeta(procedure: Procedure, area: string) {
