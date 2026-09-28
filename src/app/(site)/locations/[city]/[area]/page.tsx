@@ -12,7 +12,7 @@ import { getAllLocations, getBodyConcerns, getClinic, getConcerns, getDoctors, g
 import { SITE_URL } from "@/lib/siteUrl";
 import { indexableRobots, locationSeoKeywords } from "@/lib/locationSeo";
 import { doctorPortrait, doctorPortraitPosition } from "@/lib/doctorPortrait";
-import { formatBreadcrumb, generalLocationMeta, locationPrimaryIntent } from "@/lib/ncrLocationStrategy";
+import { generalLocationMeta, locationPrimaryIntent } from "@/lib/ncrLocationStrategy";
 
 type Params = Promise<{ city: string; area: string }>;
 
@@ -62,8 +62,8 @@ export default async function AreaPage({ params }: { params: Params }) {
   const clinicImages = gallery.filter((image) => image.category === "Clinic" && image.image);
   const nearby = NCR_AREAS.filter((a) => a.areaSlug !== area && (a.citySlug === city || ["new-delhi","noida","ghaziabad"].includes(a.citySlug))).slice(0, 16);
   const intro = location.intro || (location.area === "Anand Vihar"
-    ? `RenovaAura is located at ${clinic.address}. The Anand Vihar clinic provides hair restoration, dermatology, skin aesthetics and plastic surgery consultations in one confirmed clinic location.`
-    : `RenovaAura is located at ${clinic.address} and welcomes patients travelling from ${location.area}, ${location.city}. This page is for patients from ${location.area}; it does not represent a separate branch.`);
+    ? `RenovaAura's Anand Vihar clinic provides hair restoration, dermatology, skin aesthetics and plastic surgery consultations at one verified clinic location.`
+    : `RenovaAura welcomes patients from ${location.area}, ${location.city} to its verified Anand Vihar clinic for hair restoration, dermatology, skin aesthetics and plastic surgery consultations. This is an area-served page, not a separate branch.`);
   const faqs = location.faqs?.length ? location.faqs : [
     { question: `Does RenovaAura have a branch in ${location.area}?`, answer: `RenovaAura has one confirmed clinic at ${clinic.address}. This page is for patients travelling from ${location.area}; it does not claim a separate branch there.` },
     { question: `Which treatments are available near ${location.area}?`, answer: "Consultations cover medical and aesthetic dermatology, hair restoration and transplant options, laser treatments, and cosmetic or reconstructive procedures. Suitability is confirmed after assessment." },
@@ -110,7 +110,7 @@ export default async function AreaPage({ params }: { params: Params }) {
       </div>
     </section>
     <nav className="area-anchor-nav" aria-label="Page sections"><div className="container"><a href="#overview">Overview</a><a href="#hair">Hair</a><a href="#surgery">Surgery</a><a href="#skin">Skin</a><a href="#doctors">Specialists</a><a href="#faq">FAQ</a><a href="#consultation">Consultation</a></div></nav>
-    <section id="overview" className="section area-overview"><div className="container narrow"><h2>{locationPrimaryIntent(location)}</h2><p>{intro}</p><p><strong>Verified clinic:</strong> {clinic.address}. <strong>Hours:</strong> {clinic.hours}.</p><p><strong>Breadcrumb:</strong> {formatBreadcrumb(location.city, location.area)}.</p></div></section>
+    <section id="overview" className="section area-overview"><div className="container narrow"><h2>{locationPrimaryIntent(location)}</h2><p>{intro}</p><p><strong>Verified clinic:</strong> {clinic.address}. <strong>Hours:</strong> {clinic.hours}.</p></div></section>
     <section id="treatments" className="section area-treatments"><div className="container"><div className="section-head"><h2>Skin, Hair and Cosmetic Treatment Options</h2><p>Explore common concerns and specialist-led procedures. Recommendations depend on a clinical consultation.</p></div>
       <div className="area-service-columns">
         <ServiceGroup id="hair" title="Hair Restoration" intro="Hair transplant and restoration planning leads this page because it is the strongest local-search intent for NCR patients." image={SERVICE_IMAGES.hair} items={hair.map((x) => ({ name: x.name, href: `/procedures/${x.pillar}/${x.slug}` }))}/>
