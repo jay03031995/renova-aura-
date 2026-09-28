@@ -5683,9 +5683,32 @@ button.sbv-card-clickable:focus-visible {
   background: var(--sage); color: #fff; font-size: 24px;
 }
 
+.global-breadcrumb-wrap {
+  background: var(--cream);
+  border-top: 1px solid rgba(113, 126, 87, 0.12);
+}
+.global-breadcrumb {
+  padding-top: 22px;
+  padding-bottom: 0;
+  margin-bottom: -6px;
+  overflow-x: auto;
+  white-space: nowrap;
+  scrollbar-width: none;
+}
+.global-breadcrumb::-webkit-scrollbar { display: none; }
+.global-breadcrumb-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
 @media (max-width: 860px) {
   .contact-page-grid { grid-template-columns: 1fr; gap: 34px; }
   .contact-form-row { grid-template-columns: 1fr; }
   .lb-ba img { max-width: 90vw; }
   .lb-nav { width: 40px; height: 40px; font-size: 24px; }
+  .global-breadcrumb {
+    padding-top: 16px;
+    font-size: 13px;
+  }
 }

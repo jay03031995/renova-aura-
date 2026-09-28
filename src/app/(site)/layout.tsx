@@ -7,6 +7,7 @@ import FabStack from "@/components/FabStack";
 import MobileTabBar from "@/components/MobileTabBar";
 import BookingModal from "@/components/BookingModal";
 import RevealInit from "@/components/RevealInit";
+import GlobalBreadcrumbs from "@/components/GlobalBreadcrumbs";
 import {
   getBodyConcerns,
   getClinic,
@@ -372,6 +373,7 @@ export default async function SiteLayout({
             bodyConcerns={bodyConcerns}
           />
         </header>
+        <GlobalBreadcrumbs />
         <main>{children}</main>
         <Footer />
         <FabStack clinic={clinic} />
