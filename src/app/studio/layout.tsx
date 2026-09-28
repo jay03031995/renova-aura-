@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 
 export const metadata: Metadata = {
   title: "RenovaAura Admin",
+  description: "Private RenovaAura Sanity Studio for managing website content.",
   robots: { index: false, follow: false },
 };
 

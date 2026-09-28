@@ -5,9 +5,9 @@ import ResultsGallery from "@/components/ResultsGallery";
 import { getClinic, getResults } from "@/sanity/lib/fetchers";
 
 export const metadata: Metadata = {
-  title: "Patient Results — Before & After at RenovaAura",
+  title: "Patient Results Gallery | RenovaAura",
   description:
-    "Real patient results from RenovaAura, Anand Vihar, New Delhi — acne scars, pigmentation, hair loss and anti-ageing protocols. Photographed and shared with consent.",
+    "View RenovaAura treatment result galleries when clinic-approved, consented photos are available for hair, skin and aesthetic care.",
   alternates: { canonical: "/results" },
 };
 

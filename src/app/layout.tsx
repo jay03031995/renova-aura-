@@ -24,9 +24,9 @@ const mono = JetBrains_Mono({
   display: "swap",
 });
 
-const FALLBACK_TITLE = "RenovaAura — Hair Transplant & Plastic Surgery Specialists";
+const FALLBACK_TITLE = "RenovaAura — Hair, Skin & Plastic Surgery Clinic";
 const FALLBACK_DESCRIPTION =
-  "RenovaAura — board-certified hair transplant surgeons and plastic surgery specialists. FUE, DHI, FUT, rhinoplasty, blepharoplasty, facelift and more. Natural-looking, clinically-grounded results.";
+  "RenovaAura is a hair transplant, dermatology, skin aesthetics and plastic surgery clinic in Anand Vihar, New Delhi.";
 const FALLBACK_OG_IMAGE = "/og.jpg";
 
 const absoluteUrl = (url: string | undefined, base: string) => {

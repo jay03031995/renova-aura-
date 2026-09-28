@@ -4,9 +4,9 @@ import { ArrowRight } from "@/components/icons";
 import { getProceduresByPillar } from "@/sanity/lib/fetchers";
 
 export const metadata: Metadata = {
-  title: "Our Procedures — Hair Transplant & Plastic Surgery",
+  title: "Hair, Skin & Plastic Surgery Procedures | RenovaAura",
   description:
-    "RenovaAura offers hair restoration and plastic surgery procedures. FUE, DHI, rhinoplasty, facelift and more — all delivered by board-certified surgeons.",
+    "Explore RenovaAura procedures for hair transplant, skin concerns, body concerns and plastic surgery at the Anand Vihar clinic.",
   alternates: { canonical: "/procedures" },
 };
 

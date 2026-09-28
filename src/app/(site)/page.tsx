@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Hero from "@/components/home/Hero";
 import { getHeroSlides } from "@/sanity/lib/fetchers";
 import TrustStrip from "@/components/home/TrustStrip";
@@ -15,6 +16,13 @@ import DoctorsSection from "@/components/home/DoctorsSection";
 import Faq from "@/components/home/Faq";
 // import SimpleBook from "@/components/home/SimpleBook";
 import Contact from "@/components/home/Contact";
+
+export const metadata: Metadata = {
+  title: "Hair Transplant & Skin Clinic in Anand Vihar | RenovaAura",
+  description:
+    "Visit RenovaAura in Anand Vihar for hair transplant, dermatology, plastic surgery and skin treatments with specialist-led consultation.",
+  alternates: { canonical: "/" },
+};
 
 /**
  * RenovaAura homepage — hair transplant is the dominant pillar (immediately
