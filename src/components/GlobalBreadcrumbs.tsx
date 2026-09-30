@@ -30,7 +30,8 @@ const LABELS: Record<string, string> = {
   shahdara: "Shahdara",
   sahibabad: "Sahibabad",
   "fue-hair-transplant": "FUE Hair Transplant",
-  "dhi-hair-transplant": "Direct Hair Transplantation (DHT)",
+  "fut-hair-transplant": "FUT Hair Transplant",
+  "dht-hair-transplant": "Direct Hair Transplantation (DHT)",
   "female-hair-transplant": "Female Hair Transplant",
   "hairline-lowering": "Hairline Lowering",
   "beard-transplant": "Beard Transplant",
@@ -56,7 +57,16 @@ function labelFor(segment: string) {
 
 export default function GlobalBreadcrumbs() {
   const pathname = usePathname();
-  if (!pathname || pathname === "/" || pathname.startsWith("/studio")) return null;
+  // Doctor profiles render their breadcrumb inside the hero, where it belongs
+  // visually. Do not add the shared trail above the page as well.
+  if (
+    !pathname ||
+    pathname === "/" ||
+    pathname.startsWith("/studio") ||
+    /^\/doctors\/[^/]+$/.test(pathname)
+  ) {
+    return null;
+  }
 
   const segments = pathname.split("/").filter(Boolean);
   const items = [

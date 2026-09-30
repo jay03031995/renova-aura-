@@ -196,7 +196,7 @@ export function calculateGrafts(input: CalculatorInput): CalculatorResult {
   let recommendedProcedure = "fue-hair-transplant";
   if (input.goalDensity === "dense") {
     recommendedProcedure =
-      finalMid >= 2500 ? "sapphire-fue-hair-transplant" : "dhi-hair-transplant";
+      finalMid >= 2500 ? "sapphire-fue-hair-transplant" : "dht-hair-transplant";
   } else if (finalMid >= 4000) {
     recommendedProcedure = "fut-hair-transplant"; // best graft yield per session
   }

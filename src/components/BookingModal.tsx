@@ -24,7 +24,7 @@ const CONCERN_CHIPS = [
   "Something else",
 ];
 
-const TIMES = ["9:30", "11:00", "12:30", "2:00", "4:30", "6:00", "7:30"];
+const TIMES = ["9:30", "11:00", "12:30", "2:00", "4:30", "6:00", "7:00"];
 const DISABLED_SLOTS = ["12:30", "6:00"];
 // Only surface bookable slots — unavailable ones are hidden, not greyed out.
 const AVAILABLE_TIMES = TIMES.filter((t) => !DISABLED_SLOTS.includes(t));

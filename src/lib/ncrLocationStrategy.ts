@@ -6,7 +6,7 @@ export const CLINIC_AREA = "Anand Vihar";
 
 const HAIR_PRIMARY_SLUGS = [
   "fue-hair-transplant",
-  "dhi-hair-transplant",
+  "dht-hair-transplant",
   "female-hair-transplant",
   "hairline-lowering",
   "beard-transplant",

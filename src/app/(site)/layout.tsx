@@ -50,7 +50,7 @@ const HOURS = [
   {
     "@type": "OpeningHoursSpecification",
     dayOfWeek: ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"],
-    opens: "10:00", closes: "19:30",
+    opens: "10:00", closes: "19:00",
   },
   {
     "@type": "OpeningHoursSpecification",
@@ -130,7 +130,7 @@ const jsonLd = {
       address: {},
       geo: GEO,
       openingHoursSpecification: HOURS,
-      openingHours: ["Mo-Sa 10:00-19:30", "Su 10:00-14:00"],
+      openingHours: ["Mo-Sa 10:00-19:00", "Su 10:00-14:00"],
       medicalSpecialty: [
         "Dermatology",
         "Plastic Surgery",
@@ -229,7 +229,7 @@ const jsonLd = {
       url: `${BASE}/procedures`,
       itemListElement: [
         { "@type": "ListItem", position: 1, name: "FUE Hair Transplant",   url: `${BASE}/procedures/hair-transplant/fue-hair-transplant` },
-        { "@type": "ListItem", position: 2, name: "DHI Hair Transplant",   url: `${BASE}/procedures/hair-transplant/dhi-hair-transplant` },
+        { "@type": "ListItem", position: 2, name: "DHI Hair Transplant",   url: `${BASE}/procedures/hair-transplant/dht-hair-transplant` },
         { "@type": "ListItem", position: 3, name: "Rhinoplasty",           url: `${BASE}/procedures/plastic-surgery/rhinoplasty` },
         { "@type": "ListItem", position: 4, name: "Facelift",              url: `${BASE}/procedures/plastic-surgery/facelift` },
         { "@type": "ListItem", position: 5, name: "Acne Treatment",        url: `${BASE}/concerns/acne` },

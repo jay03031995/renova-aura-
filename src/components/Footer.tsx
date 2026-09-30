@@ -23,10 +23,7 @@ export default async function Footer() {
     }));
   const footerGroups = {
     ...FOOTER_LINKS,
-    "Plastic Surgery": [
-      ...plasticLinks,
-      { label: "All Procedures", href: "/procedures/plastic-surgery" },
-    ],
+    "Plastic Surgery": plasticLinks,
   };
   const logoSrc = clinic.logoUrl ?? "/renovaaura-logo.png";
 

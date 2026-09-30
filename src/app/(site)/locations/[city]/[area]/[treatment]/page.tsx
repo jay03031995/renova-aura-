@@ -99,7 +99,7 @@ export default async function LocationTreatmentPage({ params }: { params: Params
     openingHoursSpecification: [{
       "@type": "OpeningHoursSpecification",
       dayOfWeek: ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"],
-      opens: "10:00", closes: "19:30",
+      opens: "10:00", closes: "19:00",
     }],
     breadcrumb: {
       "@type": "BreadcrumbList",

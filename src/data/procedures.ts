@@ -229,7 +229,7 @@ const HAIR: Procedure[] = [
     ],
   },
   {
-    slug: "dhi-hair-transplant",
+    slug: "dht-hair-transplant",
     image: IMG.hairSurgery,
     name: "DHI Hair Transplant",
     pillar: "hair-transplant",

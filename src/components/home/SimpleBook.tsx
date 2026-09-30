@@ -31,7 +31,7 @@ export default function SimpleBook() {
                 <Check /> Confirmed on WhatsApp in 10 min
               </span>
               <span>
-                <Check /> Mon to Sat 10 AM to 7:30 PM
+                <Check /> Mon to Sat 10:00 AM to 7:00 PM · Sun: 10:00 AM to 2:00 PM
               </span>
             </div>
           </div>

@@ -720,7 +720,10 @@ function mapRelatedTreatment(d: SanityRelatedTreatment): RelatedTreatmentCard {
 
 function mapProcedure(d: SanityProcedure): Procedure {
   return {
-    slug: d.slug,
+    // The existing Sanity document keeps its DHI slug, while the public URL
+    // uses DHT. Normalize it at the app boundary so CMS content and links
+    // continue to serve the same page at the new address.
+    slug: d.slug === "dhi-hair-transplant" ? "dht-hair-transplant" : d.slug,
     name: d.name,
     pillar: d.pillar,
     plasticSurgeryCategory: d.plasticSurgeryCategory,
@@ -777,10 +780,12 @@ export async function getProceduresByPillar(
 export async function getProcedureBySlug(
   slug: string,
 ): Promise<Procedure | undefined> {
+  const sanitySlug =
+    slug === "dht-hair-transplant" ? "dhi-hair-transplant" : slug;
   const { available, data: doc } =
     await safeFetchWithAvailability<SanityProcedure | null>(
       procedureBySlugQuery,
-      { slug },
+      { slug: sanitySlug },
     );
   if (doc) return mapProcedure(doc);
   // Sanity may intentionally contain only a subset of the complete catalogue.
@@ -795,7 +800,12 @@ export async function getProcedureSlugs(): Promise<
     { slug: string; pillar: ProcedurePillar }[]
   >(procedureSlugsQuery);
   const local = LOCAL_PROCEDURES.map((p) => ({ slug: p.slug, pillar: p.pillar }));
-  if (isFilled(docs)) return docs;
+  if (isFilled(docs)) {
+    return docs.map((doc) => ({
+      ...doc,
+      slug: doc.slug === "dhi-hair-transplant" ? "dht-hair-transplant" : doc.slug,
+    }));
+  }
   return local;
 }
 

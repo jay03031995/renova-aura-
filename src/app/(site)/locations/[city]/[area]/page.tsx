@@ -45,7 +45,7 @@ export default async function AreaPage({ params }: { params: Params }) {
   ]);
   if (!location) return notFound();
   const meta = generalLocationMeta(location.area);
-  const hairPriority = ["fue-hair-transplant", "dhi-hair-transplant", "female-hair-transplant", "hairline-lowering", "beard-transplant", "eyebrow-transplant"];
+  const hairPriority = ["fue-hair-transplant", "dht-hair-transplant", "female-hair-transplant", "hairline-lowering", "beard-transplant", "eyebrow-transplant"];
   const plasticPriority = ["gynecomastia-surgery", "liposuction", "tummy-tuck", "botox", "thread-lift", "blepharoplasty"];
   const skinPriority = ["laser-hair-reduction", "pigmentation-melasma", "acne", "dull-skin-brightening", "anti-ageing-wrinkles", "open-pores"];
   const bodyPriority = ["back-acne", "shoulder-acne", "body-pigmentation", "underarm-pigmentation", "intimate-area-pigmentation", "neck-pigmentation"];

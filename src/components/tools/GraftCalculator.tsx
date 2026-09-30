@@ -83,7 +83,7 @@ type ToolClinic = Pick<
 const PROCEDURE_LABEL: Record<string, string> = {
   "fue-hair-transplant": "FUE Hair Transplant",
   "fut-hair-transplant": "FUT Hair Transplant",
-  "dhi-hair-transplant": "DHI Hair Transplant",
+  "dht-hair-transplant": "DHI Hair Transplant",
   "sapphire-fue-hair-transplant": "Sapphire FUE Hair Transplant",
 };
 

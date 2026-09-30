@@ -9,7 +9,7 @@ import { getProceduresByPillar } from "@/sanity/lib/fetchers";
  */
 const FEATURED_SLUGS = [
   "fue-hair-transplant",
-  "dhi-hair-transplant",
+  "dht-hair-transplant",
   "sapphire-fue-hair-transplant",
   "beard-transplant",
   "eyebrow-transplant",
@@ -76,7 +76,7 @@ export default async function HairTransplantFocus() {
             href="/procedures/hair-transplant"
             className="btn btn-primary"
           >
-            View all 11 hair restoration procedures <ArrowRight size={16} />
+            View all {all.length} hair restoration procedures <ArrowRight size={16} />
           </Link>
         </div>
       </div>
