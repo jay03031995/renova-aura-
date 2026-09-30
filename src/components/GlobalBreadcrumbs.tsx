@@ -62,6 +62,7 @@ export default function GlobalBreadcrumbs() {
   if (
     !pathname ||
     pathname === "/" ||
+    pathname === "/index" ||
     pathname.startsWith("/studio") ||
     /^\/doctors\/[^/]+$/.test(pathname)
   ) {

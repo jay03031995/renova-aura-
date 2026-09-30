@@ -17,6 +17,11 @@ const nextConfig: NextConfig = {
     // succeeds — these URLs changed for good.
     const STATIC_REDIRECTS = [
       {
+        source: "/index",
+        destination: "/",
+        permanent: true,
+      },
+      {
         source: "/procedures/hair-transplant/dhi-hair-transplant",
         destination: "/procedures/hair-transplant/dht-hair-transplant",
         permanent: true,
