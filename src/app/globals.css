@@ -255,6 +255,7 @@ p { margin: 0; color: var(--muted); }
   display: block;
   object-fit: contain;
 }
+
 .logo-img-light {
   filter: brightness(0) invert(0.95) sepia(0.4) saturate(2.5) hue-rotate(340deg) brightness(1.05);
 }
@@ -3061,20 +3062,21 @@ button.sbv-card-clickable:focus-visible {
 /* Norwood diagram grid + cards */
 .norwood-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 230px), 1fr));
+  gap: 14px;
 }
 .norwood-card {
+  min-width: 0;
   background: var(--cream);
   border: 1.5px solid var(--line);
   border-radius: var(--radius);
-  padding: 12px;
+  padding: 10px;
   cursor: pointer;
   text-align: left;
   transition: all .2s var(--ease);
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 8px;
 }
 .norwood-card:hover { border-color: var(--sage); background: var(--paper); }
 .norwood-card.selected {
@@ -3082,20 +3084,201 @@ button.sbv-card-clickable:focus-visible {
   border-color: var(--cocoa);
   box-shadow: 0 0 0 3px rgba(74, 90, 53, .12);
 }
+.norwood-card:focus-visible,
+.graft-zone-toggle:focus-within,
+.graft-zone-inputs input:focus-visible,
+.graft-zone-inputs select:focus-visible {
+  outline: 3px solid var(--tan);
+  outline-offset: 3px;
+}
 .norwood-card-svg {
-  background: linear-gradient(135deg, var(--cream-2), #f3f1e8);
+  display: block;
+  width: 100%;
+  height: auto;
   border-radius: 8px;
-  padding: 8px 6px;
+}
+.norwood-illustration-label {
+  fill: #59634c;
+  font-size: 6px;
+  font-family: var(--font-inter), system-ui, sans-serif;
+  font-weight: 600;
+  letter-spacing: .08em;
+}
+.norwood-card-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.norwood-card-title { font-size: 14px; font-weight: 600; color: var(--cocoa); }
+.norwood-card-desc { font-size: 11px; color: var(--muted); }
+
+.graft-zone-section,
+.graft-report-section {
+  margin-top: 36px;
+  padding-top: 28px;
+  border-top: 1px solid var(--line);
+}
+.graft-zone-list { display: grid; gap: 12px; }
+.graft-zone-card {
+  min-width: 0;
+  margin: 0;
+  padding: 14px 16px 8px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--cream);
+}
+.graft-zone-legend { padding: 0; }
+.graft-zone-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  padding: 2px 4px;
+  color: var(--cocoa);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.graft-zone-toggle input,
+.tool-photo-drop input { accent-color: var(--sage); }
+.graft-zone-inputs {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px 14px;
+  padding-top: 12px;
+}
+.graft-zone-description {
+  grid-column: 1 / -1;
+  margin: 0 0 2px;
+  font-size: 12px;
+  color: var(--muted);
+}
+.graft-zone-inputs .tool-field { min-width: 0; }
+.graft-zone-inputs .tool-field label {
+  letter-spacing: .02em;
+  text-transform: none;
+}
+.graft-zone-inputs input,
+.graft-zone-inputs select,
+.graft-report-section input {
+  width: 100%;
+  min-width: 0;
+  padding: 10px 11px;
+  color: var(--ink);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--paper);
+  font: inherit;
+}
+.graft-zone-help {
+  grid-column: 1 / -1;
+  font-size: 11px;
+  line-height: 1.45;
+  margin: -6px 0 8px;
+}
+.graft-calculation-message,
+.graft-result-prompt {
+  margin-top: 14px;
+  font-size: 13px;
+  line-height: 1.5;
+}
+.graft-calculation-message { color: #765d33; }
+.graft-photo-details {
+  margin-top: 28px;
+  border-top: 1px solid var(--line);
+  padding-top: 18px;
+}
+.graft-photo-details summary {
+  color: var(--cocoa);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+}
+.graft-photo-details > p {
+  margin: 8px 0 12px;
+  font-size: 12px;
+}
+.graft-photo-details .tool-photo-drop { padding: 22px; }
+.graft-photo-details .tool-photo-drop input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+}
+.graft-photo-details .tool-photo-drop input:focus-visible + .tool-photo-cta {
+  outline: 3px solid var(--tan);
+}
+.graft-report-section .tool-step-sub { max-width: 550px; }
+.graft-report-section .tool-field input:focus-visible {
+  outline: 3px solid var(--tan);
+  outline-offset: 2px;
+}
+.graft-report-section .tool-actions { flex-wrap: wrap; }
+.graft-report-section .tool-actions .btn { justify-content: center; }
+.graft-report-success {
   display: flex;
   align-items: center;
+  gap: 8px;
+  margin-top: 14px;
+  color: var(--cocoa);
+  font-size: 13px;
+}
+.graft-result-breakdown {
+  margin-top: 22px;
+  padding-top: 18px;
+  border-top: 1px solid rgba(216, 222, 199, .2);
+}
+.graft-result-breakdown h3,
+.graft-assumptions h3 {
+  margin: 0 0 12px;
+  color: var(--sand);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+}
+.graft-result-breakdown .tool-result-meta-row {
+  gap: 12px;
+  align-items: flex-start;
+  padding: 8px 0;
+}
+.graft-result-breakdown .tool-result-meta-row > span {
+  min-width: 0;
+}
+.graft-result-breakdown small {
+  display: block;
+  margin-top: 2px;
+  font-size: 10px;
+  color: rgba(250, 250, 246, .62);
+}
+.graft-result-breakdown .graft-result-total {
+  border-top: 1px solid rgba(216, 222, 199, .2);
+  margin-top: 6px;
+  padding-top: 12px;
+  color: var(--cream);
+  font-weight: 600;
+}
+.graft-consultation-cta {
+  width: 100%;
   justify-content: center;
+  margin-top: 22px;
 }
-.norwood-card-svg svg { max-width: 180px; }
-.norwood-card-meta {
-  display: flex; flex-direction: column; gap: 2px;
+.graft-assumptions {
+  margin-top: 24px;
+  padding-top: 18px;
+  border-top: 1px solid rgba(216, 222, 199, .2);
 }
-.norwood-card-title { font-size: 13px; font-weight: 600; color: var(--cocoa); }
-.norwood-card-desc { font-size: 11px; color: var(--muted); }
+.graft-assumptions ul {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding-left: 17px;
+}
+.graft-assumptions li {
+  color: rgba(250, 250, 246, .74);
+  font-size: 11px;
+  line-height: 1.5;
+}
 
 /* Photo uploader */
 .tool-photo {
@@ -3267,6 +3450,16 @@ button.sbv-card-clickable:focus-visible {
   .tool-result { position: static; }
   .tool-options.two-col { grid-template-columns: 1fr; }
   .tool-form { padding: 24px; }
+}
+
+@media (max-width: 600px) {
+  .graft-calculator .tool-form { padding: 18px; }
+  .norwood-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 9px; }
+  .norwood-card { padding: 7px; }
+  .norwood-card-desc { font-size: 10px; line-height: 1.4; }
+  .graft-zone-inputs { grid-template-columns: 1fr; gap: 0; }
+  .graft-report-section .tool-actions { align-items: stretch; flex-direction: column; }
+  .graft-report-section .tool-actions .btn { width: 100%; }
 }
 
 /* =========================================================

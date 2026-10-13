@@ -1,216 +1,118 @@
-/**
- * Norwood-Hamilton scale visual diagrams.
- *
- * Each component renders a simplified front + side view of a head with
- * the bald/recessed region shaded in sage. Pure SVG, no external assets,
- * fully themeable via CSS (currentColor where possible).
- *
- * Scale: viewBox is 160 × 96 for each, so the front-view occupies x=0–70
- * and the side-view occupies x=90–160. Vertical center ~48.
- */
 import type { Norwood } from "@/lib/graftCalculator";
 
-type Props = { className?: string };
+type Props = { stage: Norwood; className?: string };
 
-const SCALP = "#1a1f15"; // dark hair
-const SKIN = "#e8c9a8"; // skin
-const BALD = "#7a8c5b"; // sage — affected area
-const STROKE = "#2a3520";
+const stagePatterns: Record<
+  Norwood,
+  { frontal: "none" | "mild" | "deep" | "advanced" | "progressing"; vertex: "none" | "small" | "large" | "joined" }
+> = {
+  "1": { frontal: "none", vertex: "none" },
+  "2": { frontal: "mild", vertex: "none" },
+  "2A": { frontal: "advanced", vertex: "none" },
+  "3": { frontal: "deep", vertex: "none" },
+  "3V": { frontal: "deep", vertex: "small" },
+  "4": { frontal: "deep", vertex: "large" },
+  "4A": { frontal: "progressing", vertex: "none" },
+  "5": { frontal: "deep", vertex: "large" },
+  "5A": { frontal: "progressing", vertex: "none" },
+  "6": { frontal: "advanced", vertex: "joined" },
+};
 
-/** Shared face + neck silhouette (front view). Pixel-precise within the 70 × 96 box. */
-function FaceFront({ children }: { children: React.ReactNode }) {
-  return (
-    <g>
-      {/* neck + shoulders */}
-      <path
-        d="M 22 86 L 16 96 L 54 96 L 48 86 Z"
-        fill={SKIN}
-        stroke={STROKE}
-        strokeWidth="0.5"
-      />
-      {/* head — egg shape */}
-      <ellipse cx="35" cy="44" rx="22" ry="28" fill={SKIN} stroke={STROKE} strokeWidth="0.7" />
-      {/* full scalp hair (default — overridden by children clip) */}
-      <path
-        d="M 13 38 Q 13 18 35 16 Q 57 18 57 38 Q 53 30 35 28 Q 17 30 13 38 Z"
-        fill={SCALP}
-      />
-      {children}
-      {/* eyes (tiny) */}
-      <circle cx="26" cy="48" r="0.9" fill={STROKE} />
-      <circle cx="44" cy="48" r="0.9" fill={STROKE} />
-      {/* nose */}
-      <path d="M 35 51 L 33 60 L 37 60 Z" fill="none" stroke={STROKE} strokeWidth="0.4" />
-      {/* mouth */}
-      <path d="M 31 67 Q 35 69 39 67" stroke={STROKE} strokeWidth="0.5" fill="none" />
-    </g>
-  );
+function FrontalLoss({ kind }: { kind: (typeof stagePatterns)[Norwood]["frontal"] }) {
+  if (kind === "none") return null;
+  if (kind === "mild") {
+    return (
+      <>
+        <path d="M164 48 Q174 42 185 47 L181 54 Q174 50 168 55Z" />
+        <path d="M236 47 Q247 42 257 48 L253 55 Q247 50 240 54Z" />
+      </>
+    );
+  }
+  if (kind === "deep") {
+    return (
+      <>
+        <path d="M162 48 Q172 36 189 43 L184 55 Q175 50 166 59Z" />
+        <path d="M232 43 Q249 36 259 48 L255 59 Q246 50 237 55Z" />
+      </>
+    );
+  }
+  if (kind === "progressing") {
+    return (
+      <path d="M163 48 Q171 31 210 32 Q249 31 258 48 L251 58 Q244 48 232 46 L233 68 Q220 73 205 68 L204 47 Q179 46 170 58Z" />
+    );
+  }
+  return <path d="M164 48 Q169 34 210 33 Q251 34 257 48 L249 57 Q243 44 210 43 Q177 44 171 57Z" />;
 }
 
-/** Shared face silhouette (side view, facing right). 70 × 96 box at x=90. */
-function FaceSide({ children }: { children: React.ReactNode }) {
-  return (
-    <g transform="translate(90 0)">
-      {/* neck */}
-      <path d="M 32 86 L 26 96 L 50 96 L 44 86 Z" fill={SKIN} stroke={STROKE} strokeWidth="0.5" />
-      {/* head profile facing right */}
-      <path
-        d="M 18 44 Q 18 18 38 16 Q 60 18 60 44 Q 60 60 56 70 Q 53 78 48 80 L 44 86 L 32 86 Q 26 80 22 72 Q 18 60 18 44 Z"
-        fill={SKIN}
-        stroke={STROKE}
-        strokeWidth="0.7"
-      />
-      {/* full scalp hair */}
-      <path
-        d="M 19 40 Q 19 18 38 16 Q 60 18 60 40 Q 60 32 56 28 Q 50 24 38 24 Q 22 26 19 40 Z"
-        fill={SCALP}
-      />
-      {children}
-      {/* ear */}
-      <path d="M 49 47 Q 51 49 51 53 Q 51 56 49 57" fill="none" stroke={STROKE} strokeWidth="0.5" />
-      {/* eye */}
-      <circle cx="49" cy="46" r="0.8" fill={STROKE} />
-      {/* nose */}
-      <path d="M 60 50 L 64 52 L 60 55" fill="none" stroke={STROKE} strokeWidth="0.5" />
-      {/* mouth */}
-      <path d="M 56 62 L 60 63" stroke={STROKE} strokeWidth="0.5" fill="none" />
-    </g>
-  );
+function VertexLoss({ kind }: { kind: (typeof stagePatterns)[Norwood]["vertex"] }) {
+  if (kind === "none") return null;
+  if (kind === "small") {
+    return <ellipse cx="220" cy="79" rx="9" ry="7" />;
+  }
+  if (kind === "large") {
+    return <ellipse cx="220" cy="78" rx="16" ry="12" />;
+  }
+  return <path d="M165 48 Q177 43 210 43 Q243 43 257 48 L249 64 Q245 91 220 95 Q195 91 190 64Z" />;
 }
 
-function Frame({ children, className }: Props & { children: React.ReactNode }) {
+export default function NorwoodIllustration({ stage, className }: Props) {
+  const pattern = stagePatterns[stage];
+
   return (
     <svg
-      viewBox="0 0 160 96"
+      viewBox="0 0 300 124"
       className={className}
-      style={{ display: "block", width: "100%", height: "auto" }}
-      aria-hidden="true"
+      role="img"
+      aria-label={`${stage} pattern shown in side-profile and top-down views`}
+      focusable="false"
     >
-      {children}
+      <rect x="3" y="3" width="140" height="118" rx="10" fill="#f7f6f0" />
+      <rect x="157" y="3" width="140" height="118" rx="10" fill="#f7f6f0" />
+      <text x="73" y="17" textAnchor="middle" className="norwood-illustration-label">SIDE PROFILE</text>
+      <text x="227" y="17" textAnchor="middle" className="norwood-illustration-label">TOP VIEW</text>
+
+      <g stroke="#66704f" strokeWidth="1.5" strokeLinejoin="round">
+        <path
+          d="M35 99 Q27 87 30 68 Q31 40 52 29 Q75 18 96 32 Q108 41 106 58 L111 67 L106 72 L108 79 Q106 87 98 88 L94 101Z"
+          fill="#e8d4c2"
+        />
+        <path
+          d="M31 67 Q28 37 51 28 Q75 18 96 32 Q104 38 106 50 Q97 42 88 39 Q74 33 62 38 Q44 43 37 62Z"
+          fill="#263226"
+          stroke="none"
+        />
+        {pattern.frontal !== "none" && (
+          <path
+            d={
+              pattern.frontal === "mild"
+                ? "M35 53 Q42 45 51 44 L55 51 Q45 52 39 61Z"
+                : pattern.frontal === "deep"
+                  ? "M33 59 Q39 42 55 39 L61 48 Q47 51 39 67Z"
+                  : pattern.frontal === "progressing"
+                    ? "M34 61 Q40 38 70 34 L79 42 Q56 48 44 72Z"
+                    : "M34 61 Q40 38 68 35 L72 46 Q50 50 40 69Z"
+            }
+            fill="#d9b7a5"
+            stroke="none"
+          />
+        )}
+        {pattern.vertex !== "none" && (
+          <ellipse
+            cx="69"
+            cy="37"
+            rx={pattern.vertex === "small" ? 6 : pattern.vertex === "large" ? 10 : 16}
+            ry={pattern.vertex === "small" ? 4 : pattern.vertex === "large" ? 7 : 11}
+            fill="#d9b7a5"
+            stroke="none"
+          />
+        )}
+        <ellipse cx="220" cy="70" rx="40" ry="45" fill="#263226" />
+        <g fill="#d9b7a5" stroke="none">
+          <FrontalLoss kind={pattern.frontal} />
+          <VertexLoss kind={pattern.vertex} />
+        </g>
+        <path d="M180 70 Q220 78 260 70" fill="none" stroke="#738063" strokeWidth=".7" strokeDasharray="2 3" />
+      </g>
     </svg>
   );
 }
-
-// Norwood II — mild frontal recession at temples
-export function NorwoodII({ className }: Props) {
-  return (
-    <Frame className={className}>
-      <FaceFront>
-        <path d="M 13 38 Q 17 30 24 30 L 24 36 Q 20 36 17 38 Z" fill={BALD} />
-        <path d="M 57 38 Q 53 30 46 30 L 46 36 Q 50 36 53 38 Z" fill={BALD} />
-      </FaceFront>
-      <FaceSide>
-        <path d="M 19 38 Q 24 30 32 28 L 32 34 Q 26 34 22 38 Z" fill={BALD} />
-      </FaceSide>
-    </Frame>
-  );
-}
-
-// Norwood III — deeper temple recession, M-shape
-export function NorwoodIII({ className }: Props) {
-  return (
-    <Frame className={className}>
-      <FaceFront>
-        <path d="M 13 38 Q 17 26 28 24 L 28 36 Q 22 36 17 38 Z" fill={BALD} />
-        <path d="M 57 38 Q 53 26 42 24 L 42 36 Q 48 36 53 38 Z" fill={BALD} />
-      </FaceFront>
-      <FaceSide>
-        <path d="M 19 38 Q 22 24 34 22 L 34 34 Q 26 34 22 38 Z" fill={BALD} />
-      </FaceSide>
-    </Frame>
-  );
-}
-
-// Norwood III Vertex — temple recession plus vertex (crown) thinning
-export function NorwoodIIIv({ className }: Props) {
-  return (
-    <Frame className={className}>
-      <FaceFront>
-        <path d="M 13 38 Q 17 26 28 24 L 28 36 Q 22 36 17 38 Z" fill={BALD} />
-        <path d="M 57 38 Q 53 26 42 24 L 42 36 Q 48 36 53 38 Z" fill={BALD} />
-        {/* vertex circle visible through top */}
-        <ellipse cx="35" cy="22" rx="8" ry="4" fill={BALD} opacity="0.85" />
-      </FaceFront>
-      <FaceSide>
-        <path d="M 19 38 Q 22 24 34 22 L 34 34 Q 26 34 22 38 Z" fill={BALD} />
-        <ellipse cx="35" cy="24" rx="9" ry="5" fill={BALD} opacity="0.85" />
-      </FaceSide>
-    </Frame>
-  );
-}
-
-// Norwood IV — frontal recession + clear vertex baldness, bridge intact
-export function NorwoodIV({ className }: Props) {
-  return (
-    <Frame className={className}>
-      <FaceFront>
-        <path d="M 13 38 Q 17 22 30 22 L 30 38 Q 22 38 17 38 Z" fill={BALD} />
-        <path d="M 57 38 Q 53 22 40 22 L 40 38 Q 48 38 53 38 Z" fill={BALD} />
-        <ellipse cx="35" cy="22" rx="12" ry="5" fill={BALD} />
-      </FaceFront>
-      <FaceSide>
-        <path d="M 19 38 Q 22 22 36 22 L 36 36 Q 28 36 22 38 Z" fill={BALD} />
-        <ellipse cx="40" cy="22" rx="13" ry="6" fill={BALD} />
-      </FaceSide>
-    </Frame>
-  );
-}
-
-// Norwood V — bridge thinning between frontal and vertex
-export function NorwoodV({ className }: Props) {
-  return (
-    <Frame className={className}>
-      <FaceFront>
-        <path d="M 13 38 Q 14 18 35 18 Q 56 18 57 38 Q 53 24 35 24 Q 17 24 13 38 Z" fill={BALD} />
-        <rect x="29" y="20" width="12" height="10" fill={BALD} opacity="0.75" />
-      </FaceFront>
-      <FaceSide>
-        <path d="M 19 38 Q 20 18 38 18 Q 56 20 58 36 Q 50 24 38 24 Q 22 26 19 38 Z" fill={BALD} />
-      </FaceSide>
-    </Frame>
-  );
-}
-
-// Norwood VI — bridge gone, frontal + vertex connected
-export function NorwoodVI({ className }: Props) {
-  return (
-    <Frame className={className}>
-      <FaceFront>
-        <path d="M 13 40 Q 13 14 35 14 Q 57 14 57 40 L 53 38 Q 51 30 35 28 Q 19 30 17 38 Z" fill={BALD} />
-      </FaceFront>
-      <FaceSide>
-        <path d="M 19 42 Q 19 14 38 14 Q 60 16 60 42 Q 56 34 38 32 Q 22 32 19 42 Z" fill={BALD} />
-      </FaceSide>
-    </Frame>
-  );
-}
-
-// Norwood VII — horseshoe pattern, only sides + back remain
-export function NorwoodVII({ className }: Props) {
-  return (
-    <Frame className={className}>
-      <FaceFront>
-        <path d="M 13 46 Q 13 14 35 14 Q 57 14 57 46 L 55 44 Q 50 38 35 36 Q 20 38 15 44 Z" fill={BALD} />
-      </FaceFront>
-      <FaceSide>
-        <path
-          d="M 19 50 Q 19 14 38 14 Q 60 16 60 50 Q 58 42 50 38 Q 38 36 26 40 Q 22 44 19 50 Z"
-          fill={BALD}
-        />
-      </FaceSide>
-    </Frame>
-  );
-}
-
-export const NORWOOD_ICONS: Record<
-  Norwood,
-  React.ComponentType<{ className?: string }>
-> = {
-  II: NorwoodII,
-  III: NorwoodIII,
-  IIIv: NorwoodIIIv,
-  IV: NorwoodIV,
-  V: NorwoodV,
-  VI: NorwoodVI,
-  VII: NorwoodVII,
-};

@@ -19,19 +19,17 @@ export default function ToolsBanner() {
               Get a clinical preview before you book.
             </h2>
             <p className="tools-banner-p">
-              Two free interactive tools — backed by Norwood, Fitzpatrick and
-              ISHRS references. Each produces a personalised PDF you can
-              bring to your consultation.
+              A self-reported skin concern summary and a preliminary graft
+              estimate to bring to your consultation.
             </p>
           </div>
           <Link href="/tools/skin-analysis" className="tools-banner-card">
             <div className="tools-banner-card-icon">✦</div>
             <div>
               <div className="tools-banner-card-eyebrow">Dermatology</div>
-              <h3 className="tools-banner-card-h">AI Skin Analysis</h3>
+              <h3 className="tools-banner-card-h">Skin Concern Assessment</h3>
               <p className="tools-banner-card-p">
-                Map your skin type, concerns and lifestyle to a personalised
-                care plan.
+                Summarize your skin type and concerns for a clinician to review.
               </p>
               <span className="tools-banner-card-link">
                 2-min assessment <ArrowRight size={12} />
@@ -44,7 +42,7 @@ export default function ToolsBanner() {
               <div className="tools-banner-card-eyebrow">Hair Transplant</div>
               <h3 className="tools-banner-card-h">Hair Graft Calculator</h3>
               <p className="tools-banner-card-p">
-                Norwood-based math estimates the grafts you'll need for
+                Norwood-based math estimates the grafts you&apos;ll need for
                 natural restoration.
               </p>
               <span className="tools-banner-card-link">

@@ -1,20 +1,7 @@
 "use client";
 
-/**
- * AI Skin Analysis — photo-first interactive tool.
- *
- * Flow:
- *   1. Upload a face photo. Computer vision (canvas pixel sampling, not
- *      ML) extracts Fitzpatrick + skin type + redness/texture flags.
- *      Patient can confirm or adjust.
- *   2. Concerns multi-select.
- *   3. Lifestyle factors.
- *   4. Patient details.
- *
- * Live score starts at 0 and animates up only as the questionnaire is
- * answered — no pre-filled fake defaults.
- */
-import { useEffect, useMemo, useState } from "react";
+/** Questionnaire-led skin concern assessment with optional reference photo. */
+import { useMemo, useState } from "react";
 import Link from "next/link";
 import { ArrowLeft, ArrowRight, Check } from "@/components/icons";
 import {
@@ -26,13 +13,7 @@ import {
   analyseSkin,
 } from "@/lib/skinAnalysis";
 import { generateReport } from "@/lib/pdfReport";
-import SkinScorecard from "@/components/tools/SkinScorecard";
-import {
-  analyseImage,
-  downscaleDataUrl,
-  readFileAsDataUrl,
-  type ImageAnalysisResult,
-} from "@/lib/imageAnalysis";
+import { downscaleDataUrl, readFileAsDataUrl } from "@/lib/imageAnalysis";
 import type { ClinicData } from "@/sanity/lib/fetchers";
 
 const FITZ_OPTIONS: { value: Fitzpatrick; label: string; desc: string }[] = [
@@ -99,9 +80,7 @@ export default function SkinAnalysis({ clinic }: { clinic: ToolClinic }) {
   // Photo + image analysis
   const [photo, setPhoto] = useState<string | null>(null);
   const [photoCompressed, setPhotoCompressed] = useState<string | null>(null);
-  const [imageAnalysis, setImageAnalysis] =
-    useState<ImageAnalysisResult | null>(null);
-  const [analysing, setAnalysing] = useState(false);
+  const [preparingPhoto, setPreparingPhoto] = useState(false);
 
   // Required inputs — start unset
   const [fitzpatrick, setFitzpatrick] = useState<Fitzpatrick | null>(null);
@@ -133,36 +112,6 @@ export default function SkinAnalysis({ clinic }: { clinic: ToolClinic }) {
     return analyseSkin(input);
   }, [fitzpatrick, skinType, ageBracket, concerns, lifestyle]);
 
-  // Live "from zero" animated score
-  const [displayedScore, setDisplayedScore] = useState(0);
-  useEffect(() => {
-    const target = result?.healthScore ?? 0;
-    if (target === displayedScore) return;
-    const start = displayedScore;
-    const delta = target - start;
-    const duration = 800;
-    const startedAt = performance.now();
-    let frameId = 0;
-    const tick = (now: number) => {
-      const t = Math.min(1, (now - startedAt) / duration);
-      const eased = 1 - (1 - t) ** 3;
-      setDisplayedScore(Math.round(start + delta * eased));
-      if (t < 1) frameId = requestAnimationFrame(tick);
-    };
-    frameId = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(frameId);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [result?.healthScore]);
-
-  const scoreBand =
-    !result || result.healthScore === 0
-      ? "empty"
-      : result.healthScore >= 75
-      ? "good"
-      : result.healthScore >= 55
-      ? "moderate"
-      : "needs-care";
-
   const completeness = useMemo(() => {
     let pts = 0;
     if (photo) pts += 25;
@@ -188,24 +137,18 @@ export default function SkinAnalysis({ clinic }: { clinic: ToolClinic }) {
     if (!file) {
       setPhoto(null);
       setPhotoCompressed(null);
-      setImageAnalysis(null);
       return;
     }
-    setAnalysing(true);
+    setPreparingPhoto(true);
     try {
       const dataUrl = await readFileAsDataUrl(file);
       setPhoto(dataUrl);
       const small = await downscaleDataUrl(dataUrl, 800, 0.8);
       setPhotoCompressed(small);
-      const analysis = await analyseImage(dataUrl);
-      setImageAnalysis(analysis);
-      // Pre-fill the form with what we extracted — patient can override
-      setFitzpatrick(analysis.fitzpatrick);
-      setSkinType(analysis.skinType);
     } catch {
       // ignore
     } finally {
-      setAnalysing(false);
+      setPreparingPhoto(false);
     }
   };
 
@@ -250,7 +193,6 @@ export default function SkinAnalysis({ clinic }: { clinic: ToolClinic }) {
             ageBracket,
             concerns,
             lifestyle,
-            imageAnalysis,
             hasPhoto: !!photo,
           },
           outputs: result,
@@ -266,7 +208,7 @@ export default function SkinAnalysis({ clinic }: { clinic: ToolClinic }) {
       }
 
       await generateReport({
-        title: "Personalised AI Skin Analysis",
+        title: "Skin Concern Assessment",
         subtitle: `Prepared for ${patient.name}`,
         clinic: {
           name: clinic.name,
@@ -283,48 +225,17 @@ export default function SkinAnalysis({ clinic }: { clinic: ToolClinic }) {
           ageRange: ageBracket ?? undefined,
         },
         patientPhotoDataUrl: photoCompressed ?? photo ?? undefined,
-        patientPhotoCaption:
-          "Patient-uploaded face photograph. Computer-vision pixel sampling used to estimate Fitzpatrick type and skin characteristics — patient-confirmed at submission.",
+        patientPhotoCaption: "Patient-uploaded reference photo for discussion at consultation.",
         sections: [
           {
             type: "stat",
-            label: "Skin health snapshot",
-            value: `${result.healthScore} / 100`,
-            hint:
-              scoreBand === "good"
-                ? "Healthy baseline — protect it"
-                : scoreBand === "moderate"
-                ? "Room to improve"
-                : "Active care recommended",
-          },
-          { type: "spacer", height: 2 },
-          { type: "heading", text: "Your skin scorecard" },
-          {
-            type: "scoregrid",
-            items: result.metrics.map((m) => ({ label: m.label, score: m.score })),
+            label: "Assessment basis",
+            value: `${concerns.length} concern${concerns.length === 1 ? "" : "s"} selected`,
+            hint: "Self-reported information for consultation planning",
           },
           { type: "spacer", height: 2 },
           { type: "heading", text: "Your skin profile" },
           { type: "paragraph", text: result.skinProfile },
-          ...(imageAnalysis
-            ? ([
-                {
-                  type: "kv",
-                  label: "Pixel-derived lightness",
-                  value: `${imageAnalysis.lightness}/255`,
-                },
-                {
-                  type: "kv",
-                  label: "Redness index",
-                  value: `${imageAnalysis.redness}`,
-                },
-                {
-                  type: "kv",
-                  label: "Texture variance",
-                  value: `${imageAnalysis.textureVariance}`,
-                },
-              ] as const)
-            : []),
           ...(concerns.length
             ? ([
                 {
@@ -345,25 +256,19 @@ export default function SkinAnalysis({ clinic }: { clinic: ToolClinic }) {
             : []),
           { type: "heading", text: "Recommended next steps" },
           { type: "bullets", items: result.lifestyleAdvice },
-          ...(result.recommendedProcedureSlugs.length > 0
+          ...(concerns.length > 0
             ? ([
-                { type: "heading", text: "Procedures worth discussing" },
+                { type: "heading", text: "Selected concerns to discuss" },
                 {
                   type: "bullets",
-                  items: result.recommendedProcedureSlugs.map(
-                    (s) =>
-                      `${s
-                        .split("-")
-                        .map((w) => w[0].toUpperCase() + w.slice(1))
-                        .join(" ")} — see /procedures for full details`,
-                  ),
+                  items: concerns.map((concern) => CONCERN_TO_LABEL[concern]),
                 },
               ] as const)
             : []),
           { type: "spacer", height: 2 },
           {
             type: "paragraph",
-            text: "Bring this report to your in-clinic consultation. Our consultant will examine your skin in detail, confirm the analysis, and walk you through any of the recommended procedures or protocols.",
+            text: "This questionnaire is not a diagnosis or treatment recommendation. Bring this report to your consultation so your clinician can assess your skin and discuss appropriate options.",
           },
         ],
       });
@@ -386,30 +291,13 @@ export default function SkinAnalysis({ clinic }: { clinic: ToolClinic }) {
         <Link href="/tools" className="tool-back">
           <ArrowLeft size={14} /> All Tools
         </Link>
-        <div className="tool-shell-eyebrow">
-          Interactive Tool · Computer-vision assisted
-        </div>
-        <h1 className="tool-shell-title">AI Skin Analysis</h1>
+        <div className="tool-shell-eyebrow">Interactive Tool · Self-reported assessment</div>
+        <h1 className="tool-shell-title">Skin Concern Assessment</h1>
         <p className="tool-shell-sub">
-          Upload a clear face photo and our pixel-sampling algorithm
-          estimates your Fitzpatrick type, redness and texture indicators —
-          then maps your concerns + lifestyle to a personalised plan with
-          a downloadable PDF report.
+          Share your skin type, sun response, and concerns to create a useful
+          summary for your consultation. A photo is optional and is not analysed.
         </p>
       </header>
-
-      {result && result.metrics.length > 0 && (
-        <section className="scorecard-section">
-          <div className="scorecard-section-head">
-            <div className="tool-shell-eyebrow">Your skin map</div>
-            <p>
-              Per-attribute scores mapped from your photo and answers — higher
-              means healthier. Tap any concern below to see matched treatments.
-            </p>
-          </div>
-          <SkinScorecard photo={photo ?? undefined} metrics={result.metrics} />
-        </section>
-      )}
 
       <div className="tool-grid">
         <div className="tool-form">
@@ -427,72 +315,27 @@ export default function SkinAnalysis({ clinic }: { clinic: ToolClinic }) {
 
           {step === 0 && (
             <>
-              <h2 className="tool-step-title">Step 1 · Upload your photo</h2>
+              <h2 className="tool-step-title">Step 1 · Add a reference photo (optional)</h2>
               <p className="tool-step-sub">
-                A clear front-facing photo in natural daylight gives the
-                most accurate read. Photos never leave your browser unless
-                you submit the form.
+                You can include a photo with your report for your clinician to
+                review. It does not affect the questionnaire summary.
               </p>
               <PhotoUploader
                 photo={photo}
                 onChange={handlePhoto}
                 helper="Front-facing face photo · JPG / PNG · up to 10MB"
-                analysing={analysing}
+                analysing={preparingPhoto}
               />
-              {imageAnalysis && (
-                <div className="tool-photo-result">
-                  <div className="tool-photo-result-eyebrow">
-                    Detected from your photo
-                  </div>
-                  <div className="tool-photo-result-grid">
-                    <div>
-                      <small>Fitzpatrick</small>
-                      <strong>Type {imageAnalysis.fitzpatrick}</strong>
-                    </div>
-                    <div>
-                      <small>Skin type guess</small>
-                      <strong style={{ textTransform: "capitalize" }}>
-                        {imageAnalysis.skinType}
-                      </strong>
-                    </div>
-                    <div>
-                      <small>Lightness</small>
-                      <strong>{imageAnalysis.lightness}/255</strong>
-                    </div>
-                    <div>
-                      <small>Redness index</small>
-                      <strong>{imageAnalysis.redness}</strong>
-                    </div>
-                  </div>
-                  {(imageAnalysis.rednessFlag ||
-                    imageAnalysis.textureFlag) && (
-                    <ul className="tool-photo-flags">
-                      {imageAnalysis.rednessFlag && (
-                        <li>Elevated redness detected — possible rosacea or inflammation</li>
-                      )}
-                      {imageAnalysis.textureFlag && (
-                        <li>Uneven texture detected — possible acne, scarring or pigmentation</li>
-                      )}
-                    </ul>
-                  )}
-                  <p className="tool-photo-hint">
-                    These are smart defaults. You&apos;ll confirm or adjust
-                    them on the next step.
-                  </p>
-                </div>
-              )}
             </>
           )}
 
           {step === 1 && (
             <>
               <h2 className="tool-step-title">
-                Step 2 · {imageAnalysis ? "Confirm your skin baseline" : "Your skin baseline"}
+                Step 2 · Your skin baseline
               </h2>
               <p className="tool-step-sub">
-                {imageAnalysis
-                  ? "We pre-filled this from your photo. Tap to change anything."
-                  : "Fitzpatrick skin type — how your skin responds to sunlight."}
+                Fitzpatrick type describes how your skin usually reacts to sun exposure. Choose based on that response, not a photo.
               </p>
               <div className="tool-block-label">Fitzpatrick type</div>
               <div className="tool-options two-col">
@@ -698,31 +541,10 @@ export default function SkinAnalysis({ clinic }: { clinic: ToolClinic }) {
           )}
         </div>
 
-        <aside
-          className={
-            "tool-result" + (scoreBand !== "empty" ? " tool-result-" + scoreBand : "")
-          }
-        >
-          <div className="tool-result-eyebrow">Live skin score</div>
-          <div className="tool-result-num">
-            {result ? displayedScore : "—"}
-          </div>
-          <div className="tool-result-range">
-            {result ? (
-              <>
-                out of 100 ·{" "}
-                <strong>
-                  {scoreBand === "good"
-                    ? "Strong baseline"
-                    : scoreBand === "moderate"
-                    ? "Room to improve"
-                    : "Active care advised"}
-                </strong>
-              </>
-            ) : (
-              "Upload a photo or fill the questions to begin"
-            )}
-          </div>
+        <aside className="tool-result">
+          <div className="tool-result-eyebrow">Your assessment</div>
+          <div className="tool-result-num">{result ? concerns.length : "—"}</div>
+          <div className="tool-result-range">{result ? "concerns selected" : "Complete the questions to begin"}</div>
 
           <div className="tool-result-progress">
             <div
@@ -768,9 +590,8 @@ export default function SkinAnalysis({ clinic }: { clinic: ToolClinic }) {
           )}
           <div className="tool-result-sep" />
           <div className="tool-result-note">
-            This expert-system analysis isn&apos;t a medical diagnosis.
-            Final recommendations are confirmed at consultation with a
-            board-certified RenovaAura consultant.
+            This self-reported summary is not a diagnosis. A clinician can
+            assess your skin and discuss suitable options at consultation.
           </div>
         </aside>
       </div>
@@ -779,7 +600,7 @@ export default function SkinAnalysis({ clinic }: { clinic: ToolClinic }) {
 }
 
 // =========================================================================
-// Photo uploader subcomponent (with analysing state)
+// Photo uploader subcomponent
 // =========================================================================
 function PhotoUploader({
   photo,
@@ -800,7 +621,7 @@ function PhotoUploader({
           {analysing && (
             <div className="tool-photo-analysing">
               <div className="tool-photo-spinner" />
-              Analysing pixels…
+              Preparing photo…
             </div>
           )}
           <button

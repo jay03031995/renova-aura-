@@ -3,9 +3,9 @@ import SkinAnalysis from "@/components/tools/SkinAnalysis";
 import { getClinic } from "@/sanity/lib/fetchers";
 
 export const metadata: Metadata = {
-  title: "AI Skin Analysis — Free, 2-Minute Personalised Report",
+  title: "Skin Concern Assessment — Free Consultation Summary",
   description:
-    "Free AI Skin Analysis from RenovaAura. Fitzpatrick + skin type + concerns → personalised PDF report with recommended procedures, lifestyle advice and clinical considerations.",
+    "Share your skin type, sun response, and concerns to prepare a self-reported summary for a RenovaAura consultation.",
   alternates: { canonical: "/tools/skin-analysis" },
 };
 
