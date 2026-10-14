@@ -107,7 +107,15 @@ export default function Hero({ slides }: { slides?: Slide[] }) {
       aria-roledescription="carousel"
       aria-label="RenovaAura clinic highlights"
     >
-      {SLIDES.map((slide, i) => (
+      {SLIDES.map((slide, i) => {
+        // SEO: a page should expose exactly one <h1>. The carousel keeps every
+        // slide's copy in the DOM (only toggling aria-hidden), so without this
+        // guard each slide's headline would render as its own <h1>, giving
+        // crawlers 3 competing H1s on the homepage. Only the first slide
+        // (the one present in the initial server-rendered HTML) gets the h1;
+        // every other slide's headline renders as an h2 instead.
+        const HeadingTag = i === 0 ? "h1" : "h2";
+        return (
         <div
           key={i}
           className={"hero-slide" + (i === index ? " active" : "")}
@@ -129,12 +137,12 @@ export default function Hero({ slides }: { slides?: Slide[] }) {
           <div className="hero-overlay" />
           <div className="hero-content">
             <span className="hero-eyebrow">{slide.eyebrow}</span>
-            <h1 className="hero-headline">
+            <HeadingTag className="hero-headline">
               <span className="hero-headline-line">{slide.headline.line1}</span>
               <span className="hero-headline-line hero-headline-emphasis">
                 {slide.headline.line2}
               </span>
-            </h1>
+            </HeadingTag>
             <p className="hero-subtitle">{slide.subtitle}</p>
             <div className="hero-cta-row">
               <a
@@ -153,7 +161,8 @@ export default function Hero({ slides }: { slides?: Slide[] }) {
             </div>
           </div>
         </div>
-      ))}
+        );
+      })}
 
       <button
         type="button"
