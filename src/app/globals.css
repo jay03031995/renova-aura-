@@ -1413,6 +1413,7 @@ button.sbv-card-clickable:focus-visible {
   grid-template-columns: repeat(3, 1fr);
   gap: 22px;
 }
+.testimonials-widget { width: 100%; min-width: 0; }
 .testimonial {
   background: var(--cream);
   border: 1px solid var(--line);
