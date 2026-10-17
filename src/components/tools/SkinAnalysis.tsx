@@ -1,7 +1,7 @@
 "use client";
 
 /** Questionnaire-led skin concern assessment with optional reference photo. */
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { ArrowLeft, ArrowRight, Check } from "@/components/icons";
 import {
@@ -98,6 +98,8 @@ export default function SkinAnalysis({ clinic }: { clinic: ToolClinic }) {
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [submitted, setSubmitted] = useState(false);
+  const submittingRef = useRef(false);
+  const submissionRef = useRef<{ signature: string; key: string } | null>(null);
 
   // Compute analysis only when minimum required inputs are present
   const result = useMemo(() => {
@@ -165,45 +167,63 @@ export default function SkinAnalysis({ clinic }: { clinic: ToolClinic }) {
   };
 
   const handleSubmit = async () => {
+    if (submittingRef.current || submitted) return;
     if (!result) {
       setSubmitError("Please complete steps 1–3 before submitting.");
       return;
     }
     if (!canAdvance()) {
-      setSubmitError("Please fill in your name and a valid phone number.");
+      setSubmitError("Please enter your name and a valid phone number.");
       return;
     }
+    if (patient.email && !/^\S+@\S+\.\S+$/.test(patient.email.trim())) {
+      setSubmitError("Enter a valid email address or leave it blank.");
+      return;
+    }
+    submittingRef.current = true;
     setSubmitting(true);
     setSubmitError(null);
 
     try {
+      const leadPayload = {
+        tool: "skin-analysis" as const,
+        name: patient.name.trim(),
+        phone: patient.phone.trim(),
+        email: patient.email.trim() || undefined,
+        ageRange: ageBracket ?? undefined,
+        summary: result.summary,
+        inputs: {
+          fitzpatrick,
+          skinType,
+          ageBracket,
+          concerns,
+          lifestyle,
+          hasPhoto: !!photo,
+        },
+        outputs: result,
+        source: "/tools/skin-analysis",
+      };
+      const signature = JSON.stringify(leadPayload);
+      if (submissionRef.current?.signature !== signature) {
+        submissionRef.current = {
+          signature,
+          key: crypto.randomUUID(),
+        };
+      }
       const res = await fetch("/api/leads", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          tool: "skin-analysis",
-          name: patient.name,
-          phone: patient.phone,
-          email: patient.email,
-          ageRange: ageBracket ?? undefined,
-          summary: result.summary,
-          inputs: {
-            fitzpatrick,
-            skinType,
-            ageBracket,
-            concerns,
-            lifestyle,
-            hasPhoto: !!photo,
-          },
-          outputs: result,
-          source: "/tools/skin-analysis",
-        }),
+        headers: {
+          "Content-Type": "application/json",
+          "Idempotency-Key": submissionRef.current.key,
+        },
+        body: JSON.stringify(leadPayload),
       });
       const payload = (await res.json().catch(() => ({}))) as {
         ok?: boolean;
+        persisted?: boolean;
         message?: string;
       };
-      if (!res.ok || !payload.ok) {
+      if (!res.ok || !payload.ok || payload.persisted !== true) {
         throw new Error(payload.message || `Lead capture failed (${res.status})`);
       }
 
@@ -247,7 +267,6 @@ export default function SkinAnalysis({ clinic }: { clinic: ToolClinic }) {
                 },
               ] as const)
             : []),
-          { type: "spacer", height: 2 },
           ...(result.riskFactors.length > 0
             ? ([
                 { type: "heading", text: "Clinical considerations" },
@@ -255,22 +274,10 @@ export default function SkinAnalysis({ clinic }: { clinic: ToolClinic }) {
               ] as const)
             : []),
           { type: "heading", text: "Recommended next steps" },
-          { type: "bullets", items: result.lifestyleAdvice },
-          ...(concerns.length > 0
-            ? ([
-                { type: "heading", text: "Selected concerns to discuss" },
-                {
-                  type: "bullets",
-                  items: concerns.map((concern) => CONCERN_TO_LABEL[concern]),
-                },
-              ] as const)
-            : []),
-          { type: "spacer", height: 2 },
-          {
-            type: "paragraph",
-            text: "This questionnaire is not a diagnosis or treatment recommendation. Bring this report to your consultation so your clinician can assess your skin and discuss appropriate options.",
-          },
+          { type: "bullets", items: result.lifestyleAdvice.slice(0, 4) },
         ],
+        disclaimer:
+          "This questionnaire is not a diagnosis or treatment recommendation. Bring this report to your consultation so your clinician can assess your skin and discuss appropriate options.",
       });
 
       setSubmitted(true);
@@ -281,6 +288,7 @@ export default function SkinAnalysis({ clinic }: { clinic: ToolClinic }) {
           : "Could not save your details. Please call the clinic.",
       );
     } finally {
+      submittingRef.current = false;
       setSubmitting(false);
     }
   };

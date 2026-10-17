@@ -10,7 +10,7 @@ import WhyUs from "@/components/home/WhyUs"; // desktop only (hidden ≤640px vi
 import DoctorsSection from "@/components/home/DoctorsSection";
 // Results stays hidden until RenovaAura's own patient photos are available.
 // import Results from "@/components/home/Results";
-import Testimonials from "@/components/home/Testimonials";
+// import Testimonials from "@/components/home/Testimonials";
 import Faq from "@/components/home/Faq";
 // import SimpleBook from "@/components/home/SimpleBook";
 import Contact from "@/components/home/Contact";
@@ -41,7 +41,7 @@ export default async function Home() {
       <WhyUs />
       <DoctorsSection />
       {/* <Results /> — unpublished until RenovaAura before/after photos exist */}
-      <Testimonials />
+      {/* <Testimonials /> */}
       <Faq />
       {/* <SimpleBook /> */}
       <Contact />

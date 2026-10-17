@@ -16,18 +16,10 @@ import {
 } from "@/sanity/lib/fetchers";
 
 /**
- * No-cache / always-fresh: every page under (site)/ is rendered dynamically
- * on each request, so any edit published in Sanity Studio is live immediately
- * with no caching and no manual "Refresh website" step. `force-dynamic` is
- * equivalent to setting every fetch to `{ cache: "no-store" }` (see Next 16
- * "Caching and Revalidating — Previous Model" docs).
- *
- * Tradeoff: pages are server-rendered per visit (no static generation), so
- * each request hits the Sanity API. The /api/revalidate webhook + manual
- * refresh button are kept as harmless no-ops / safety nets.
+ * Site content is cached for up to one hour and tagged by the Sanity fetchers.
+ * The signed /api/revalidate webhook expires the shared tag after published
+ * content changes; the interval is a fallback if webhook delivery fails.
  */
-//export const dynamic = "force-dynamic";
-//cache changes
 export const revalidate = 3600;
 
 

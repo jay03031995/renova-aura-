@@ -97,10 +97,25 @@
 .calculatorStyles :global(.graft-estimate-sum) { border-bottom: 0; font-weight: 600; }
 .calculatorStyles :global(.graft-estimate-disclaimer) { max-width: 620px; margin: 20px auto 0; padding: 12px 14px; border-radius: 10px; background: var(--cream); color: var(--muted); font-size: 11px; line-height: 1.55; }
 .calculatorStyles :global(.graft-assessment-button) { display: flex; width: min(100%, 360px); justify-content: center; margin: 18px auto 0; }
+.leadForm { max-width: 620px; margin: 24px auto 0; padding: 18px; border: 1px solid var(--line); border-radius: 14px; background: white; }
+.leadForm h3 { color: var(--cocoa); font-size: 15px; }
+.leadForm > p { margin: 4px 0 14px; color: var(--muted); font-size: 12px; }
+.leadFields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin-bottom: 14px; }
+.leadFields label { display: grid; gap: 5px; color: var(--cocoa); font-size: 12px; font-weight: 500; }
+.leadFields label:last-child { grid-column: 1 / -1; }
+.leadFields label span { color: var(--muted); font-weight: 400; }
+.leadFields input { width: 100%; min-height: 42px; padding: 9px 11px; border: 1px solid var(--line); border-radius: 8px; background: white; color: var(--cocoa); font: inherit; }
+.leadFields input:focus-visible { outline: 2px solid var(--tan); outline-offset: 1px; }
+.leadFields input:disabled { background: var(--cream); }
+.leadError { margin: 0 0 10px; color: #9b342b; font-size: 12px; }
+.leadSuccess { margin: 0 0 10px; color: #3f684d; font-size: 12px; }
+.leadForm button:disabled { cursor: default; opacity: .65; }
 .calculatorStyles :global(.graft-norwood-reference) { max-width: 980px; margin: 14px auto 0; padding: 14px 18px; border: 1px solid var(--line); border-radius: 14px; background: white; color: var(--cocoa); font-size: 13px; }
 .calculatorStyles :global(.graft-norwood-reference summary) { cursor: pointer; font-weight: 500; }
 .calculatorStyles :global(.graft-norwood-reference img) { width: 100%; height: auto; margin-top: 14px; }
 @media (max-width: 700px) {
+  .leadFields { grid-template-columns: 1fr; }
+  .leadFields label:last-child { grid-column: auto; }
   .calculatorStyles :global(.graft-stage-picker) { align-items: flex-start; flex-direction: column; }
   .calculatorStyles :global(.graft-stage-options) { justify-content: flex-start; }
   .calculatorStyles :global(.graft-zone-picks) { grid-template-columns: repeat(2, minmax(0, 1fr)); }

@@ -6,13 +6,9 @@
  * shared secret, then invalidate every fetch tagged with "sanity" so the next
  * request to any public page sees the updated content within seconds.
  *
- * Configure the webhook in Sanity:
- *   sanity.io/manage/project/<id>/api/webhooks → Create webhook
- *   URL: https://www.renovaaura.com/api/revalidate
- *   Trigger: Create, Update, Delete (document level)
- *   HTTP method: POST
- *   HTTP headers: leave blank; Sanity adds sanity-webhook-signature automatically
- *   Secret: same value as SANITY_REVALIDATE_SECRET env var
+ * Configure a document webhook for public content types only. Trigger on
+ * Create, Update and Delete, use a {_type, _id} projection, and use this
+ * endpoint's SANITY_REVALIDATE_SECRET as the Sanity webhook secret.
  *
  * Env vars required (set in .env.local and Vercel):
  *   SANITY_REVALIDATE_SECRET — any random string, shared with the webhook
@@ -32,6 +28,31 @@ type SanityWebhookBody = {
   _id?: string;
   slug?: { current?: string };
 };
+
+const REVALIDATABLE_TYPES = new Set([
+  "announcementBar",
+  "blogPost",
+  "bodyConcern",
+  "clinicSettings",
+  "concern",
+  "doctor",
+  "eeatPillar",
+  "equipment",
+  "galleryImage",
+  "homepageFaq",
+  "heroSlide",
+  "location",
+  "package",
+  "procedure",
+  "realResult",
+  "redirect",
+  "result",
+  "siteSettings",
+  "testimonial",
+  "trustItem",
+  "video",
+  "whyUsSection",
+]);
 
 export async function POST(req: NextRequest) {
   try {
@@ -55,9 +76,15 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    if (!body?._type) {
+    if (!body?._type || !body._id) {
       return NextResponse.json(
-        { message: "Bad webhook payload — missing _type" },
+        { message: "Bad webhook payload — missing document type or ID" },
+        { status: 400 },
+      );
+    }
+    if (!REVALIDATABLE_TYPES.has(body._type)) {
+      return NextResponse.json(
+        { message: "Document type is not configured for revalidation" },
         { status: 400 },
       );
     }
@@ -106,7 +133,7 @@ export async function GET(req: NextRequest) {
     );
   }
 
-  revalidateTag("sanity", "max");
+  revalidateTag("sanity", { expire: 0 });
   return page(
     "Website refreshed ✓",
     "Your latest published changes are now live. Give the site a moment, then reload it.",

@@ -18,6 +18,7 @@ A modern, EEAT-structured clinical website built with **Next.js 16**, the **App 
   - Clinic settings, announcement bar, site SEO
 - **/api/bookings** — POST endpoint that saves bookings into Sanity
 - **/api/revalidate** — Sanity webhook endpoint for instant content updates
+- **/api/webhooks/sanity-lead** — signed, Create-only lead notification endpoint
 - **EEAT structure** baked in — MedicalProcedure + FAQPage JSON-LD per procedure page, medical-review attribution, doctor credentials, transparent process steps
 
 ## Setup (one-time)
@@ -67,10 +68,14 @@ Open <http://localhost:3000> for the public site, <http://localhost:3000/studio>
 
 1. Push this repo to GitHub
 2. Import the repo at <https://vercel.com/new>
-3. Add the same 4 env vars from `.env.local` to Vercel
+3. Add the Sanity, webhook, and Resend environment variables listed in
+   `.env.local.example` to the hosting environment
 4. Deploy
 5. Add your Vercel URL to Sanity CORS (with credentials)
 6. Visit `https://<your-deploy>.vercel.app/studio` → **Register this studio**
+
+See [`docs/sanity-webhooks.md`](docs/sanity-webhooks.md) for the exact Sanity
+webhook filters, projections, secrets, and email-provider environment setup.
 
 ## Where to edit content
 

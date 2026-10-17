@@ -27,9 +27,9 @@ const PALETTE = {
 const PAGE = {
   w: 210, // A4 width mm
   h: 297, // A4 height mm
-  marginX: 20,
-  marginTop: 18,
-  marginBottom: 24,
+  marginX: 16,
+  marginTop: 37,
+  marginBottom: 19,
 };
 
 export type ReportSection =
@@ -95,40 +95,36 @@ function setStroke(doc: jsPDF, c: [number, number, number]) {
   doc.setDrawColor(c[0], c[1], c[2]);
 }
 
-/** Draw the RenovaAura masthead — cocoa band with embedded logo + tagline. */
+/** Draw a clean white masthead with the original logo asset. */
 function drawHeader(
   doc: jsPDF,
   logoDataUrl?: string,
   clinic: typeof CLINIC = CLINIC,
 ) {
-  // Background band — taller to accommodate the logo
-  setFill(doc, PALETTE.cocoa);
-  doc.rect(0, 0, PAGE.w, 26, "F");
-
   if (logoDataUrl) {
     try {
-      // Logo on the left, height ~14mm, white-tinted via PNG with transparency
-      doc.addImage(logoDataUrl, "PNG", PAGE.marginX, 5, 38, 17);
+      // Preserve original asset colors and 600:180 aspect ratio.
+      doc.addImage(logoDataUrl, "PNG", PAGE.marginX, 5, 34, 10.2);
     } catch {
       // If addImage fails (e.g. unsupported format), fall through to wordmark
-      setColor(doc, PALETTE.cream);
+      setColor(doc, PALETTE.cocoa);
       doc.setFont("helvetica", "bold");
       doc.setFontSize(18);
       doc.text(clinic.name, PAGE.marginX, 14);
     }
   } else {
     // Text wordmark fallback
-    setColor(doc, PALETTE.cream);
+    setColor(doc, PALETTE.cocoa);
     doc.setFont("helvetica", "bold");
     doc.setFontSize(18);
     doc.text(clinic.name, PAGE.marginX, 14);
   }
 
-  // Tagline right of logo (small caps)
-  setColor(doc, PALETTE.sand);
+  // Website and clinic detail stay understated on white.
+  setColor(doc, PALETTE.muted);
   doc.setFont("helvetica", "normal");
-  doc.setFontSize(7);
-  doc.text(clinic.tagline.toUpperCase(), PAGE.marginX + 42, 22);
+  doc.setFontSize(8);
+  doc.text(clinic.web, PAGE.marginX, 20);
 
   // Right-aligned date
   doc.setFontSize(8);
@@ -137,45 +133,15 @@ function drawHeader(
     month: "short",
     year: "numeric",
   });
-  doc.text(`Report generated · ${now}`, PAGE.w - PAGE.marginX, 14, {
+  doc.text(`Report generated · ${now}`, PAGE.w - PAGE.marginX, 10, {
     align: "right",
   });
-  doc.setFontSize(7);
-  setColor(doc, PALETTE.tan);
-  doc.text(clinic.web, PAGE.w - PAGE.marginX, 22, { align: "right" });
-}
-
-/** Diagonal watermark across each page. Very low opacity. */
-function drawWatermark(doc: jsPDF) {
-  const gs = (doc as unknown as {
-    GState: new (opts: { opacity: number }) => unknown;
-    setGState: (s: unknown) => void;
-  });
-  let restored = false;
-  try {
-    if (gs.GState && gs.setGState) {
-      gs.setGState(new gs.GState({ opacity: 0.05 }));
-      restored = true;
-    }
-  } catch {
-    /* opacity not supported; watermark just renders at full opacity which
-       is fine because we use very pale tan colour anyway */
-  }
-  setColor(doc, PALETTE.tan);
-  doc.setFont("helvetica", "bold");
-  doc.setFontSize(72);
-  // Centre point of the page
-  const x = PAGE.w / 2;
-  const y = PAGE.h / 2 + 20;
-  // jsPDF rotates around the anchor point; use 45° diagonal
-  doc.text("RenovaAura", x, y, { align: "center", angle: 30 });
-  if (restored) {
-    try {
-      gs.setGState(new gs.GState({ opacity: 1 }));
-    } catch {
-      /* noop */
-    }
-  }
+  doc.setFontSize(8);
+  setColor(doc, PALETTE.cocoa);
+  doc.text(clinic.tagline, PAGE.w - PAGE.marginX, 18, { align: "right" });
+  setStroke(doc, PALETTE.line);
+  doc.setLineWidth(0.3);
+  doc.line(PAGE.marginX, 27, PAGE.w - PAGE.marginX, 27);
 }
 
 /** Bottom-of-page clinic block + pagination. */
@@ -245,7 +211,7 @@ class Cursor {
   }
 
   reset() {
-    this.y = PAGE.marginTop + 26; // below header band (logo height + padding)
+    this.y = PAGE.marginTop; // below the compact masthead
   }
 
   logoDataUrl?: string;
@@ -254,7 +220,6 @@ class Cursor {
     if (this.y + spaceNeeded > PAGE.h - PAGE.marginBottom - 4) {
       this.doc.addPage();
       this.page += 1;
-      drawWatermark(this.doc);
       drawHeader(this.doc, this.logoDataUrl, this.clinic);
       this.reset();
     }
@@ -271,24 +236,7 @@ async function loadLogoDataUrl(): Promise<string | undefined> {
     const res = await fetch("/renovaaura-logo.png");
     if (!res.ok) return undefined;
     const blob = await res.blob();
-    // The base logo is dark — recolour it WHITE so it reads on the cocoa
-    // masthead band. Draw to canvas, then composite white over the alpha mask.
-    try {
-      const bitmap = await createImageBitmap(blob);
-      const canvas = document.createElement("canvas");
-      canvas.width = bitmap.width;
-      canvas.height = bitmap.height;
-      const ctx = canvas.getContext("2d");
-      if (ctx) {
-        ctx.drawImage(bitmap, 0, 0);
-        ctx.globalCompositeOperation = "source-in";
-        ctx.fillStyle = "#ffffff";
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-        return canvas.toDataURL("image/png");
-      }
-    } catch {
-      /* canvas tint unavailable — fall through to the original logo */
-    }
+    // Embed the source image directly; do not tint or process its pixels.
     return await new Promise<string>((resolve, reject) => {
       const reader = new FileReader();
       reader.onload = () => resolve(String(reader.result));
@@ -309,7 +257,6 @@ export async function generateReport(input: ReportInput): Promise<void> {
   const clinic = { ...CLINIC, ...input.clinic };
   const logoDataUrl = await loadLogoDataUrl();
   const doc = new jsPDF({ unit: "mm", format: "a4" });
-  drawWatermark(doc);
   drawHeader(doc, logoDataUrl, clinic);
   const cursor = new Cursor(doc, clinic);
   cursor.logoDataUrl = logoDataUrl;
@@ -318,48 +265,33 @@ export async function generateReport(input: ReportInput): Promise<void> {
   cursor.ensure(28);
   setColor(doc, PALETTE.cocoa);
   doc.setFont("helvetica", "bold");
-  doc.setFontSize(22);
+  doc.setFontSize(17);
   const titleLines = doc.splitTextToSize(
     input.title,
     PAGE.w - PAGE.marginX * 2,
   );
   doc.text(titleLines, PAGE.marginX, cursor.y);
-  cursor.y += titleLines.length * 8;
+  cursor.y += titleLines.length * 6.5;
 
   if (input.subtitle) {
+    const subtitleLines = doc.splitTextToSize(
+      input.subtitle,
+      PAGE.w - PAGE.marginX * 2,
+    );
     setColor(doc, PALETTE.tan);
     doc.setFont("helvetica", "normal");
-    doc.setFontSize(11);
-    doc.text(input.subtitle, PAGE.marginX, cursor.y);
-    cursor.y += 6;
+    doc.setFontSize(9);
+    doc.text(subtitleLines, PAGE.marginX, cursor.y);
+    cursor.y += subtitleLines.length * 4;
   }
 
-  cursor.y += 4;
+  cursor.y += 1;
 
   // Patient details card
-  cursor.ensure(28);
-  setFill(doc, PALETTE.cream);
-  doc.setDrawColor(PALETTE.line[0], PALETTE.line[1], PALETTE.line[2]);
-  doc.setLineWidth(0.2);
-  doc.roundedRect(
-    PAGE.marginX,
-    cursor.y,
-    PAGE.w - PAGE.marginX * 2,
-    22,
-    2,
-    2,
-    "FD",
-  );
-  setColor(doc, PALETTE.tan);
-  doc.setFontSize(8);
-  doc.text("PATIENT DETAILS", PAGE.marginX + 5, cursor.y + 6);
-  setColor(doc, PALETTE.ink);
+  const cardInnerW = PAGE.w - PAGE.marginX * 2 - 10;
   doc.setFont("helvetica", "bold");
-  doc.setFontSize(11);
-  doc.text(input.patient.name, PAGE.marginX + 5, cursor.y + 12);
-  doc.setFont("helvetica", "normal");
-  doc.setFontSize(9);
-  setColor(doc, PALETTE.muted);
+  doc.setFontSize(9.5);
+  const patientNameLines = doc.splitTextToSize(input.patient.name, cardInnerW);
   const contact = [
     input.patient.phone,
     input.patient.email,
@@ -367,8 +299,43 @@ export async function generateReport(input: ReportInput): Promise<void> {
   ]
     .filter(Boolean)
     .join("  ·  ");
-  doc.text(contact, PAGE.marginX + 5, cursor.y + 18);
-  cursor.y += 30;
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(8.5);
+  const contactLines = contact
+    ? doc.splitTextToSize(contact, cardInnerW)
+    : [];
+  const contactY = 11 + patientNameLines.length * 4.2;
+  const patientCardHeight = Math.max(
+    20,
+    contactY + contactLines.length * 3.7 + 1,
+  );
+  cursor.ensure(patientCardHeight + 5);
+  setFill(doc, PALETTE.cream);
+  doc.setDrawColor(PALETTE.line[0], PALETTE.line[1], PALETTE.line[2]);
+  doc.setLineWidth(0.2);
+  doc.roundedRect(
+    PAGE.marginX,
+    cursor.y,
+    PAGE.w - PAGE.marginX * 2,
+    patientCardHeight,
+    2,
+    2,
+    "FD",
+  );
+  setColor(doc, PALETTE.tan);
+  doc.setFontSize(7);
+  doc.text("PATIENT DETAILS", PAGE.marginX + 5, cursor.y + 6);
+  setColor(doc, PALETTE.ink);
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(9.5);
+  doc.text(patientNameLines, PAGE.marginX + 5, cursor.y + 11);
+  if (contactLines.length) {
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(8.5);
+    setColor(doc, PALETTE.muted);
+    doc.text(contactLines, PAGE.marginX + 5, cursor.y + contactY);
+  }
+  cursor.y += patientCardHeight + 5;
 
   // Sections
   for (const section of input.sections) {
@@ -388,8 +355,8 @@ export async function generateReport(input: ReportInput): Promise<void> {
     doc.line(PAGE.marginX, cursor.y, PAGE.marginX + 12, cursor.y);
     cursor.y += 8;
     try {
-      const imgWidth = 80; // mm
-      const imgHeight = 80; // mm — square crop
+      const imgWidth = 52; // mm
+      const imgHeight = 52; // mm — square crop
       doc.addImage(
         input.patientPhotoDataUrl,
         "JPEG",
@@ -431,7 +398,7 @@ export async function generateReport(input: ReportInput): Promise<void> {
     doc,
     cursor.y,
     input.disclaimer ??
-      "This is NOT a final medical report or diagnosis. The scores and recommendations are AI/expert-system estimates based on the information you provided and standard clinical references. An in-person consultation with a board-certified RenovaAura doctor is essential before starting any treatment, procedure, or product. Do not begin any product or treatment suggested here without that consultation.",
+      "This self-reported assessment is not a diagnosis or treatment recommendation. A qualified RenovaAura clinician must assess you in person before any treatment or procedure is considered.",
   );
 
   // Footer on every page
@@ -450,30 +417,30 @@ export async function generateReport(input: ReportInput): Promise<void> {
 function renderSection(doc: jsPDF, cursor: Cursor, s: ReportSection) {
   switch (s.type) {
     case "heading":
-      cursor.ensure(14);
+      cursor.ensure(12);
       setColor(doc, PALETTE.cocoa);
       doc.setFont("helvetica", "bold");
-      doc.setFontSize(13);
+      doc.setFontSize(11.5);
       doc.text(s.text, PAGE.marginX, cursor.y);
       cursor.y += 3;
       setStroke(doc, PALETTE.espresso);
       doc.setLineWidth(0.6);
       doc.line(PAGE.marginX, cursor.y, PAGE.marginX + 12, cursor.y);
-      cursor.y += 6;
+      cursor.y += 4;
       break;
     case "paragraph": {
       const lines = doc.splitTextToSize(s.text, PAGE.w - PAGE.marginX * 2);
       cursor.ensure(lines.length * 4.5 + 2);
       setColor(doc, PALETTE.ink);
       doc.setFont("helvetica", "normal");
-      doc.setFontSize(10);
+      doc.setFontSize(9);
       doc.text(lines, PAGE.marginX, cursor.y);
       cursor.y += lines.length * 4.5 + 2;
       break;
     }
     case "bullets":
       doc.setFont("helvetica", "normal");
-      doc.setFontSize(10);
+      doc.setFontSize(9);
       for (const item of s.items) {
         const lines = doc.splitTextToSize(
           item,
@@ -484,25 +451,31 @@ function renderSection(doc: jsPDF, cursor: Cursor, s: ReportSection) {
         doc.text("•", PAGE.marginX, cursor.y);
         setColor(doc, PALETTE.ink);
         doc.text(lines, PAGE.marginX + 5, cursor.y);
-        cursor.y += lines.length * 4.5 + 1;
+        cursor.y += lines.length * 4 + 0.5;
       }
       cursor.y += 2;
       break;
     case "kv": {
-      cursor.ensure(6);
+      const labelW = 34;
+      const valueW = PAGE.w - PAGE.marginX * 2 - labelW;
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(9);
+      const valueLines = doc.splitTextToSize(s.value, valueW);
+      cursor.ensure(Math.max(5, valueLines.length * 4) + 1);
       setColor(doc, PALETTE.muted);
       doc.setFont("helvetica", "normal");
       doc.setFontSize(9);
       doc.text(s.label, PAGE.marginX, cursor.y);
       setColor(doc, PALETTE.ink);
       doc.setFont("helvetica", "bold");
-      doc.text(s.value, PAGE.w - PAGE.marginX, cursor.y, { align: "right" });
-      cursor.y += 5;
+      doc.text(valueLines, PAGE.marginX + labelW, cursor.y);
+      cursor.y += Math.max(5, valueLines.length * 4) + 1;
       break;
     }
     case "stat": {
       cursor.ensure(22);
-      setFill(doc, PALETTE.sand);
+      setFill(doc, PALETTE.cream);
+      setStroke(doc, PALETTE.line);
       doc.roundedRect(
         PAGE.marginX,
         cursor.y,
@@ -510,14 +483,17 @@ function renderSection(doc: jsPDF, cursor: Cursor, s: ReportSection) {
         18,
         2,
         2,
-        "F",
+        "FD",
       );
+      setFill(doc, PALETTE.espresso);
+      doc.rect(PAGE.marginX, cursor.y, 1.4, 18, "F");
       setColor(doc, PALETTE.cocoa);
       doc.setFont("helvetica", "bold");
       doc.setFontSize(8);
       doc.text(s.label.toUpperCase(), PAGE.marginX + 5, cursor.y + 6);
-      doc.setFontSize(20);
-      doc.text(s.value, PAGE.marginX + 5, cursor.y + 14);
+      doc.setFontSize(16);
+      const valueLines = doc.splitTextToSize(s.value, PAGE.w - PAGE.marginX * 2 - 10);
+      doc.text(valueLines, PAGE.marginX + 5, cursor.y + 13);
       if (s.hint) {
         setColor(doc, PALETTE.espresso);
         doc.setFont("helvetica", "normal");

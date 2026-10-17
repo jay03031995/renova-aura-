@@ -7,10 +7,8 @@
  *
  * Required env var: SANITY_API_TOKEN (Editor role).
  *
- * Falls back gracefully when Sanity isn't configured — returns a success
- * response with a synthetic ID so the tool UX still flows (the PDF still
- * downloads, the patient sees their result), but no record is persisted.
- * Useful while the new RenovaAura Sanity project is being set up.
+ * Lead persistence is required for success. A report may only be marked
+ * complete after this endpoint confirms the Sanity write.
  */
 import { NextResponse, type NextRequest } from "next/server";
 import { writeClient, sanityEnabled } from "@/sanity/lib/client";
@@ -37,65 +35,75 @@ function bad(message: string, status = 400) {
 export async function POST(req: NextRequest) {
   let body: Body;
   try {
-    body = (await req.json()) as Body;
+    const parsed = (await req.json()) as unknown;
+    if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) {
+      return bad("Invalid lead submission body");
+    }
+    body = parsed as Body;
   } catch {
     return bad("Invalid JSON body");
   }
 
-  const name = (body.name ?? "").trim();
-  const phone = (body.phone ?? "").trim();
-  const email = (body.email ?? "").trim();
+  const name = typeof body.name === "string" ? body.name.trim() : "";
+  const phone = typeof body.phone === "string" ? body.phone.trim() : "";
+  const email = typeof body.email === "string" ? body.email.trim() : "";
+  const idempotencyKey = req.headers.get("idempotency-key") ?? "";
 
   if (!body.tool || !["skin-analysis", "graft-calculator"].includes(body.tool)) {
     return bad("Invalid or missing tool identifier");
   }
   if (name.length < 2) return bad("Name is required");
   if (!/^\+?[0-9\s-]{10,}$/.test(phone)) return bad("Valid phone is required");
+  if (email && (!/^\S+@\S+\.\S+$/.test(email) || email.length > 254)) {
+    return bad("Enter a valid email address or leave it blank.");
+  }
+  if (!/^[a-f0-9-]{36}$/i.test(idempotencyKey)) {
+    return bad("Submission key is invalid. Please retry the form.");
+  }
 
-  // Soft-fail when Sanity isn't wired up yet — the PDF flow still works.
   if (!sanityEnabled) {
-    return NextResponse.json({
-      ok: true,
-      id: `local-${Date.now()}`,
-      persisted: false,
-      message:
-        "Sanity isn't configured yet — lead was not persisted but the PDF will still download.",
-    });
+    return bad("Lead saving is temporarily unavailable. Please try again later or call the clinic.", 503);
   }
 
   const token = process.env.SANITY_API_TOKEN;
   if (!token) {
     return bad(
-      "Server is missing SANITY_API_TOKEN. Add it in Vercel env vars and redeploy.",
-      500,
+      "Lead saving is not configured. Please try again later or call the clinic.",
+      503,
     );
   }
 
   try {
+    const summary = typeof body.summary === "string" ? body.summary.trim().slice(0, 1000) : undefined;
+    const city = typeof body.city === "string" ? body.city.trim().slice(0, 120) : undefined;
+    const ageRange = typeof body.ageRange === "string" ? body.ageRange.trim().slice(0, 80) : undefined;
+    const source = typeof body.source === "string" ? body.source.trim().slice(0, 300) : "/tools";
     const client = writeClient(token);
-    const doc = await client.create({
+    const doc = await client.createIfNotExists({
+      _id: `lead-${idempotencyKey}`,
       _type: "lead",
       status: "new",
       tool: body.tool,
       name,
       phone,
       email: email || undefined,
-      ageRange: body.ageRange || undefined,
-      city: body.city || undefined,
-      summary: body.summary || undefined,
+      ageRange: ageRange || undefined,
+      city: city || undefined,
+      summary: summary || undefined,
       inputs: body.inputs ? JSON.stringify(body.inputs, null, 2) : undefined,
       outputs: body.outputs ? JSON.stringify(body.outputs, null, 2) : undefined,
       submittedAt: new Date().toISOString(),
-      source: body.source || "/tools",
+      source,
     });
 
     return NextResponse.json({ ok: true, id: doc._id, persisted: true });
   } catch (err) {
-    const message =
-      err instanceof Error
-        ? err.message
-        : "Failed to save lead — please call the clinic.";
-    console.error("[/api/leads] write failed:", err);
-    return bad(message, 500);
+    console.error("[/api/leads] Sanity persistence failed", {
+      errorName: err instanceof Error ? err.name : "UnknownError",
+    });
+    return bad(
+      "We couldn't save your assessment right now. Please retry, or call the clinic for help.",
+      500,
+    );
   }
 }

@@ -167,15 +167,14 @@ function isFilled<T>(v: T | null | undefined): v is T {
 async function safeFetch<T>(query: string, params?: Record<string, unknown>) {
   if (!sanityEnabled) return null;
   try {
-    // No caching — every fetch goes straight to Sanity so published edits
-    // are live immediately. The (site) layout is also force-dynamic; this
-    // also covers fetches outside it (metadata, sitemap, redirects).
-   return await client.fetch<T>(query, params ?? {}, {
-  next: {
-    revalidate: 3600,
-    tags: ["sanity"],
-  },
-});
+    // Cache for up to one hour, or until the signed Sanity webhook expires
+    // the shared tag after a published content change.
+    return await client.fetch<T>(query, params ?? {}, {
+      next: {
+        revalidate: 3600,
+        tags: ["sanity"],
+      },
+    });
   } catch (e) {
     console.warn("[sanity] fetch failed, falling back to local data:", e);
     return null;
@@ -190,12 +189,13 @@ async function safeFetchWithAvailability<T>(
   try {
     return {
       available: true,
-data: await client.fetch<T>(query, params ?? {}, {
-  next: {
-    revalidate: 3600,
-    tags: ["sanity"],
-  },
-}),    };
+      data: await client.fetch<T>(query, params ?? {}, {
+        next: {
+          revalidate: 3600,
+          tags: ["sanity"],
+        },
+      }),
+    };
   } catch (e) {
     console.warn("[sanity] fetch failed, falling back to local data:", e);
     return { available: false, data: null };
