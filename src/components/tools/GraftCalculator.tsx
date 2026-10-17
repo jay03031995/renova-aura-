@@ -231,7 +231,11 @@ export default function GraftCalculator() {
 
     await generateReport({
       title: "Hair Restoration Assessment",
-      patient: { name: patient.name.trim() || "Patient" },
+      patient: {
+        name: patient.name.trim() || "Patient",
+        phone: patient.phone.trim() || undefined,
+        email: patient.email.trim() || undefined,
+      },
       sections: [
         {
           type: "stat",

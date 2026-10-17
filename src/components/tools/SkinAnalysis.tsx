@@ -4,6 +4,7 @@
 import { useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { ArrowLeft, ArrowRight, Check } from "@/components/icons";
+import BookButton from "@/components/BookButton";
 import {
   type AnalysisInput,
   type Fitzpatrick,
@@ -17,12 +18,12 @@ import { downscaleDataUrl, readFileAsDataUrl } from "@/lib/imageAnalysis";
 import type { ClinicData } from "@/sanity/lib/fetchers";
 
 const FITZ_OPTIONS: { value: Fitzpatrick; label: string; desc: string }[] = [
-  { value: "I", label: "Type I", desc: "Very fair — always burns" },
-  { value: "II", label: "Type II", desc: "Fair — usually burns" },
-  { value: "III", label: "Type III", desc: "Light olive — sometimes burns" },
-  { value: "IV", label: "Type IV", desc: "Olive — tans easily" },
-  { value: "V", label: "Type V", desc: "Brown — rarely burns" },
-  { value: "VI", label: "Type VI", desc: "Dark — never burns" },
+  { value: "I", label: "Type I", desc: "Always burns; does not tan" },
+  { value: "II", label: "Type II", desc: "Usually burns; tans minimally" },
+  { value: "III", label: "Type III", desc: "Sometimes burns; tans gradually" },
+  { value: "IV", label: "Type IV", desc: "Rarely burns; tans easily" },
+  { value: "V", label: "Type V", desc: "Very rarely burns; tans deeply" },
+  { value: "VI", label: "Type VI", desc: "Never burns; tans darkly" },
 ];
 
 const SKIN_TYPE_OPTIONS: { value: SkinType; label: string }[] = [
@@ -34,8 +35,9 @@ const SKIN_TYPE_OPTIONS: { value: SkinType; label: string }[] = [
 ];
 
 const AGE_OPTIONS: { value: AnalysisInput["ageBracket"]; label: string }[] = [
-  { value: "u25", label: "Under 25" },
-  { value: "25-34", label: "25–34" },
+  { value: "u18", label: "Under 18" },
+  { value: "18-25", label: "18–25" },
+  { value: "26-34", label: "26–34" },
   { value: "35-44", label: "35–44" },
   { value: "45-54", label: "45–54" },
   { value: "o55", label: "55+" },
@@ -43,15 +45,19 @@ const AGE_OPTIONS: { value: AnalysisInput["ageBracket"]; label: string }[] = [
 
 const CONCERN_OPTIONS: { value: SkinConcern; label: string }[] = [
   { value: "acne", label: "Acne / breakouts" },
-  { value: "pigmentation", label: "Pigmentation / melasma" },
-  { value: "anti-ageing", label: "Anti-ageing / wrinkles" },
+  { value: "pigmentation", label: "Dark spots / uneven pigmentation" },
+  { value: "wrinkles", label: "Wrinkles / fine lines" },
   { value: "dark-circles", label: "Dark circles" },
+  { value: "under-eye-puffiness", label: "Under-eye puffiness" },
   { value: "dull-skin", label: "Dull skin / uneven tone" },
+  { value: "dehydration", label: "Dryness / dehydrated skin" },
   { value: "open-pores", label: "Open pores" },
-  { value: "rosacea", label: "Rosacea / redness" },
+  { value: "redness", label: "Redness" },
   { value: "scars", label: "Scars / texture" },
   { value: "unwanted-hair", label: "Unwanted hair" },
   { value: "stretch-marks", label: "Stretch marks" },
+  { value: "loose-skin", label: "Loose skin" },
+  { value: "double-chin", label: "Double chin / under-chin fullness" },
 ];
 
 const LIFESTYLE_OPTIONS: { value: LifestyleFactor; label: string }[] = [
@@ -61,6 +67,13 @@ const LIFESTYLE_OPTIONS: { value: LifestyleFactor; label: string }[] = [
   { value: "high-sun-exposure", label: "Lots of sun exposure" },
   { value: "screen-heavy", label: "8+ hr screen time" },
   { value: "alcohol", label: "Regular alcohol" },
+  { value: "weight-loss", label: "Recent weight loss" },
+  { value: "weight-gain", label: "Recent weight gain" },
+  { value: "pregnancy", label: "Pregnancy" },
+  { value: "lactating", label: "Breastfeeding / lactating" },
+  { value: "medication", label: "Taking medication" },
+  { value: "nutritional-deficiency", label: "Nutritional deficiency" },
+  { value: "hormonal-issues", label: "Hormonal issues or changes" },
 ];
 
 const CONCERN_TO_LABEL = Object.fromEntries(
@@ -256,6 +269,17 @@ export default function SkinAnalysis({ clinic }: { clinic: ToolClinic }) {
           { type: "spacer", height: 2 },
           { type: "heading", text: "Your skin profile" },
           { type: "paragraph", text: result.skinProfile },
+          ...(lifestyle.length
+            ? ([
+                { type: "heading", text: "Health and lifestyle context shared" },
+                {
+                  type: "bullets",
+                  items: lifestyle.map(
+                    (factor) => LIFESTYLE_OPTIONS.find((option) => option.value === factor)?.label ?? factor,
+                  ),
+                },
+              ] as const)
+            : []),
           ...(concerns.length
             ? ([
                 {
@@ -343,7 +367,7 @@ export default function SkinAnalysis({ clinic }: { clinic: ToolClinic }) {
                 Step 2 · Your skin baseline
               </h2>
               <p className="tool-step-sub">
-                Fitzpatrick type describes how your skin usually reacts to sun exposure. Choose based on that response, not a photo.
+                Skin tones across India are diverse. Fitzpatrick type describes your usual sun response, not your ethnicity or exact skin colour. Choose based on whether you burn or tan, not a photo.
               </p>
               <div className="tool-block-label">Fitzpatrick type</div>
               <div className="tool-options two-col">
@@ -362,7 +386,7 @@ export default function SkinAnalysis({ clinic }: { clinic: ToolClinic }) {
                   </button>
                 ))}
               </div>
-              <div className="tool-block-label">Skin type</div>
+              <div className="tool-block-label">Skin type · oil and dryness balance</div>
               <div className="tool-row">
                 {SKIN_TYPE_OPTIONS.map((o) => (
                   <button
@@ -427,7 +451,7 @@ export default function SkinAnalysis({ clinic }: { clinic: ToolClinic }) {
             <>
               <h2 className="tool-step-title">Step 4 · Lifestyle factors</h2>
               <p className="tool-step-sub">
-                Cortisol, UV, smoking and sleep all directly affect your skin.
+                These optional details give your clinician context for your skin concerns. Share only what you are comfortable sharing.
               </p>
               <div className="tool-options two-col">
                 {LIFESTYLE_OPTIONS.map((o) => (
@@ -444,6 +468,14 @@ export default function SkinAnalysis({ clinic }: { clinic: ToolClinic }) {
                   </button>
                 ))}
               </div>
+              <div style={{ marginTop: 16 }}>
+                <BookButton
+                  className="btn btn-primary"
+                  prefill={{ concern: "Skin consultation", source: "skin-analysis" }}
+                >
+                  Book a skin consultation
+                </BookButton>
+              </div>
             </>
           )}
 
@@ -451,8 +483,7 @@ export default function SkinAnalysis({ clinic }: { clinic: ToolClinic }) {
             <>
               <h2 className="tool-step-title">Step 5 · Your details</h2>
               <p className="tool-step-sub">
-                We&apos;ll WhatsApp your full report and the care team will
-                reach out within 10 minutes during clinic hours.
+                Your details are saved with the assessment so the care team can follow up if needed.
               </p>
               <div className="tool-field">
                 <label>Full name</label>
@@ -535,8 +566,7 @@ export default function SkinAnalysis({ clinic }: { clinic: ToolClinic }) {
               </div>
               <h3>Your report is downloading.</h3>
               <p>
-                Our care team will reach out on WhatsApp within 10 minutes.
-                Bring the PDF to your consultation.
+                Your assessment has been saved for the care team. Bring the PDF to your consultation.
               </p>
               <Link
                 href="/concerns"

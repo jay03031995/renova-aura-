@@ -9,14 +9,18 @@ export type SkinType = "oily" | "dry" | "combination" | "normal" | "sensitive";
 export type SkinConcern =
   | "acne"
   | "pigmentation"
-  | "anti-ageing"
+  | "wrinkles"
   | "dark-circles"
+  | "under-eye-puffiness"
   | "dull-skin"
+  | "dehydration"
   | "open-pores"
-  | "rosacea"
+  | "redness"
   | "scars"
   | "unwanted-hair"
-  | "stretch-marks";
+  | "stretch-marks"
+  | "loose-skin"
+  | "double-chin";
 
 export type LifestyleFactor =
   | "smoker"
@@ -25,12 +29,19 @@ export type LifestyleFactor =
   | "high-sun-exposure"
   | "screen-heavy"
   | "indoor-mostly"
-  | "alcohol";
+  | "alcohol"
+  | "weight-loss"
+  | "weight-gain"
+  | "pregnancy"
+  | "lactating"
+  | "medication"
+  | "nutritional-deficiency"
+  | "hormonal-issues";
 
 export type AnalysisInput = {
   fitzpatrick: Fitzpatrick;
   skinType: SkinType;
-  ageBracket: "u25" | "25-34" | "35-44" | "45-54" | "o55";
+  ageBracket: "u18" | "18-25" | "26-34" | "35-44" | "45-54" | "o55";
   concerns: SkinConcern[];
   lifestyle: LifestyleFactor[];
 };
@@ -43,14 +54,13 @@ export type AnalysisResult = {
   summary: string;
 };
 
-const CONCERN_TO_SLUG: Record<SkinConcern, string> = {
+const CONCERN_TO_SLUG: Partial<Record<SkinConcern, string>> = {
   acne: "acne",
   pigmentation: "pigmentation-melasma",
-  "anti-ageing": "anti-ageing-wrinkles",
+  wrinkles: "anti-ageing-wrinkles",
   "dark-circles": "dark-circles",
   "dull-skin": "dull-skin-brightening",
   "open-pores": "open-pores",
-  rosacea: "rosacea-sensitive-skin",
   scars: "scar-reduction",
   "unwanted-hair": "laser-hair-reduction",
   "stretch-marks": "stretch-marks",
@@ -58,7 +68,15 @@ const CONCERN_TO_SLUG: Record<SkinConcern, string> = {
 
 export function analyseSkin(input: AnalysisInput): AnalysisResult {
   const { fitzpatrick, skinType, ageBracket, concerns, lifestyle } = input;
-  const ageLabel = ageBracket === "u25" ? "under 25" : ageBracket === "o55" ? "55+" : ageBracket;
+  const ageLabels: Record<AnalysisInput["ageBracket"], string> = {
+    u18: "under 18",
+    "18-25": "18–25",
+    "26-34": "26–34",
+    "35-44": "35–44",
+    "45-54": "45–54",
+    o55: "55+",
+  };
+  const ageLabel = ageLabels[ageBracket];
   const concernLabels = concerns.map((concern) => concern.replaceAll("-", " "));
   const skinProfile = `Fitzpatrick type ${fitzpatrick} · ${skinType} skin · age ${ageLabel}`;
 
@@ -68,9 +86,9 @@ export function analyseSkin(input: AnalysisInput): AnalysisResult {
       "Pigmentation treatment should be selected and monitored by a clinician; some procedures can cause dark marks after irritation, especially in more deeply pigmented skin.",
     );
   }
-  if (concerns.includes("rosacea")) {
+  if (concerns.includes("redness")) {
     riskFactors.push(
-      "Facial redness can have several causes. A clinician should confirm the cause before treatment, especially if symptoms are new, persistent, painful, or affecting the eyes.",
+      "Facial redness can have several causes. A clinician can assess persistent, painful, or new redness before treatment.",
     );
   }
   if (concerns.includes("acne") && concerns.includes("scars")) {
@@ -81,6 +99,16 @@ export function analyseSkin(input: AnalysisInput): AnalysisResult {
   if (lifestyle.includes("smoker")) {
     riskFactors.push(
       "Tell your clinician if you smoke, particularly before a procedure, because it can affect healing.",
+    );
+  }
+  if (lifestyle.some((factor) => ["pregnancy", "lactating", "medication"].includes(factor))) {
+    riskFactors.push(
+      "Mention pregnancy, lactation, or medicines to your clinician before discussing treatment; suitability can vary.",
+    );
+  }
+  if (lifestyle.some((factor) => ["nutritional-deficiency", "hormonal-issues"].includes(factor))) {
+    riskFactors.push(
+      "Share any nutritional or hormonal concerns with your clinician so they can consider the wider health context.",
     );
   }
 
@@ -101,7 +129,9 @@ export function analyseSkin(input: AnalysisInput): AnalysisResult {
   return {
     skinProfile,
     riskFactors,
-    recommendedConcernSlugs: concerns.map((concern) => CONCERN_TO_SLUG[concern]),
+    recommendedConcernSlugs: concerns
+      .map((concern) => CONCERN_TO_SLUG[concern])
+      .filter((slug): slug is string => Boolean(slug)),
     lifestyleAdvice,
     summary,
   };
