@@ -16,11 +16,11 @@ import {
 } from "@/sanity/lib/fetchers";
 
 /**
- * Site content is cached for up to one hour and tagged by the Sanity fetchers.
+ * Site content is cached for up to 24 hours and tagged by the Sanity fetchers.
  * The signed /api/revalidate webhook expires the shared tag after published
  * content changes; the interval is a fallback if webhook delivery fails.
  */
-export const revalidate = 3600;
+export const revalidate = 86400;
 
 
 /**

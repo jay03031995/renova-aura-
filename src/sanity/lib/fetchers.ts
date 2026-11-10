@@ -167,11 +167,11 @@ function isFilled<T>(v: T | null | undefined): v is T {
 async function safeFetch<T>(query: string, params?: Record<string, unknown>) {
   if (!sanityEnabled) return null;
   try {
-    // Cache for up to one hour, or until the signed Sanity webhook expires
+    // Cache for up to 24 hours, or until the signed Sanity webhook expires
     // the shared tag after a published content change.
     return await client.fetch<T>(query, params ?? {}, {
       next: {
-        revalidate: 3600,
+        revalidate: 86400,
         tags: ["sanity"],
       },
     });
@@ -191,7 +191,7 @@ async function safeFetchWithAvailability<T>(
       available: true,
       data: await client.fetch<T>(query, params ?? {}, {
         next: {
-          revalidate: 3600,
+          revalidate: 86400,
           tags: ["sanity"],
         },
       }),
